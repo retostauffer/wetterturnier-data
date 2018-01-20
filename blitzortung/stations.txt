@@ -1,0 +1,21 @@
+# -----------------------------------------------
+# - List of the stations and cities where to
+#   visualize the lightning maps.
+#   Not that the city-hash has to be identical
+#   to the city hash from the wetterturnier
+#   to get the images shown at the end.
+#   The station position is from the ZAMG
+#   database.
+# - 2014-12-30, RS: created
+# -----------------------------------------------
+city, wmo, name, lon, lat
+BER, 10382, Tegel          , 13.31083, 52.56556
+BER, 10385, Schoenefeld    , 13.53250, 52.38222
+VIE, 11035, Hohe Warte     , 16.35639, 48.24861
+VIE, 11036, Schwechat      , 16.56972, 48.11028
+ZUR,  6660, Fluntern       ,  8.56583, 47.37778 
+ZUR,  6670, Kloten         ,  8.53611, 47.47972
+IBK, 11120, Flughafen      , 11.34389, 47.26028
+IBK, 11320, Universitaet   , 11.38417, 47.26000
+LEI, 10469, Schkeuditz     , 12.24139, 51.43611
+LEI, 10471, Holzhausen     , 12.44611, 51.31500

@@ -1,0 +1,15 @@
+CREATE TABLE `table_name` (
+   `statnr`       int(11) NOT NULL,
+   `datum`        int(8) NOT NULL,
+   `datumsec`     int(11) NOT NULL,
+   `stdmin`       smallint(4) NOT NULL,
+   `msgtyp`       enum('na','bufr','synop') default 'na',
+   `stint`        enum('na','essential','additional') default 'na',
+   `utime`        timestamp default CURRENT_TIMESTAMP,
+   `ucount`       tinyint unsigned default 0, 
+  UNIQUE KEY `table_name_statnr_datumsec_msgtyp` (`statnr`,`datumsec`,`msgtyp`),
+  KEY        `table_name_statnr`          (`statnr`),
+  KEY        `table_name_datum`           (`datum`),
+  KEY        `table_name_datumsec`        (`datumsec`),
+  KEY        `table_name_einspiel`        (`utime`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;

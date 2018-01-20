@@ -1,0 +1,6 @@
+
+# Ignore lockbits
+*
+
+# Include .gitignore file
+!.gitignore

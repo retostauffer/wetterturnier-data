@@ -1,0 +1,19 @@
+
+# Ignore config.conf!
+config.conf
+!config.conf.template
+
+# Take gitignore
+!.gitignore
+
+# Ignore files
+*.pyc
+*.bufr
+*.mod
+*.o
+R/Rplots.pdf
+
+# Ignore some folders
+trash
+.tmp
+R/images

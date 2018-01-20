@@ -1,0 +1,171 @@
+# -------------------------------------------------------------------
+# - NAME:        table_setup.dat
+# - AUTHOR:      Reto Stauffer
+# - DATE:        2015-02-17
+# -------------------------------------------------------------------
+# - DESCRIPTION:
+# -------------------------------------------------------------------
+# - EDITORIAL:   2015-02-17, RS: Created file on thinkreto.
+# -------------------------------------------------------------------
+# - L@ST MODIFIED: 2015-12-13 11:32 on thinkreto
+# -------------------------------------------------------------------
+#
+# - Empty lines will be ignored
+# - Comment lines will be ignored
+# - The rest needs:
+# column name, column type, default value
+timecolumn   ; smallint unsigned
+datumsec     ; int(11) 
+
+t            ; smallint
+td           ; smallint
+
+tmin1        ; smallint
+tmin3        ; smallint
+tmin6        ; smallint
+tmin12       ; smallint
+tmin15       ; smallint
+tmin24       ; smallint
+
+tmax1        ; smallint
+tmax3        ; smallint
+tmax6        ; smallint
+tmax12       ; smallint
+tmax15       ; smallint
+tmax24       ; smallint
+
+tgnd         ; smallint
+tgnd12       ; smallint
+tgnd15       ; smallint
+
+# - Wind
+dd           ; smallint unsigned
+ffinst       ; smallint unsigned
+ff           ; smallint unsigned
+ffx          ; smallint unsigned
+ffx1         ; smallint unsigned
+ffx3         ; smallint unsigned
+ffx6         ; smallint unsigned
+ffmax        ; smallint unsigned
+ffmax1       ; smallint unsigned
+ffmax3       ; smallint unsigned
+ffmax6       ; smallint unsigned
+
+# - Cloud Cover and Cloud Amount
+cc           ; tinyint unsigned
+cch          ; tinyint unsigned
+ccm          ; tinyint unsigned
+ccl          ; tinyint unsigned
+cah          ; tinyint unsigned
+cam          ; tinyint unsigned
+cal          ; tinyint unsigned
+chh          ; smallint unsigned
+chm          ; smallint unsigned
+chl          ; smallint unsigned
+
+# - Past and present weather
+ww           ; smallint unsigned
+w1           ; tinyint unsigned 
+w2           ; tinyint unsigned
+
+# - Some parameters
+vv           ; int
+rh           ; tinyint unsigned
+
+# - Sun
+sun          ; tinyint unsigned
+sun6         ; tinyint unsigned
+sun12        ; tinyint unsigned
+sunday       ; smallint unsigned
+
+netrad1      ; int
+netrad3      ; int
+netrad6      ; int
+netrad12     ; int
+netrad24     ; int
+
+lw1          ; int
+lw3          ; int
+lw6          ; int
+lw12         ; int
+lw24         ; int
+
+sw1          ; int
+sw3          ; int
+sw6          ; int
+sw12         ; int
+sw24         ; int
+
+solglo1      ; int
+solglo3      ; int
+solglo6      ; int
+solglo12     ; int
+solglo24     ; int
+
+soldiff1     ; int
+soldiff3     ; int
+soldiff6     ; int
+soldiff12    ; int
+soldiff24    ; int
+
+soldir1      ; int
+soldir3      ; int
+soldir6      ; int
+soldir12     ; int
+soldir24     ; int
+
+rr3          ; smallint
+rr24         ; smallint
+
+rrr05        ; smallint
+rrr1         ; smallint
+rrr3         ; smallint
+rrr6         ; smallint
+rrr12        ; smallint
+rrr18        ; smallint
+rrr24        ; smallint
+
+pmsl         ; mediumint
+psta         ; mediumint
+pch          ; smallint
+pch24        ; smallint
+ptend        ; tinyint
+
+
+# ----------------------------------------
+# - SYNOP SHIT
+# ----------------------------------------
+Iw           ; tinyint unsigned
+Ir           ; tinyint unsigned
+Ix           ; tinyint unsigned
+h            ; tinyint unsigned
+N            ; tinyint unsigned
+Nh           ; tinyint unsigned
+CL           ; tinyint unsigned
+CM           ; tinyint unsigned
+CH           ; tinyint unsigned
+E            ; tinyint unsigned
+Esnow        ; tinyint unsigned
+snow         ; smallint unsigned
+newsnow      ; smallint unsigned
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

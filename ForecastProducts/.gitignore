@@ -1,0 +1,10 @@
+
+# Ignore old code
+oldcode
+
+# Ignore pyc files
+*.pyc
+*/*.pyc
+
+# Ignore local config
+config.conf

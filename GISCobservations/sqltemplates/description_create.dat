@@ -1,0 +1,11 @@
+CREATE TABLE `table_name` (
+  `bufrid`  smallint(3) unsigned NOT NULL,
+  `param`   varchar(35) NOT NULL, 
+  `desc`    varchar(150) DEFAULT NULL,
+  `unit`    varchar(35) DEFAULT NULL,
+  `period`  mediumint unsigned DEFAULT 0, 
+  `offset`  float DEFAULT 0, 
+  `factor`  float DEFAULT 1,
+  `changed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY `table_name_param` (`param`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;

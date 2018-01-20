@@ -1,0 +1,124 @@
+# -------------------------------------------------------------------
+# - NAME:        table_setup.dat
+# - AUTHOR:      Reto Stauffer
+# - DATE:        2015-02-17
+# -------------------------------------------------------------------
+# - DESCRIPTION:
+# -------------------------------------------------------------------
+# - EDITORIAL:   2015-02-17, RS: Created file on thinkreto.
+# -------------------------------------------------------------------
+# - L@ST MODIFIED: 2015-03-13 13:40 on prognose2.met.fu-berlin.de
+# -------------------------------------------------------------------
+#
+# - Empty lines will be ignored
+# - Comment lines will be ignored
+# - The rest needs:
+# column name, column type, default value
+datumsec     ; int(11) NOT NULL             ;    0
+Ir           ; tinyint(3) unsigned NOT NULL ;  255
+Ix           ; tinyint(3) unsigned NOT NULL ;  255
+h            ; tinyint(3) unsigned NOT NULL ;  255
+VV           ; mediumint  NOT NULL          ; -999
+N            ; tinyint(3) unsigned NOT NULL ;  255
+Npc          ; tinyint(3) unsigned NOT NULL ;  255
+dd           ; smallint(6) NOT NULL         ; -999
+ff           ; smallint(6) NOT NULL         ; -999 
+T            ; smallint(6) NOT NULL         ; -999 
+Td           ; smallint(6) NOT NULL         ; -999 
+Pp           ; smallint(6) NOT NULL         ; -999 
+Pg           ; smallint(6) NOT NULL         ; -999 
+a            ; tinyint(3) unsigned NOT NULL ;  255
+p            ; smallint(6) NOT NULL         ; -999 
+RRR          ; smallint(6) NOT NULL         ; -999 
+RRR1         ; smallint(6) NOT NULL         ; -999 
+RRR3         ; smallint(6) NOT NULL         ; -999 
+RRR6         ; smallint(6) NOT NULL         ; -999 
+RRR12        ; smallint(6) NOT NULL         ; -999 
+RRR18        ; smallint(6) NOT NULL         ; -999 
+RRR24        ; smallint(6) NOT NULL         ; -999 
+tr           ; tinyint(3) unsigned NOT NULL ;  255 
+ww           ; tinyint(3) unsigned NOT NULL ;  255 
+W1           ; tinyint(3) unsigned NOT NULL ;  255 
+W2           ; tinyint(3) unsigned NOT NULL ;  255 
+Nh           ; tinyint(3) unsigned NOT NULL ;  255 
+CL           ; tinyint(3) unsigned NOT NULL ;  255 
+CM           ; tinyint(3) unsigned NOT NULL ;  255 
+CH           ; tinyint(3) unsigned NOT NULL ;  255 
+czeit        ; smallint(6) NOT NULL         ; -999
+Iw           ; tinyint(3) unsigned NOT NULL ;  255
+Tmax         ; smallint(6) NOT NULL         ; -999
+Tmin         ; smallint(6) NOT NULL         ; -999
+E            ; tinyint(3) unsigned NOT NULL ;  255
+Tg           ; smallint(6) NOT NULL         ; -999
+Eschnee      ; tinyint(3) unsigned NOT NULL ;  255
+schnee       ; smallint(6) NOT NULL         ; -999
+nschnee      ; smallint(6) NOT NULL         ; -999
+rel          ; tinyint(3) unsigned NOT NULL ;  255 
+Ns1          ; tinyint(3) unsigned NOT NULL ;  255 
+C1           ; tinyint(3) unsigned NOT NULL ;  255 
+hs1          ; tinyint(3) unsigned NOT NULL ;  255 
+Ns2          ; tinyint(3) unsigned NOT NULL ;  255 
+C2           ; tinyint(3) unsigned NOT NULL ;  255 
+hs2          ; tinyint(3) unsigned NOT NULL ;  255 
+Ns3          ; tinyint(3) unsigned NOT NULL ;  255 
+C3           ; tinyint(3) unsigned NOT NULL ;  255 
+hs3          ; tinyint(3) unsigned NOT NULL ;  255 
+Ns4          ; tinyint(3) unsigned NOT NULL ;  255 
+C4           ; tinyint(3) unsigned NOT NULL ;  255 
+hs4          ; tinyint(3) unsigned NOT NULL ;  255 
+Nh1          ; tinyint(3) unsigned NOT NULL ;  255 
+Ch1          ; tinyint(3) unsigned NOT NULL ;  255 
+hh1          ; tinyint(3) unsigned NOT NULL ;  255 
+Ct1          ; tinyint(3) unsigned NOT NULL ;  255 
+Nh2          ; tinyint(3) unsigned NOT NULL ;  255 
+Ch2          ; tinyint(3) unsigned NOT NULL ;  255 
+hh2          ; tinyint(3) unsigned NOT NULL ;  255 
+Ct2          ; tinyint(3) unsigned NOT NULL ;  255 
+Nh3          ; tinyint(3) unsigned NOT NULL ;  255 
+Ch3          ; tinyint(3) unsigned NOT NULL ;  255 
+hh3          ; tinyint(3) unsigned NOT NULL ;  255 
+Ct3          ; tinyint(3) unsigned NOT NULL ;  255 
+Tmaxv        ; smallint(6) NOT NULL         ; -999
+RRRv         ; smallint(6) NOT NULL         ; -999
+sonne        ; tinyint(3) unsigned NOT NULL ;  255 
+sonnetag     ; tinyint(3) unsigned NOT NULL ;  255 
+boe          ; smallint(6) NOT NULL         ; -999 
+w1boe        ; smallint(6) NOT NULL         ; -999 
+w1ffmax      ; smallint(6) NOT NULL         ; -999 
+Mw           ; tinyint(3) unsigned NOT NULL ;  255 
+Da           ; tinyint(3) unsigned NOT NULL ;  255 
+So           ; tinyint(3) unsigned NOT NULL ;  255 
+io           ; tinyint(3) unsigned NOT NULL ;  255 
+RR932        ; smallint(6) NOT NULL         ; -999
+RR934        ; smallint(6) NOT NULL         ; -999
+ww960        ; tinyint(3) unsigned NOT NULL ;  255 
+ww961        ; tinyint(3) unsigned NOT NULL ;  255 
+ww962        ; tinyint(3) unsigned NOT NULL ;  255 
+ww963        ; tinyint(3) unsigned NOT NULL ;  255 
+ww964        ; tinyint(3) unsigned NOT NULL ;  255 
+ww965        ; tinyint(3) unsigned NOT NULL ;  255 
+sp1          ; smallint(6) NOT NULL         ; -999 
+sp2          ; smallint(6) NOT NULL         ; -999 
+sp3          ; smallint(6) NOT NULL         ; -999 
+sp4          ; smallint(6) NOT NULL         ; -999 
+sp5          ; smallint(6) NOT NULL         ; -999 
+sp6          ; smallint(6) NOT NULL         ; -999 
+sp7          ; smallint(6) NOT NULL         ; -999 
+sp8          ; smallint(6) NOT NULL         ; -999 
+sp9          ; smallint(6) NOT NULL         ; -999 
+sp10         ; smallint(6) NOT NULL         ; -999 
+sp11         ; smallint(6) NOT NULL         ; -999 
+sp12         ; smallint(6) NOT NULL         ; -999 
+sp13         ; smallint(6) NOT NULL         ; -999 
+sp14         ; smallint(6) NOT NULL         ; -999 
+sp15         ; smallint(6) NOT NULL         ; -999 
+RR3          ; smallint(6) NOT NULL         ; -999 
+tr3          ; tinyint(3) unsigned NOT NULL ;  255
+RR24         ; smallint(6) NOT NULL         ; -999 
+app24        ; smallint(6) NOT NULL         ; -999 
+Tw           ; smallint(6) NOT NULL         ; -999
+flag_rst     ; tinyint(3) unsigned NOT NULL ;  255
+qflag        ; int(11) NOT NULL             ; -999
+schwarz      ; tinyint(3) unsigned NOT NULL ;  255
+rot          ; tinyint(3) unsigned NOT NULL ;  255
+gruen        ; tinyint(3) unsigned NOT NULL ;  255

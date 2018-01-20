@@ -1,0 +1,23 @@
+
+
+
+dwd.job
+=======
+Laedt via ftp einmal pro Stunde Bilder mit dem Namen fx401-* von denen
+es am FTP kein einziges mehr gibt. Auch die Logs am prognose-Server sind
+entsprechend leer.
+
+
+
+Karten.sh
+=========
+Da verschiebt der jobs zuerst alle analysen um 12h nach hinten. Startet
+man den job 2x, hat man verloren. Ich bau den mal so um, dass er den 
+Scheiss mit Datum und Zeit abspeichert, da die original-Files ja sowieso
+genau so heissen.
+ ------- umgebaut
+
+Karten2.sh
+==========
+Gibts nimma! Sucht - wie der dwd job - nach fx401 von denen es keine mehr gibt.
+

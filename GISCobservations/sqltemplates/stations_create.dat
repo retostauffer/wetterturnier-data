@@ -1,0 +1,11 @@
+CREATE TABLE `table_name` (
+  `statnr` smallint(11) unsigned NOT NULL,
+  `nr` tinyint(3) unsigned NOT NULL,
+  `name` varchar(150) DEFAULT NULL,
+  `lon` decimal(10,4) NOT NULL,
+  `lat` decimal(10,4) NOT NULL,
+  `hoehe` smallint(6) NOT NULL,
+  `hbaro` smallint(6) DEFAULT '-999',
+  `changed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  KEY `table_name` (`statnr`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;

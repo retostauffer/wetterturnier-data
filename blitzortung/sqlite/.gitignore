@@ -1,0 +1,6 @@
+
+# Ignore sqlite database
+*
+
+# Include .gitignore
+!.gitignore

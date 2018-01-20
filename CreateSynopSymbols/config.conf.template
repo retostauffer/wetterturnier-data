@@ -1,0 +1,85 @@
+# -------------------------------------------------------------------
+# - NAME:        config.conf 
+# - AUTHOR:      Reto Stauffer
+# - DATE:        2015-12-12
+# -------------------------------------------------------------------
+# - DESCRIPTION: Reading config file
+# -------------------------------------------------------------------
+# - EDITORIAL:   2015-12-12, RS: Created file on pc24-c707.
+# -------------------------------------------------------------------
+# - L@ST MODIFIED: 2018-01-20 21:17 on marvin
+# -------------------------------------------------------------------
+
+
+[main]
+
+# For which station this should be done
+stations = 6660,6670,10382,10384,10385,10469,10471,11035,11036,11120,11121,11320
+
+
+# Where to store the images
+outdir        = pngs
+
+# Image height and width in pixel
+imagewidth    = 150
+imageheight   = 150
+
+# Pixels per inch
+dpi = 150
+
+# Font size
+fontsize      = 15
+
+# -------------------------------------------------------------------
+# Mysql connection
+# -------------------------------------------------------------------
+[mysql]
+host          = localhost
+username      = **********
+password      = **********
+database      = obs
+table         = live
+
+
+# -------------------------------------------------------------------
+# We are using ttf fonts to create the synop symbols. They will
+# be selected depending on the parameter. Parameters NOT specified
+# here will drawn with the "default" font, if something is specified,
+# the new font will be used.
+# Default can be set but does not have to be set. If set, it has to
+# be a .ttf file. If not set, the internal default font will be used.
+# -------------------------------------------------------------------
+[font specifications]
+w0    = font/w0.ttf
+w1    = font/w1.ttf
+w2    = font/w2.ttf
+w3    = font/w3.ttf
+w4    = font/w4.ttf
+w5    = font/w5.ttf
+w6    = font/w6.ttf
+w7    = font/w7.ttf
+w8    = font/w8.ttf
+w9    = font/w9.ttf
+wpast = font/wpast.ttf
+cc    = font/n.ttf
+ptend = font/a.ttf
+ch    = font/CH.ttf
+cm    = font/CM.ttf
+cl    = font/CL.ttf
+
+
+# You can set a default font here for the fonts abvoe if
+# needed. Normally not needed at all.
+[font colors]
+w0    = blue
+
+
+
+
+
+
+
+
+
+
+

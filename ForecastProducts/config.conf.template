@@ -1,0 +1,329 @@
+# -------------------------------------------------------------------
+# - NAME:        config.conf
+# - AUTHOR:      Reto Stauffer
+# - DATE:        2015-12-17
+# -------------------------------------------------------------------
+# - DESCRIPTION:
+# -------------------------------------------------------------------
+# - EDITORIAL:   2015-12-17, RS: Created file on thinkreto.
+# -------------------------------------------------------------------
+# - L@ST MODIFIED: 2016-01-05 12:56 on pc24-c707
+# -------------------------------------------------------------------
+
+
+
+# -------------------------------------------------------------------
+# Defines the necessary ftp login settings
+# -------------------------------------------------------------------
+[ftp]
+
+server            = mira.met.fu-berlin.de
+user              = prognose
+password          = norman02
+directory         = export/faxe
+
+# -------------------------------------------------------------------
+# Main config part: where to store the images, location of
+# the product configs, and other settings
+# -------------------------------------------------------------------
+[main]
+
+# Directory where the product configs are located
+productconfig         = productconfig
+
+# Delete downloaded images and lockbits after N days
+delete_images         = 7
+delete_lockbits       = 2
+
+# Where to store all the images
+imagedir              = images
+
+# Where to store the meteograms
+meteogramsdir         = meteograms
+
+# IMPORTANT: the lockbit directory. Every time we are procedding
+# a figure (downloading from ftp, and creating the necessary 
+# resized or cropped images for the wetterturnier) a lockbit
+# will be produced and saved in this directory. This will be
+# needed to know which image was already processed when the script
+# gets started again. If the lockfile (matching an original file 
+# from the ftp server) exists, it will be skipped.
+lockbitdir           = lockbits
+
+# Path to a directory where to store the original files.
+# If 'store_originals' is off, the original files wont be
+# saved on disc (as this is not necessary). If needed, e.g,
+# for development, you can turn this on (True).
+originals             = originals
+store_originals       = False
+
+# Development mode. If True, an image which was already
+# processed wont be processed again. However, during development
+# I'd like to have the chance to test. If devel is True, but
+# the figure is already in the "originals" folder: load the
+# image from local dist (instead of ftp) and process it (split
+# into subfiles or whatever needed).
+devel                 = False
+
+
+# -------------------------------------------------------------------
+# Section for products regarding meteograms
+# -------------------------------------------------------------------
+[products meteograms]
+
+# COSMO-EU Meteogramme for several cities
+meteogram_cosmoeu_berlintempelhof = True
+meteogram_cosmoeu_innsbruck       = True
+meteogram_cosmoeu_salzburg        = True
+meteogram_cosmoeu_greifswald      = True
+meteogram_cosmoeu_leipzig         = True
+meteogram_cosmoeu_meiningen       = True
+
+# ICON meteograms
+meteogram_icon_berlin     = True 
+meteogram_icon_essen      = True 
+meteogram_icon_frankfurt  = True 
+meteogram_icon_hamburg    = True 
+meteogram_icon_leipzig    = True 
+meteogram_icon_muenchen   = True 
+
+# -------------------------------------------------------------------
+# Product specification | type analysis.
+# Each line specifies the name of a config file in "productconfig"
+# directory. The boolean flag allows to enable/disable a specific line.
+# -------------------------------------------------------------------
+[products analysis]
+
+# Analysis maps
+#   Region identifier:
+#     - na:   northern atlantic
+#     - nh:   northern hemisphere
+#   Product identifier:
+#     - gtXXX: geopotential height on XXXhPa with corresponding observations
+#     - pmls:  pressure reduced to mean sea level
+#     - sst:   sea surface temperature 
+analysis_icon_hemisphere_pmsl      = True
+analysis_icon_atlantic_gt300       = True
+analysis_icon_atlantic_pmsl        = True
+analysis_icon_atlantic_gt700_gt850 = True
+analysis_icon_atlantic_gt400_gt500 = True
+analysis_icon_atlantic_gt200_gt300 = True
+analysis_metoffice_atlantic_fronts = True
+analysis_dwd_atlantic_sst          = True
+analysis_dwd_atlantic_fronts       = True
+analysis_dwd_europe_fronts         = True
+
+
+# -------------------------------------------------------------------
+# Product specification | type forecasts.
+# Each line specifies the name of a config file in "productconfig"
+# directory. The boolean flag allows to enable/disable a specific line.
+# HERE: cosmo-eu forecast maps
+# -------------------------------------------------------------------
+[products cosmoeu]
+
+
+# COSMO-EU forecast maps
+#   Parameter identifier:
+#     - win:    10 wind speed/direction
+#     - ttc:    2m temperature 
+#     - tnx:    2m minimum/maximum temperature
+#     - rsa:    6h precipitation
+#     - cln:    low cloud cover
+#     - clm:    mid cloud cover
+#     - ccl:    convective cloud cover 
+#     - x4g:    significant weather charts
+#   First for ALPS region
+cosmoeu_alps_win_006_012       = True 
+cosmoeu_alps_win_018_024       = True
+cosmoeu_alps_win_030_036       = True
+cosmoeu_alps_win_042_048       = True
+cosmoeu_alps_ttc_006_012       = True 
+cosmoeu_alps_ttc_018_024       = True
+cosmoeu_alps_ttc_030_036       = True
+cosmoeu_alps_ttc_042_048       = True
+cosmoeu_alps_txn_018           = True
+cosmoeu_alps_txn_030_042       = True
+cosmoeu_alps_rsa_006_012       = True 
+cosmoeu_alps_rsa_018_024       = True
+cosmoeu_alps_rsa_030_036       = True
+cosmoeu_alps_rsa_042_048       = True
+cosmoeu_alps_cln_006_012       = True 
+cosmoeu_alps_cln_018_024       = True
+cosmoeu_alps_cln_030_036       = True
+cosmoeu_alps_cln_042_048       = True
+cosmoeu_alps_clm_006_012       = True 
+cosmoeu_alps_clm_018_024       = True
+cosmoeu_alps_clm_030_036       = True
+cosmoeu_alps_clm_042_048       = True
+cosmoeu_alps_ccl_006_012       = True 
+cosmoeu_alps_ccl_018_024       = True
+cosmoeu_alps_ccl_030_036       = True
+cosmoeu_alps_ccl_042_048       = True
+cosmoeu_alps_x4g_006_012       = True 
+cosmoeu_alps_x4g_018_024       = True
+cosmoeu_alps_x4g_030_036       = True
+cosmoeu_alps_x4g_042_048       = True
+#   Same for GERMANY
+cosmoeu_germany_win_006_012    = True 
+cosmoeu_germany_win_018_024    = True
+cosmoeu_germany_win_030_036    = True
+cosmoeu_germany_win_042_048    = True
+cosmoeu_germany_wix_006_012    = True 
+cosmoeu_germany_wix_018_024    = True
+cosmoeu_germany_wix_030_036    = True
+cosmoeu_germany_wix_042_048    = True
+cosmoeu_germany_ttc_006_012    = True 
+cosmoeu_germany_ttc_018_024    = True
+cosmoeu_germany_ttc_030_036    = True
+cosmoeu_germany_ttc_042_048    = True
+cosmoeu_germany_txn_018        = True
+cosmoeu_germany_txn_030_042    = True
+cosmoeu_germany_rsa_006_012    = True 
+cosmoeu_germany_rsa_018_024    = True
+cosmoeu_germany_rsa_030_036    = True
+cosmoeu_germany_rsa_042_048    = True
+cosmoeu_germany_cln_006_012    = True 
+cosmoeu_germany_cln_018_024    = True
+cosmoeu_germany_cln_030_036    = True
+cosmoeu_germany_cln_042_048    = True
+cosmoeu_germany_clm_006_012    = True 
+cosmoeu_germany_clm_018_024    = True
+cosmoeu_germany_clm_030_036    = True
+cosmoeu_germany_clm_042_048    = True
+cosmoeu_germany_ccl_006_012    = True 
+cosmoeu_germany_ccl_018_024    = True
+cosmoeu_germany_ccl_030_036    = True
+cosmoeu_germany_ccl_042_048    = True
+cosmoeu_germany_x4g_006_012    = True 
+cosmoeu_germany_x4g_018_024    = True
+cosmoeu_germany_x4g_030_036    = True
+cosmoeu_germany_x4g_042_048    = True
+#   Same for EUROPE
+cosmoeu_europe_win_006_012    = True 
+cosmoeu_europe_win_018_024    = True
+cosmoeu_europe_win_030_036    = True
+cosmoeu_europe_win_042_048    = True
+cosmoeu_europe_ttc_006_012    = True 
+cosmoeu_europe_ttc_018_024    = True
+cosmoeu_europe_ttc_030_036    = True
+cosmoeu_europe_ttc_042_048    = True
+cosmoeu_europe_txn_018        = True
+cosmoeu_europe_txn_030_042    = True
+cosmoeu_europe_rsa_006_012    = True 
+cosmoeu_europe_rsa_018_024    = True
+cosmoeu_europe_rsa_030_036    = True
+cosmoeu_europe_rsa_042_048    = True
+cosmoeu_europe_cln_006_012    = True 
+cosmoeu_europe_cln_018_024    = True
+cosmoeu_europe_cln_030_036    = True
+cosmoeu_europe_cln_042_048    = True
+cosmoeu_europe_clm_006_012    = True 
+cosmoeu_europe_clm_018_024    = True
+cosmoeu_europe_clm_030_036    = True
+cosmoeu_europe_clm_042_048    = True
+cosmoeu_europe_ccl_006_012    = True 
+cosmoeu_europe_ccl_018_024    = True
+cosmoeu_europe_ccl_030_036    = True
+cosmoeu_europe_ccl_042_048    = True
+cosmoeu_europe_x4g_006_012    = True 
+cosmoeu_europe_x4g_018_024    = True
+cosmoeu_europe_x4g_030_036    = True
+cosmoeu_europe_x4g_042_048    = True
+#   Some overview maps
+cosmoeu_overview_1 = True
+cosmoeu_overview_2 = True
+cosmoeu_overview_3 = True
+cosmoeu_overview_4 = True
+
+
+# -------------------------------------------------------------------
+# Product specification | type forecasts.
+# Each line specifies the name of a config file in "productconfig"
+# directory. The boolean flag allows to enable/disable a specific line.
+# HERE: icon forecast maps
+# -------------------------------------------------------------------
+[products icon]
+
+# ICON based surface maps (based on forecasts)
+icon_atlantic_sfcmap_036           = True
+icon_atlantic_sfcmap_048           = True
+icon_atlantic_sfcmap_060           = True
+icon_atlantic_sfcmap_084           = True
+icon_atlantic_sfcmap_108           = True
+
+# ICON geopotential height + temperature on 500 hpa
+#      mean sea level pressure 
+icon_atlantic_gt500_pmsl_012_030    = True
+icon_atlantic_gt500_pmsl_036_072    = True 
+icon_atlantic_gt500_pmsl_084_120    = True
+icon_atlantic_gt500_pmsl_132_168    = True
+# ICON geopotential height + temperature on 850 hpa
+#      plus relavite humidity 700hPa
+icon_atlantic_gt850_rh700_012_030    = True
+icon_atlantic_gt850_rh700_036_072    = True
+icon_atlantic_gt850_rh700_084_120    = True
+icon_atlantic_gt850_rh700_132_168    = True
+
+# ICON precipitation, 12h sums, Europe
+icon_europe_rr12_018_030    = True
+icon_europe_rr12_042_054    = True 
+icon_europe_rr12_066_078    = True 
+
+# ICON precipitation, 24h sums, Europe
+icon_europe_rr24_030        = True 
+icon_europe_rr24_054        = True 
+icon_europe_rr24_078        = True 
+
+# ICON precipitation, 24h sums, Germany
+icon_germany_rr24_024_048   = True 
+icon_germany_rr24_072_096   = True  
+icon_germany_rr24_120_144   = True  
+
+
+# -------------------------------------------------------------------
+# Product specification | type forecasts.
+# Each line specifies the name of a config file in "productconfig"
+# directory. The boolean flag allows to enable/disable a specific line.
+# HERE: ecmwf forecast maps
+# -------------------------------------------------------------------
+[products ecmwf]
+
+# ECMWF geopotential height + temperature on 500 hpa
+#      mean sea level pressure 
+ecmwf_atlantic_gt500_pmsl_012_030   = True 
+ecmwf_atlantic_gt500_pmsl_036_072   = True 
+ecmwf_atlantic_gt500_pmsl_084_120   = True
+ecmwf_atlantic_gt500_pmsl_132_168   = True
+# ECMWF geopotential height + temperature on 850 hpa
+#       plus relavite humidity 700hPa
+ecmwf_atlantic_gt850_rh700_012_030  = True 
+ecmwf_atlantic_gt850_rh700_036_072  = True 
+ecmwf_atlantic_gt850_rh700_084_120  = True 
+ecmwf_atlantic_gt850_rh700_132_168  = True 
+
+
+# -------------------------------------------------------------------
+# Product specification | type forecasts.
+# Each line specifies the name of a config file in "productconfig"
+# directory. The boolean flag allows to enable/disable a specific line.
+# HERE: uk metoffice surface analysis forecast maps
+# -------------------------------------------------------------------
+[products metoffice]
+
+metoffice_atlantic_fronts_024   = True
+metoffice_atlantic_fronts_036   = True
+metoffice_atlantic_fronts_048   = True
+metoffice_atlantic_fronts_060   = True
+metoffice_atlantic_fronts_072   = True
+metoffice_atlantic_fronts_084   = True
+metoffice_atlantic_fronts_096   = True
+metoffice_atlantic_fronts_120   = True
+
+
+
+
+
+
+
+

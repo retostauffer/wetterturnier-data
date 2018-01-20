@@ -1,0 +1,15 @@
+
+# Ignore pyc files
+*.pyc
+*/*.pcy
+*/*/*.pyc
+*/*/*/*.pyc
+
+# Ignore this, has his own repos!
+GENSvis
+
+# Ignore some tests
+test_FU
+
+# Ignore virtualenv
+venv

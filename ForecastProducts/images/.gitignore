@@ -1,0 +1,6 @@
+
+# Ignore all, dynamic content
+*
+
+# Icnlude gitignore
+!.gitignore
