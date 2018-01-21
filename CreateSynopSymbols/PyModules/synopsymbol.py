@@ -8,7 +8,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2015-12-12, RS: Created file on pc24-c707.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-06-20 10:34 on prognose2.met.fu-berlin.de
+# - L@ST MODIFIED: 2018-01-21 18:14 on marvin
 # -------------------------------------------------------------------
 
 import logging
@@ -17,11 +17,11 @@ log = logging.getLogger(__name__)
 import drawbarb
 
 class synopsymbol( drawbarb.drawbarb ):
-   """!Synopsymbol class extending the drawbarb class drawing the
+   """Synopsymbol class extending the drawbarb class drawing the
    vector wind barbs onto the figure."""
 
    def __init__( self, config ):
-      """!Initialize a synopsymbol class. Inputs needed: config from
+      """Initialize a synopsymbol class. Inputs needed: config from
       @see readconfig.readconfig. It contains the fonts and other stuff
       we need later.
       @return Returns the initialized class itself."""
@@ -287,7 +287,7 @@ class synopsymbol( drawbarb.drawbarb ):
    # Initializes new matplotlib figure
    # ----------------------------------------------------------------
    def _open_figure_(self):
-      """!Helper function opening the new matplotlib.pyplot.figure
+      """Helper function opening the new matplotlib.pyplot.figure
       object, setting axis properly. 
       @param No input parameters, all needed is on self.config.
       @return No return, stores axis and figure handler onto
@@ -312,7 +312,7 @@ class synopsymbol( drawbarb.drawbarb ):
    # Saving figure
    # ----------------------------------------------------------------
    def _save_figure_(self,file):
-      """!Saves the figure self.fig into the output file specified.
+      """Saves the figure self.fig into the output file specified.
       @param file. Required, string. Name of the output file.
       @return No return."""
       

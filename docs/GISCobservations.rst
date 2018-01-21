@@ -18,7 +18,7 @@ station 11320 Universitaet Innsbruck is not included in the GISC at all).
 
 
 The worker script
---------------
+-----------------------
 
 .. _script-bufr:
 
@@ -51,7 +51,7 @@ WARNING: the BUFR tables in this archive have the suffix ``.txt`` while
 
 To get this script to run:
 
-.. code-block::
+.. code-block:: bash
 
     ## Make a copy of the config template file and adjust
     ## the settings, namely mysql database access information
@@ -62,7 +62,7 @@ To get this script to run:
     ## If required: set BUFR TABLES environment variable
     export BUFR_TABLES=/path/to/your/bufrtables
 
-    ## Execut escript
+    ## Execute script (keep care using the virtualenv if you do so)
     python bufr.py
 
 For testing a specific file can be specified using the ``-f/--file`` flag.
@@ -70,7 +70,7 @@ In this case this file will be read and *not moved* after execution.
 
 .. code-block:: bash
 
-    ## Processing af specific bufr file
+    ## Processing af specific bufr file (keep care using the virtualenv if you do so)
     python bufr.py --file <path/to/buf/file>
 
 
@@ -89,7 +89,7 @@ The :file:`CleanUp.py` script does this job using the configuration from the
 
 To get the script running:
 
-.. code-block::
+.. code-block:: bash
 
     ## Make a copy of the config template file if you havn't done this
     ## yet and adjsut the settings, namely mysql database access information
