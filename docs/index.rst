@@ -14,7 +14,23 @@ be a good starting point if you would like to setup a similar system.
     :hidden:
 
     overview.rst
+
+
+Parts and Pieces
+==================
+
+.. toctree::
+    :maxdepth: 1
+    :hidden:
+
+    CreateSynopSymbols.rst
+    ForecastProducts.rst
+    GISCobservations.rst
+    blitzortung.rst
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Databases
+    :hidden:
+
     dbtables.rst
-
-
-

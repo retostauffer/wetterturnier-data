@@ -17,7 +17,7 @@ additional columns if there are data. ``...`` in the table indicate the data
 columns (e.g,. temperature observations, cloud cover observations, ...).
 
 The ``live`` table is a rolling database containing the latest observations for
-all incoming stations. The script :ref:`Concuela.py <script-Concuela>` cleans the database from time
+all incoming stations. The script :ref:`CleanUp.py <script-cleanup>` cleans the database from time
 to time moving the observations for some specific stations into the
 :ref:`archive <table-archive>` database table and deletes all others.
 
@@ -40,4 +40,27 @@ and an unnecessary and unused copy of everything).
 
 
 .. _database-wetterturnier:
+
+stations
+----------
+
+.. _table-stations:
+
+Station information as read from the BUFR files.
+
+.. include:: dbtables/stations.rsx
+
+
+
+
+bufrdesc
+----------
+
+.. _table-bufrdesc:
+
+BUFR description as read from the BUFR files.
+
+.. include:: dbtables/bufrdesc.rsx
+
+
 

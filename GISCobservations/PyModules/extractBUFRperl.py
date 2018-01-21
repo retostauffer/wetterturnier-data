@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2015-02-04, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2018-01-20 20:51 on marvin
+# - L@ST MODIFIED: 2018-01-21 17:58 on marvin
 # -------------------------------------------------------------------
 
 
@@ -22,6 +22,16 @@ class bufrdesc(object):
    """
    This is a small helper class. I am loading the bufrdesc database
    as a list ob such bufrdesc classes which are easily iteratable.
+   Used to store each record (each row of the
+   :ref:`bufrdesc database table <table-bufrdesc>` as an object which
+   is easy to iterate over.
+
+   Args:
+       rec (:obj:`tuple`): A record from the bufrdesc database table.
+            The elements of the :obj:`tuple` are described
+            by the second input argument ``cols``.
+       cols (:obj:`list`): List of :obj:`str` describing the elements
+            in the first argument (rec :obj:`tuple`).
    """
    
    # ----------------------------------------------------------------
@@ -60,6 +70,12 @@ class bufrdesc(object):
       """
       Returns element corresponding to input string 'what'. 
       If we cant find it in the columns from the database: stop!
+
+      Args:
+        what (:obj:`str`): Element to be returned.
+
+      Returns:
+        Returns the corresponding element if available, else stop.
       """
       try:
          i = self.cols.index( what )
@@ -78,6 +94,13 @@ class bufrentry(object):
    bufr file in such bufrentry classes. A bufrenry class contains
    the specification of one single message.
    E.g., bufrid, value, description.
+
+   Args:
+      string (:obj:`str`): A bufrentry is a line as extracted by
+        the Geo::BUFR bufrread.pl perl script.
+      width (:obj:`int`): bufrread.pl allows to set a width for the
+        description column. This width has to be known by :class:`bufrentry`
+        to be able to properly extract the information from this line.
    """
 
    MISSING_VALUE = -9999.
@@ -117,6 +140,13 @@ class bufrentry(object):
    # - Helper function to show recotrd if necessary
    # ----------------------------------------------------------------
    def show(self):
+      """
+      Allows to print the content of this object, mainly for development.
+
+      Returns:
+        No return, creates output on stdout.
+      """
+
       print "    - BUFR ENTRY:"
       print "      Count:       %6d"  % (self.count)
       print "      Bufrid:      %06d" % (self.bufrid)
@@ -129,6 +159,12 @@ class bufrentry(object):
 
 
    def string(self):
+      """
+      Helper method to output the content of this object to console.
+
+      Returns:
+         Returns the information from the object in a string format.
+      """
       x = " -- %3d %06d %-42s %-15s" % (self.count,self.bufrid,self.desc[0:40],self.unit)
       if type(self.value) == type(str()):
          x = '%s %s' % (x,self.value)
@@ -141,11 +177,49 @@ class bufrentry(object):
 # - The main extractBUFR data class. 
 # -------------------------------------------------------------------
 class extractBUFR( object ):
+   """
+   Main class, extracting data from the BUFR file.
 
+   This object uses `subprocess.Popen` to call the Geo::BUFR bufrread.pl
+   file (see `<http://search.cpan.org/dist/Geo-BUFR/lib/Geo/BUFR.pm>`_,
+   `<https://wiki.met.no/bufr.pm/start>`_). If not installed None will
+   be returned. To install Geo::BUFR check the readme of the package.
+   It is as simple as:
+
+   .. code-block:: bash
+
+     cpan Geo::BUFR
+
+   Please note that you will also have to have the BUFRTABLES installed on
+   your system at either one of the default locations or by setting the
+   environment variable ``BUFR_TABLES=<path>`` corresponding to the location
+   of the bufr files.
+
+   BUFR Tables can e.g. be downloaded here:
+   <https://software.ecmwf.int/wiki/display/BUFR/BUFRDC+Home>`_. The files in
+   this archive are named ``.txt`` while ``.TXT`` files are expected. bufrread.pl
+   will drop a corresponding message. Simply link the ``.txt`` files to a corresponding
+   ``.TXT`` version in your BUFR_TABLES folder to get around this.
+
+   Args:
+      config (:obj:`str`): Name of the config file.
+      stint (:obj:`str`): Used to store a flag into the database
+        from which source the messages come. In this case "bufr".
+        Keep in mind that the database column type is "ENUM" and
+        only allows a distinct set of strings.
+      verbose (:obj:`bool`): Boolean True/False whether the object
+        should be verbose or not.
+      filterfile (:obj:`str`): Default is None, a filter file can be
+        specified forwarded to Geo::BUFR bufrread.pl.
+   """
+
+   # Width used for the ACII output format from bufrread.pl
    WIDTH         = 40
+   # Replace 'missing' string with this value.
    MISSING_VALUE = -9999.
+   # Attribute used to store the database handler later on
    db            = None
-
+   # Whether or ont the object should be verbose or not.
    VERBOSE       = True
 
    # ----------------------------------------------------------------
@@ -199,6 +273,14 @@ class extractBUFR( object ):
       """
       Loading data from 'table' and returns a list object containing
       one 'bufrdesc' object for each of the rows in the database.
+
+      Args:
+        table (:obj:`str`): Name of the database table containing
+            the bufr descriptions.
+
+      Returns:
+        list: Returns a list of :obj:`bufrdesc` objects containing
+        the definition/description.
       """
       cur = self.db.cursor()
       cur.execute( "SELECT * FROM %s" % table )
@@ -224,6 +306,18 @@ class extractBUFR( object ):
       Function reading the BUFR file. Actually calling the perl
       Geo::BUFR library to convert the binary files into ASCII table
       and pase the output to extract the necessary information.
+
+      Args:
+        file (:obj:`str`): Path/Name of the BUFR file (binary file).
+        filterfile (:obj:`str`): Default None, dan be set and will be
+            forwarded to Geo::BUFR bufrread.pl to set specific filters.
+            If set only this subset of the bufr file will be extracted/processed.
+
+      Returns:
+         list: Returns a list of lists, each containing a set of :obj:`bufrentry`
+         objects. The length of the most outer list corresponds to the number
+         of messages in the BUFR file. The first nested lists are the messages
+         each consisting of a set of :obj:`bufrentry` entries with the data.
       """
 
       import os
@@ -285,9 +379,16 @@ class extractBUFR( object ):
 
 
    # ----------------------------------------------------------------
-   # - Get value: kill all huge missing values and shit.
    # ----------------------------------------------------------------
    def __getval__(self,x):
+      """
+      Get value: if the value is a string: simply return.
+      Else convert value to :obj:`float`. If the value is extremely
+      large or extremely small: return ``MISSING_VALUE``.
+
+      Returns:
+        Properly prepare the value.
+      """
       if type(x) == type(str()):
          return x 
       if float(x) < -1.e20 or float(x) > 1.e20:
@@ -296,7 +397,6 @@ class extractBUFR( object ):
 
 
    # ----------------------------------------------------------------
-   # - Loading data now
    # ----------------------------------------------------------------
    def extractdata(self):
       """
@@ -322,7 +422,7 @@ class extractBUFR( object ):
          displacement = 0
 
          # - Sensor height, set to -999 if not specified yet.
-         sensorheight = -999
+         sensorheight = -9
 
          # - Similar to the displacement there are some variables (cloud cover
          #   and cloud type) on different levels. These levels are called
@@ -419,10 +519,14 @@ class extractBUFR( object ):
    # ----------------------------------------------------------------
    def __check_bufrdesc_and_add_if_necessary__(self,rec,param):
       """
-      Input rec is a bufrentry object.
-      Input param has to be of class paramclass.
-      Checks if entry is already in the bufrdesc database. If not,
-      we have to add a row.
+      Adding bufr entry to database table :ref:`bufrdesc <table-bufrdesc>` if
+      necessary.  Input rec is a bufrentry object.  Input param has to be of
+      class paramclass.  Checks if entry is already in the bufrdesc database.
+      If not, we have to add a row.
+
+      Args:
+        rec (:class:`bufrentry`): Object to be added.
+        param (:class:`bufrdesc`): Bufr description object.
       """
       desc = None
       for elem in self.bufrdesc:
@@ -474,6 +578,16 @@ class extractBUFR( object ):
    #   seconds. 
    # ----------------------------------------------------------------
    def __check_displacement__(self,rec):
+      """Check if current record is a time displacement specification.
+      If so the value of the time displacement value will be returned
+      as :obj:`int` in seconds. If not :obj:`bool` ``False`` is returned.
+
+      Args:
+          rec (:class:`bufrentry`): Object to check.
+
+      Returns:
+          Returns :obj:`bool` ``FALSE`` or :obj:`int`.
+      """
 
       is_displacement = False
       if rec.bufrid in [004024,004025]:
@@ -509,6 +623,16 @@ class extractBUFR( object ):
    # 0.05m temperatures).
    # ----------------------------------------------------------------
    def __check_sensorheight__(self,rec):
+      """Check if current record is a sensorheight specification.
+      If so the value of the sensorheight value will be returned
+      (float). If not a :obj:`bool` ``False`` is returned.
+
+      Args:
+          rec (:class:`bufrentry`): Object to check.
+
+      Returns:
+          Returns :obj:`bool` ``FALSE`` or :obj:`float`.
+      """
 
       is_sensorheight = False
       if rec.bufrid in [00703]:
@@ -531,6 +655,16 @@ class extractBUFR( object ):
    #   information. If not, return False. Else return value. 
    # ----------------------------------------------------------------
    def __check_verticalsign__(self,rec):
+      """Check if current record is a vertical significance specification.
+      If so the value of the vertical significance value will be returned
+      (absolute value as integer). If not a :obj:`bool` ``False`` is returned.
+
+      Args:
+          rec (:class:`bufrentry`): Object to check.
+
+      Returns:
+          Returns :obj:`bool` ``FALSE`` or :obj:`int`.
+      """
 
       is_verticalsign = False
       if rec.bufrid == 8002:
@@ -551,6 +685,29 @@ class extractBUFR( object ):
    # - Show data
    # ----------------------------------------------------------------
    def __get_param_obj__(self,search,displacement,verticalsign,sensorheight):
+      """The config file :file:`bufr_config.conf` contains a set of
+      parameter definitions. This method is used to finde the appropriate
+      parameter description given the inputs which directly come from the
+      BUFR entry extracted from the BUFR file using Geo::BUFR buffread.pl.
+
+      We are therefore matching each data line from the BUFR file with one
+      of our specified parameter configs from the :file:`bufr_config.conf`
+      and use them to further process the data.
+
+      Args:
+        search (:obj:`burentry`): Bufrentry object.
+        displacement (:obj:`int`): Lates time displacement value, seconds.
+        verticalsign (:obj:`int`): Latest vertical significance value.
+        sensorheight (:obj:`float`): Latest sensor height value.
+
+      Returns:
+         Returns two values, the first one is a :obj:`bool` whether to
+         drop the message or not. If no parameter entry can be matched to
+         the current bufrentry this value is ``True`` (drop message, unknown).
+         Else ``False`` will be returned (don't drop). The second argument
+         is :obj:`bool` False if we cannot find the parameter entry, or
+         a parameter entry of class :class:`bufrdesc` else.
+      """
 
       param = False
       drop  = True
@@ -577,10 +734,10 @@ class extractBUFR( object ):
                if rec.period == displacement:       check.append(True)
                else:                                check.append(False)
             if rec.sensorheight:
-               if rec.sensorheight == sensorheight: check.append(True)
+               if sensorheight in rec.sensorheight: check.append(True)
                else:                                check.append(False)
             if rec.verticalsign:
-               if rec.verticalsign == verticalsign: check.append(True)
+               if verticalsign in rec.verticalsign: check.append(True)
                else:                                check.append(False)
 
             # If at least one is False: kick
@@ -598,10 +755,13 @@ class extractBUFR( object ):
       return False, param
 
 
-   # ----------------------------------------------------------------
-   # - Manipulate data 
-   # ----------------------------------------------------------------
    def manipulatedata(self):
+      """Manipulate data. Is looking for some meta information such as
+      ``wmoblock``, ``statnr``, ``year``, ``month``, ``hour``, and ``minute``
+      and creates the columns ``datumsec`` (unix time stamp), ``stdmin``
+      (hour/minute integer, e.g., 7:00 UTC is 700), and ``statnr`` (a combination
+      of the wmoblock and station number information from the bufr file).
+      """
 
       if len(self.data) == 0:
          print '[!] Cannot manipulate data - no data loaded yet.'
@@ -697,14 +857,13 @@ class extractBUFR( object ):
       return True 
 
 
-   # ----------------------------------------------------------------
-   # - Prepares the data.
-   #   Puts the data we found bevore in the single messages into
-   #   a matrix style variable called "res". Stores parameter
-   #   (column description of the matrix) and the data matrix into
-   #   self.PREPARED.
-   # ----------------------------------------------------------------
    def prepare_data( self ):
+      """Prepares the data.
+      Puts the data we found bevore in the single messages into
+      a matrix style variable called "res". Stores parameter
+      (column description of the matrix) and the data matrix into
+      self.PREPARED.
+      """
 
       res = ()
       par = []
@@ -756,6 +915,8 @@ class extractBUFR( object ):
    # - Write the data we have found into the database now.
    # ----------------------------------------------------------------
    def write_to_db(self):
+      """Write data to database.
+      """
 
       if self.db == None:
          print '[!] Database connection not established. Return.'
@@ -801,6 +962,12 @@ class extractBUFR( object ):
    # - Update stations table
    # ----------------------------------------------------------------
    def update_stations( self ):
+      """Update station database. Update the station database with the
+      information from the bufr message. Plase note that we do simply
+      update the database row and do not take care of history (e.g.,
+      if a station would be renamed or moved the latest name/location
+      will be stored and the old information is simply overwritten).
+      """
 
       print "\n  * Update stations table in the database"
 
@@ -838,6 +1005,12 @@ class extractBUFR( object ):
    # - Show dropped entries 
    # ----------------------------------------------------------------
    def showdropped(self):
+      """If a bufrentry cannot be attributed (is not defined by bufr_config.conf)
+      we will ignore these lines. To see what has been dropped and whether there
+      is important information being dropped the dropped lines will be kept.
+
+      This method allows to print the dropped lines to stdout.
+      """
 
       if len( self.dropped ) == 0:
          print '\n    NO DROPPED ENTRIES/VARIABLES AT THE MOMENT\n\n'
@@ -852,6 +1025,8 @@ class extractBUFR( object ):
    # - Getting output sort order - if set. 
    # ----------------------------------------------------------------
    def __showdata_sort_order__(self,force=None):
+      """Takes care of the order of the columns in the output.
+      """
    
       if not self.config['sortorder']: return self.data.keys()
 
@@ -883,6 +1058,9 @@ class extractBUFR( object ):
    # - Show data
    # ----------------------------------------------------------------
    def showdata(self):
+      """
+      Helper function to print the data to stdout.
+      """
 
       # - No data?
       if len(self.data) == 0:
@@ -920,10 +1098,11 @@ class extractBUFR( object ):
          print '\n',
 
 
-   # ----------------------------------------------------------------
-   # - Connecting database
-   # ----------------------------------------------------------------
    def dbConnect(self):
+      """Method to open the database connection. Uses the settings
+      on self.config. No return, saves the database handler on the
+      object itself.
+      """
    
       if self.db == None:
          if self.VERBOSE: print '  * Establishing database connection' 
@@ -932,19 +1111,24 @@ class extractBUFR( object ):
       else:
          if self.VERBOSE: print '    Database connection already open.' 
 
-   # ----------------------------------------------------------------
-   # - Some db helpers
-   # ----------------------------------------------------------------
    def cursor(self):
+      """
+      Alias for MySQLdb.close.
+      
+      Returns:
+        Returns a MySQL.cursor object.
+      """
+      self.db.db.commit()
       return self.db.db.cursor()
    def commit(self):
+      """
+      Alias for MySQLdb.commit.
+      """
       self.db.db.commit()
-
-
-   # ----------------------------------------------------------------
-   # - Close database connection
-   # ----------------------------------------------------------------
    def dbClose(self):
+      """
+      Alias for MySQLdb.close.
+      """
       if self.VERBOSE: print '    Close database connection'
       self.db.db.close()
 

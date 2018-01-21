@@ -7,12 +7,17 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2015-02-04, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2018-01-15 12:17 on prognose2
+# - L@ST MODIFIED: 2018-01-21 17:03 on marvin
 # -------------------------------------------------------------------
 
 
 
 def readconfig( file = 'config.conf' ):
+   """Method to read the config file. Default is :file:`config.conf.
+
+   Args:
+       file (:obj:`str`): Name of the main config file.
+   """
 
    import sys, os
    if not os.path.isfile( file ): sys.exit("ERROR: readconfig cannot find file %s" % file)
@@ -218,6 +223,12 @@ def readconfig( file = 'config.conf' ):
 #   we are appending all the new elements to this dict!
 # -------------------------------------------------------------------
 def readbufrconfig(input=None,file='bufr_config.conf'):
+   """Method to read the bufr parameter specification config file.
+   Default is :file:`bufr_config.conf`.
+
+   Args:
+       file (:obj:`str`): Name of the bufr config file.
+   """
 
    import sys, os
    from paramclass import paramclass
@@ -267,12 +278,16 @@ def readbufrconfig(input=None,file='bufr_config.conf'):
          period = CNF.get(sec,'period')
       except:
          period = False
+
+      # Load sensor height and create a list if set.
       try:
-         sensorheight = CNF.getfloat(sec,'height')
+         tmp          = CNF.get(sec,'height')
+         sensorheight = [float(x) for x in tmp.split(",")]
       except:
          sensorheight = False
       try:
-         verticalsign = CNF.getint(sec,'verticalsign')
+         tmp          = CNF.getint(sec,'verticalsign')
+         sensorheight = [float(x) for x in tmp.split(",")]
       except:
          verticalsign = False
       # - Append

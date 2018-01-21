@@ -18,8 +18,8 @@ import os
 import shlex
 
 # Tell sphinx where to search for modules/classes
-sys.path.append("../PythonPackage/pywetterturnier");
-sys.path.append("../PythonPackage");
+sys.path.append("../GISCobservations/PyModules");
+sys.path.append("../GISCobservations");
 sys.path.append("../");
 
 ##import pywetterturnier

@@ -7,12 +7,18 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2015-08-01, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2015-12-12 13:13 on prognose2.met.fu-berlin.de
+# - L@ST MODIFIED: 2018-01-21 17:52 on marvin
 # -------------------------------------------------------------------
 
 
 # - New class
 class cleanup(object):
+   """Setting up the class to clean files and databases used for
+   processing incoming observations.
+
+   Args:
+       config (:obj:`str`): Name of the config file to read.
+   """
 
    # - Initialize the object
    def __init__( self, config ):
@@ -70,11 +76,22 @@ class cleanup(object):
    # ----------------------------------------------------------------
    def getOldFiles(self, dirPath, maxage, postfix): 
        """
-       return a list of all files under dirPath older than days 
+       List old files on disc.
+
+       Args:
+          dirPath (:obj:`str`): Path to the directory which should be checked.
+          maxage (:obj:`int`): Timestamp, files older than this will
+            be considered to be old and marked for deletion.
+          postfix (:obj:`str`): File postfix. Only files where the postfix
+            matches (not case sensitive) will be considered.
+
+       Returns:
+          list: A list of all files under dirPath older than days.
        """
        import sys, os, time, glob
        present = time.time()
        oldfiles = []
+       postfix = postfix.lower()
        for root, dirs, files in os.walk(dirPath, topdown=False):
            for name in dirs:
                subDirPath = os.path.join(root, name)
@@ -249,3 +266,6 @@ class cleanup(object):
       Closing database.
       """
       self.db.close()
+
+
+
