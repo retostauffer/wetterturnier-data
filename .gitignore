@@ -1,4 +1,7 @@
 
+# Ignore local folders
+.*
+
 # Ignore pyc files
 *.pyc
 */*.pcy
