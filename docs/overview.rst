@@ -27,7 +27,8 @@ trough `<github <https://github.com/retostauffer>`_. Some links to the repositor
   `documentation on readthedocs <http://wetterturnier-backend.readthedocs.io/en/latest/>`_,
   contains the python code to compute automatons, points, and rankings.
 * Wetterturnier Data Backend (the one you are currently looking at):
-  `github repository  <https://github.com/retostauffer/wetterturnier-data>`_.
+  `github repository  <https://github.com/retostauffer/wetterturnier-data>`_,
+  this `documentation on readthedocs <http://wetterturnier-data.readthedocs.io/en/latest/>`_.
   Contains a set of tools to process/prepare data. Relatively specific for
   `Wetterturnier.de <http://www.wetterturnier.de>`_ but might be a starting point.
 	

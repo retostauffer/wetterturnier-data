@@ -21,8 +21,6 @@ all incoming stations. The script :ref:`Concuela.py <script-Concuela>` cleans th
 to time moving the observations for some specific stations into the
 :ref:`archive <table-archive>` database table and deletes all others.
 
-.. todo:: Rename Concuela!
-
 
 .. include:: dbtables/live.rsx
 
