@@ -4,21 +4,24 @@
 Wetterturnier Data Tools
 ========================
 
-This repository is part of the `Wetterturnier.de <http://www.wetterturnier.de>`_
-system.
+This repository is part of the `Wetterturnier.de <http://www.wetterturnier.de>`_ system.
+The `documentation for this repository can be found on readthedocs <http://wetterturnier-data.readthedocs.io/en/latest/>`_
 
 GISCobservations
 ================
 
-virtualenv --no-site-packages venv
-source venv/bin/activate   # activate virtualenv
-pip install mysqlclient    # database access
-pip install matplotlib     # For the synop symbols
 
+.. code-block:: bash
 
-export BUFR_TABLES=/path/to/your/bufr/tables
-cd GISCobservations
-python bufr.py
+    virtualenv --no-site-packages venv
+    source venv/bin/activate   # activate virtualenv
+    pip install mysqlclient    # database access
+    pip install matplotlib     # For the synop symbols
+    
+    
+    export BUFR_TABLES=/path/to/your/bufr/tables
+    cd GISCobservations
+    python bufr.py
 
 
 License Information
