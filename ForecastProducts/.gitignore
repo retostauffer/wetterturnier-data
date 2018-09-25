@@ -5,6 +5,7 @@ oldcode
 # Ignore pyc files
 *.pyc
 */*.pyc
+lockbits
 
 # Ignore local config
 config.conf
