@@ -221,7 +221,14 @@ class synopsymbol( drawbarb.drawbarb ):
       elif orig_string[0] in ["5","6","7"] or orig_string in ["20","21","22","23"]:
          font_color = "#009933"
          bg_color   = "#d9efe0"
-
+      # Blue for shower
+      elif orig_string[0] in ["8"] or orig_string in ["25","26","27"]:
+          font_color = "#0000cc"
+          bg_color   = "#d9e0ef"
+      # Red for thunderstorms
+      elif orig_string[0] in ["9"] or orig_string in ["17","18","19"]:
+          font_color = "#f30000"
+          bg_color   = "#ffe8e8"
       return font_color,bg_color
 
    # ----------------------------------------------------------------
