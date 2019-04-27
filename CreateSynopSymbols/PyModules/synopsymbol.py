@@ -150,11 +150,12 @@ class synopsymbol( drawbarb.drawbarb ):
    # Current weather
    # ----------------------------------------------------------------
    def _draw_currentweather_symbol_(self,value):
-      string = "%02d" % int(value)
+      if value >= 100:
+          return #No weather have been reported. Issue arise due to the WWs fpr automatic weather ststions
+      else:
+          string = "%02d" % int(value)
+          print(value)
       opts = {"verticalalignment":"center","horizontalalignment":"center"}
-
-      # No reported weather
-      if value == 508: return
 
       self._place_symbol_(-.8,0,string,"ww",opts)
 
@@ -214,21 +215,30 @@ class synopsymbol( drawbarb.drawbarb ):
       font_color = None
       bg_color   = None
       # Yellow for fog
-      if orig_string[0] == "4" or orig_string in ["10","11","12","28"]:
-         font_color = "#aca20d"
-         bg_color   = "#f2f1da"
+      if orig_string in ["41","42","43","44","45","46","47","48","49"]:
+         font_color = "#ffd903"
+         bg_color   = "#f5ec70"
+      elif orig_string in ["08","09","10","11","12","40"]:
+         font_color = "#fed804"
+         bg_color   = "#ffffff"
       # Green for rain
-      elif orig_string[0] in ["5","6","7"] or orig_string in ["20","21","22","23"]:
+      elif orig_string[0] in ["5","6","7"] or orig_string in ["20","21","22","23","24"]:
          font_color = "#009933"
          bg_color   = "#d9efe0"
+      elif orig_string in ["14","15","16"]:
+         font_color = "#009933"
+         bg_color   = "#ffffff"
       # Blue for shower
-      elif orig_string[0] in ["8"] or orig_string in ["25","26","27"]:
+      elif orig_string[0] in ["8"] or orig_string in ["25","26","27","90"]:
           font_color = "#0000cc"
           bg_color   = "#d9e0ef"
       # Red for thunderstorms
-      elif orig_string[0] in ["9"] or orig_string in ["17","18","19"]:
+      elif orig_string in ["17","91","92","93","94","95","96","97","98","99"]:
           font_color = "#f30000"
           bg_color   = "#ffe8e8"
+      elif orig_string in ["13","18","19"]:
+          font_color = "#f30000"
+          bg_color   = "#ffffff"
       return font_color,bg_color
 
    # ----------------------------------------------------------------
