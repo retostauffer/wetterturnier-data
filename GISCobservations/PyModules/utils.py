@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2015-02-21, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2015-08-08 06:11 on prognose2.met.fu-berlin.de
+# - L@ST MODIFIED: 2019-06-08 19:20 on prognose2
 # -------------------------------------------------------------------
 
 
@@ -26,9 +26,9 @@ def movefile(config,stint,file,typ,ok):
    # - Destination directory
    #   not ok means ok == False .. however :D 
    if not ok:
-      dstdir = '%s/%s/error/' % (config['%s_outdir' % stint],typ)
+      dstdir = '%s/%s/error' % (config['%s_outdir' % stint],typ)
    else:
-      dstdir = '%s/%s/processed/' % (config['%s_outdir' % stint],typ)
+      dstdir = '%s/%s/processed' % (config['%s_outdir' % stint],typ)
 
    # - Create dir if not existing
    if not os.path.isdir( dstdir ):

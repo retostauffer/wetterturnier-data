@@ -215,9 +215,9 @@ class synopsymbol( drawbarb.drawbarb ):
       font_color = None
       bg_color   = None
       # Yellow for fog
-      if orig_string in ["41","42","43","44","45","46","47","48","49"]:
+      if orig_string in ["28","41","42","43","44","45","46","47","48","49"]:
          font_color = "#ffd903"
-         bg_color   = "#f5ec70"
+         bg_color   = "#ffffd8"
       elif orig_string in ["08","09","10","11","12","40"]:
          font_color = "#fed804"
          bg_color   = "#ffffff"
@@ -233,7 +233,7 @@ class synopsymbol( drawbarb.drawbarb ):
           font_color = "#0000cc"
           bg_color   = "#d9e0ef"
       # Red for thunderstorms
-      elif orig_string in ["17","91","92","93","94","95","96","97","98","99"]:
+      elif orig_string in ["17","29","91","92","93","94","95","96","97","98","99"]:
           font_color = "#f30000"
           bg_color   = "#ffe8e8"
       elif orig_string in ["13","18","19"]:

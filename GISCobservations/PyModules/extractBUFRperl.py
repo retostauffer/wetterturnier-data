@@ -86,32 +86,34 @@ class bufrentry(object):
    # - Init. Does all you have to know.
    # ----------------------------------------------------------------
    def __init__(self,string,width):
-
+      import sys
       try:
          self.count  = int(string[0:6])
          self.bufrid = int(string[7:14])
          self.value  = str(string[15:(16+width)]).strip().upper()
          self.desc   = str(string[(16+width):]).strip().upper()
       except Exception as e:
-         import sys
          print e
          print string
          sys.exit('ERROR in bfrentry class. Cannot extract necessary infos from \n%s\n' % string)
 
       # - Extracting unit from description
       tmp = re.findall(r'\[([^]]*)\]',self.desc)
-      if len(tmp) == 0: sys.exit('CANNOT EXTRACT UNIT FROM STRING \"%s\"' % self.desc)
-      # - Take first element as unit
-      self.unit = '%s' % tmp[0]
-      # - Remove unit from description
-      self.desc = self.desc.replace("[%s]" % self.unit,"").strip()
-      
-      if self.value.strip().upper() == 'MISSING':
-         self.value = self.MISSING_VALUE 
-      elif self.unit.upper().find('CCITTIA5') >= 0:
-         self.value = self.value.strip().replace('"','')
+      if len(tmp) == 0:
+         print 'CANNOT EXTRACT UNIT FROM STRING \"%s\"' % self.desc
+         #sys.exit('CANNOT EXTRACT UNIT FROM STRING \"%s\"' % self.desc)
       else:
-         self.value = float(self.value)
+         # - Take first element as unit
+         self.unit = '%s' % tmp[0]
+         # - Remove unit from description
+         self.desc = self.desc.replace("[%s]" % self.unit,"").strip()
+         
+         if self.value.strip().upper() == 'MISSING':
+            self.value = self.MISSING_VALUE 
+         elif self.unit.upper().find('CCITTIA5') >= 0:
+            self.value = self.value.strip().replace('"','')
+         else:
+            self.value = float(self.value)
 
    # ----------------------------------------------------------------
    # - Helper function to show recotrd if necessary
@@ -229,11 +231,12 @@ class extractBUFR( object ):
       import os
       import subprocess as sub
 
-      #### NOTE: not calling perl bufrread.pl. bufrread.pl
-      #### shuld be installed in /usr/locale/bin/bufrread.pl and
-      #### can be called directly
-      cmd = ['bufrread.pl',file,'--on_error_stop', \
-             '--data_only','--width','%d' % self.WIDTH]
+      #### NOTE; Using a modified version of the bufrread.pl script provided by the norvegian meteorological service
+      ### It is located in the same "PyModules" folder (even though it is not actually a .py file, KISS-wise)
+
+      cmd = ['PyModules/bufrread.pl',file,'--data_only','--width', '%d' % self.WIDTH]
+      #'--on_error_stop'
+      #--tableformat <ECCODES> ???
       if filterfile:
          cmd.append("--filter"); cmd.append(filterfile)
 
@@ -371,8 +374,10 @@ class extractBUFR( object ):
          
             # - Dropped: Ignore current entry and go further
             if drop:
-               drop = '%5d  %06d %7.2fm \"%s\" (%s)' % (displacement,
-                      rec.bufrid, sensorheight, rec.desc, rec.unit)
+               #'%5d  %06d %7.2fm \"%s\" (%s)' % (displacement,
+               #rec.bufrid, sensorheight, rec.desc, rec.unit)
+               drop = '%5d  %06d %7.2fm \"%s\"' % (displacement,
+                      rec.bufrid, sensorheight, rec.desc)
                if not drop in self.dropped:
                   self.dropped.append( drop )
                continue
@@ -820,10 +825,17 @@ class extractBUFR( object ):
          # - Else create tuple and append to res
          try:
             tmp = (rec['statnr'],0,rec['stationname'], \
-                   "%f10.4" % rec['lon'], "%f10.4" % rec['lat'], \
+                   "%f10.6" % rec['lon'], "%f10.6" % rec['lat'], \
                    rec['height'],rec['hbaro'])
          except:
-            continue # if something was missing
+            # if hbaro was missing:
+            try:
+               tmp = (rec['statnr'],0,rec['stationname'], \
+                      "%f10.6" % rec['lon'], "%f10.6" % rec['lat'], \
+                      rec['height'],-999)
+            # if something else was missing:
+            except:
+               continue
          # - Append now
          res.append( tmp )
 

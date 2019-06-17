@@ -7,12 +7,13 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2017-07-31, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2018-01-15 14:18 on prognose2
+# - L@ST MODIFIED: 2019-06-08 22:13 on prognose2
 # -------------------------------------------------------------------
 
 if __name__ == "__main__":
 
    import ftplib
+   #from ftplib import FTP_TLS
    import re, os, sys, socket
    from datetime import datetime as dt
 
@@ -27,8 +28,9 @@ if __name__ == "__main__":
    # ----------------------------------------------------------------
    # - Reading config file
    # ----------------------------------------------------------------
-   configfile = '%s_config.conf' % socket.gethostname()
-   if not os.path.isfile( configfile ):   configfile = 'config.conf'
+   configfile = 'config.conf'
+   #configfile = '%s_config.conf' % socket.gethostname()
+   #if not os.path.isfile( configfile ):   configfile = 'config.conf'
    print '    Reading config file: %s' % configfile
    config = readconfig(configfile)
    config = readbufrconfig(config)
@@ -40,6 +42,8 @@ if __name__ == "__main__":
    # FTP listing
    print "  * Establishing ftp connection"
    ftp = ftplib.FTP( config["dwd_ftp"]["host"] )
+   #ftp = FTP_TLS( config["dwd_ftp"]["host"] )
+   
    ftp.login( config["dwd_ftp"]["user"], config["dwd_ftp"]["passwd"] )
    ftp.cwd( config["dwd_ftp"]["dir"] )
    data = []

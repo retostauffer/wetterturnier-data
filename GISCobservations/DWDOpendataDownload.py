@@ -10,8 +10,8 @@
 # - L@ST MODIFIED: 2018-01-15 13:40 on prognose2
 # -------------------------------------------------------------------
 
-import sys
-sys.exit("Currently offline, seems ftp access changed aniways.")
+#import sys
+#sys.exit("Currently offline, seems ftp access changed aniways.")
 
 if __name__ == "__main__":
 
@@ -22,9 +22,9 @@ if __name__ == "__main__":
    os.environ["TZ"] = "UTC"
    
    ftp_server = "opendata.dwd.de"
-   ftp_username = "anonymous"
+   ftp_username = ""
    ftp_password = ""
-   ftp_dir      = "weather/weather_reports/synoptic_reports/germany/"
+   ftp_dir      = "weather/weather_reports/synoptic/germany/"
    
    outputdir = "incoming-essential"
    checkdir  = "data-processed/bufr/processed"
@@ -66,4 +66,3 @@ if __name__ == "__main__":
       ftp.retrbinary('RETR %s' % filename, open("{0:s}/{1:s}".format(outputdir,filename),"wb").write )
    
    ftp.quit()
-
