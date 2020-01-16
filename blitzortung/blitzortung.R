@@ -264,6 +264,3 @@ for ( c in cities ) {
 #   the script was called last.
 cat(sprintf(' * Crate lastrun logfile\n'))
 write(strftime(Sys.time(),'%Y-%m-%d %H:%M'),file=sprintf('%s/lastrun',config$dstdir))
-
-
-
