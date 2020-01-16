@@ -86,32 +86,34 @@ class bufrentry(object):
    # - Init. Does all you have to know.
    # ----------------------------------------------------------------
    def __init__(self,string,width):
-
+      import sys
       try:
          self.count  = int(string[0:6])
          self.bufrid = int(string[7:14])
          self.value  = str(string[15:(16+width)]).strip().upper()
          self.desc   = str(string[(16+width):]).strip().upper()
       except Exception as e:
-         import sys
          print e
          print string
          sys.exit('ERROR in bfrentry class. Cannot extract necessary infos from \n%s\n' % string)
 
       # - Extracting unit from description
       tmp = re.findall(r'\[([^]]*)\]',self.desc)
-      if len(tmp) == 0: sys.exit('CANNOT EXTRACT UNIT FROM STRING \"%s\"' % self.desc)
-      # - Take first element as unit
-      self.unit = '%s' % tmp[0]
-      # - Remove unit from description
-      self.desc = self.desc.replace("[%s]" % self.unit,"").strip()
-      
-      if self.value.strip().upper() == 'MISSING':
-         self.value = self.MISSING_VALUE 
-      elif self.unit.upper().find('CCITTIA5') >= 0:
-         self.value = self.value.strip().replace('"','')
+      if len(tmp) == 0:
+         print 'CANNOT EXTRACT UNIT FROM STRING \"%s\"' % self.desc
+         #sys.exit('CANNOT EXTRACT UNIT FROM STRING \"%s\"' % self.desc)
       else:
-         self.value = float(self.value)
+         # - Take first element as unit
+         self.unit = '%s' % tmp[0]
+         # - Remove unit from description
+         self.desc = self.desc.replace("[%s]" % self.unit,"").strip()
+         
+         if self.value.strip().upper() == 'MISSING':
+            self.value = self.MISSING_VALUE 
+         elif self.unit.upper().find('CCITTIA5') >= 0:
+            self.value = self.value.strip().replace('"','')
+         else:
+            self.value = float(self.value)
 
    # ----------------------------------------------------------------
    # - Helper function to show recotrd if necessary
@@ -229,11 +231,12 @@ class extractBUFR( object ):
       import os
       import subprocess as sub
 
-      #### NOTE: not calling perl bufrread.pl. bufrread.pl
-      #### shuld be installed in /usr/locale/bin/bufrread.pl and
-      #### can be called directly
-      cmd = ['bufrread.pl',file,'--on_error_stop', \
-             '--data_only','--width','%d' % self.WIDTH]
+      #### NOTE; Using a modified version of the bufrread.pl script provided by the norvegian meteorological service
+      ### It is located in the same "PyModules" folder (even though it is not actually a .py file, KISS-wise)
+
+      cmd = ['PyModules/bufrread.pl',file,'--data_only','--width', '%d' % self.WIDTH]
+      #'--on_error_stop'
+      #--tableformat <ECCODES> ???
       if filterfile:
          cmd.append("--filter"); cmd.append(filterfile)
 
@@ -347,14 +350,16 @@ class extractBUFR( object ):
             check_displacement = self.__check_displacement__(rec)
             if not check_displacement == False:
                displacement = check_displacement
-               #print '     + set displacement time to %8d' % displacement
+               if self.VERBOSE:
+                  print '     + set displacement time to %8d' % displacement
                continue
 
             # - Checking sensor height
             check_sensorheight = self.__check_sensorheight__(rec)
             if not check_sensorheight == False:
                sensorheight = check_sensorheight
-               #print '     + set sensorheight to %10.2f' % sensorheight
+               if self.VERBOSE:
+                  print '     + set sensorheight to %10.2f' % sensorheight
                continue
 
             # - Check if current message defines a vertical significance
@@ -363,7 +368,8 @@ class extractBUFR( object ):
             check_verticalsign = self.__check_verticalsign__(rec)
             if not check_verticalsign == False:
                verticalsign = check_verticalsign
-               # print '     + set vertical significance to %8d' % verticalsign
+               if self.VERBOSE:
+                  print '     + set vertical significance to %8d' % verticalsign
                continue
 
             # - Returns paramclass object if found 
@@ -371,8 +377,10 @@ class extractBUFR( object ):
          
             # - Dropped: Ignore current entry and go further
             if drop:
-               drop = '%5d  %06d %7.2fm \"%s\" (%s)' % (displacement,
-                      rec.bufrid, sensorheight, rec.desc, rec.unit)
+               #'%5d  %06d %7.2fm \"%s\" (%s)' % (displacement,
+               #rec.bufrid, sensorheight, rec.desc, rec.unit)
+               drop = '%5d  %06d %7.2fm \"%s\"' % (displacement,
+                      rec.bufrid, sensorheight, rec.desc)
                if not drop in self.dropped:
                   self.dropped.append( drop )
                continue
@@ -613,6 +621,7 @@ class extractBUFR( object ):
       # - Kees we need
       necessary = ['wmoblock','statnr','year','month','hour','minute']
 
+      counter=0 #dropped stations counter
       # - Check if keys exist and manipulate if necessary.
       for sec in range(0,len(self.data)):
 
@@ -627,16 +636,30 @@ class extractBUFR( object ):
          #   'to_drop' sections will be removed at the end.
          for nec in necessary:
             if not nec in keys:
-               print 'UPS: missing key \"%s\" in \"%s\" drop.' % (nec,self.file.split("/")[-1])
+               if self.VERBOSE:
+                  print 'UPS: missing key \"%s\" in \"%s\" drop.' % (nec,self.file.split("/")[-1])
                to_drop.append(sec)
                skip_this = True
                break
 
          # - Skip 
-         if skip_this: continue
-
+         if skip_this:
+            continue
+         
          # - Manipulate station
          rec['statnr'] = rec['wmoblock']*1e3 + rec['statnr']
+
+         #print self.config['cleanup_stations']
+         #TODO: get current stations from wpwt->wp_wetterturnier_stations
+         #      -> grant read to wpwt on obs user
+         
+         if rec['statnr'] not in self.config['cleanup_stations']:
+            to_drop.append(sec)
+            if self.VERBOSE:
+               print "Station %d skipped since not used in tournament!" % rec['statnr']
+            else: counter+=1
+            continue
+         
    
          # - Create different date formats
          from datetime import datetime as dt
@@ -676,6 +699,7 @@ class extractBUFR( object ):
       # - If there were sections with corrupt date/time info,
       #   drop them.
       print '    Dropping %d messages from totally %d' % (len(to_drop),len(self.data))
+      print "    %d station(s) dropped because not used in tournament" % counter
       if len(to_drop) > 0:
          hold = self.data; self.data = []
          for sec in range(0,len(hold)):
@@ -820,10 +844,17 @@ class extractBUFR( object ):
          # - Else create tuple and append to res
          try:
             tmp = (rec['statnr'],0,rec['stationname'], \
-                   "%f10.4" % rec['lon'], "%f10.4" % rec['lat'], \
+                   "%f10.6" % rec['lon'], "%f10.6" % rec['lat'], \
                    rec['height'],rec['hbaro'])
          except:
-            continue # if something was missing
+            # if hbaro was missing:
+            try:
+               tmp = (rec['statnr'],0,rec['stationname'], \
+                      "%f10.6" % rec['lon'], "%f10.6" % rec['lat'], \
+                      rec['height'],-999)
+            # if something else was missing:
+            except:
+               continue
          # - Append now
          res.append( tmp )
 
@@ -838,14 +869,15 @@ class extractBUFR( object ):
    # - Show dropped entries 
    # ----------------------------------------------------------------
    def showdropped(self):
+      if self.VERBOSE:
+         if len( self.dropped ) == 0:
+            print '\n    NO DROPPED ENTRIES/VARIABLES AT THE MOMENT\n\n'
 
-      if len( self.dropped ) == 0:
-         print '\n    NO DROPPED ENTRIES/VARIABLES AT THE MOMENT\n\n'
-
-      print '\n    DROPPED THE FOLLOWING ENTRIES/VARIABLES (not defined in config)'
-      for rec in self.dropped:
-         print '    - %s' % rec
-      print ''
+         print '\n    DROPPED THE FOLLOWING ENTRIES/VARIABLES (not defined in config)'
+         for rec in self.dropped:
+            print '    - %s' % rec
+         print ''
+      else: pass
 
 
    # ----------------------------------------------------------------

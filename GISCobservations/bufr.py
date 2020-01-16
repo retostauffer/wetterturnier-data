@@ -24,9 +24,9 @@ def extract_bufr_file(config,stint,file,verbose):
       return None
 
    obj.extractdata()
-   print "----------------- dropped --------------------"
+   #print "----------------- dropped --------------------"
    obj.showdropped()
-   print "----------------- dropped --------------------"
+   #print "----------------- dropped --------------------"
 
 
    check = obj.manipulatedata()

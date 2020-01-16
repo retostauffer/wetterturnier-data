@@ -30,8 +30,8 @@ class readconfig( object ):
          self.exit("Cannot find config file %s. Stop." % file)
    
       # Open new ConfigParser
-      import ConfigParser
-      CNF = ConfigParser.ConfigParser()   
+      import configparser
+      CNF = configparser.ConfigParser()   
       CNF.read(file)
 
       # -------------------------------------------------------------

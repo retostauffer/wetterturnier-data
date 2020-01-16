@@ -148,7 +148,7 @@ class derivedvars( object ):
       sql = "\n".join(sql)
 
       cur = self.db.cursor()
-      print sql
+
       cur.execute( sql )
       # - Column description
       desc = []

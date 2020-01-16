@@ -52,7 +52,7 @@ if __name__ == "__main__":
       # Compute 'loop timestamp'
       date_time = current_timestamp + datetime.timedelta(0,lag*21600) 
 
-      print "\n\n"
+      print("\n\n")
       log.info("Processing date/time:    %s" % date_time.strftime("%Y-%m-%d %H:%M"))
 
       # Initialize the overall handler class
@@ -72,7 +72,7 @@ if __name__ == "__main__":
    # ----------------------------------------------------------------
    # Delete old files older than X days (see config file)
    # ----------------------------------------------------------------
-   print "\n"
+   print("\n")
    log.info("Delete old files now ...") 
 
    # Delete files from originals directory

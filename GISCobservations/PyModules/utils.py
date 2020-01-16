@@ -26,9 +26,9 @@ def movefile(config,stint,file,typ,ok):
    # - Destination directory
    #   not ok means ok == False .. however :D 
    if not ok:
-      dstdir = '%s/%s/error/' % (config['%s_outdir' % stint],typ)
+      dstdir = '%s/%s/error' % (config['%s_outdir' % stint],typ)
    else:
-      dstdir = '%s/%s/processed/' % (config['%s_outdir' % stint],typ)
+      dstdir = '%s/%s/processed' % (config['%s_outdir' % stint],typ)
 
    # - Create dir if not existing
    if not os.path.isdir( dstdir ):

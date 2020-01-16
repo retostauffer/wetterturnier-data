@@ -86,7 +86,7 @@ class drawbarb( object ):
          return(False)
   
       # - Take barb definition (or error barb)
-      if inarray(barbs.keys(),'b'+str(int(ff))):
+      if inarray( list(barbs.keys()), 'b' + str(int(ff))):
          b = barbs['b'+str(int(ff))]
       else:
          b = barbs['error']

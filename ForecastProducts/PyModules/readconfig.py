@@ -20,7 +20,7 @@ class readconfig( object ):
 
    def __init__( self, file ):
       import sys, os, re
-      from ConfigParser import ConfigParser
+      from configparser import ConfigParser
       if not os.path.isfile(file):
          log.error("Cannot find config file: %s",file); sys.exit(9)
 
@@ -161,7 +161,7 @@ class readconfig( object ):
       today = dt.now().strftime("%Y%m%d")
 
       # Reading the config file
-      from ConfigParser import ConfigParser
+      from configparser import ConfigParser
       CNF = ConfigParser(); CNF.read( file )
 
       # Save images into sub-directories based on the name of

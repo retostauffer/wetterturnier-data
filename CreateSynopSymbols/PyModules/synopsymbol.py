@@ -8,10 +8,11 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2015-12-12, RS: Created file on pc24-c707.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-06-20 10:34 on prognose2.met.fu-berlin.de
+# - L@ST MODIFIED: 2019-04-27 15:32 on prognose2
 # -------------------------------------------------------------------
 
 import logging
+import six
 log = logging.getLogger(__name__)
 
 import drawbarb
@@ -38,7 +39,7 @@ class synopsymbol( drawbarb.drawbarb ):
       key=key.lower()
       if not type(value) == type(int()) and not type(value) == type(float()):
          self.exit("Only integer and float arguments allowed for addValues")
-      if key in self.data.keys():
+      if key in list(self.data.keys()):
          log.warning("\"%s\" has already been added. Overwrite." % key)
       self.data[key] = value
 
@@ -48,7 +49,7 @@ class synopsymbol( drawbarb.drawbarb ):
    # ----------------------------------------------------------------
    def showValues(self):
       log.info("Values added to the class:")
-      for key,val in self.data.iteritems():
+      for key, val in self.data.items():
          log.info("  - %-10s %6.2f" % (key,val))
 
 
@@ -125,8 +126,7 @@ class synopsymbol( drawbarb.drawbarb ):
       import numpy as np
       value = int(value)
       if value > 0:
-         value = int(np.floor( float(value) / 100. * 8. )) + 1
-         if value > 8: value = 8
+         value = int(np.floor( float(value) / 100. * 8. ))
       string = "%d" % value ###int(np.round(float(value)/100*8))
       opts = {"verticalalignment":"center","horizontalalignment":"center"}
       self._place_symbol_(0,0,string,"cc",opts)
@@ -150,11 +150,11 @@ class synopsymbol( drawbarb.drawbarb ):
    # Current weather
    # ----------------------------------------------------------------
    def _draw_currentweather_symbol_(self,value):
-      string = "%02d" % int(value)
+      if value >= 100:
+         return #No reported weather
+      else:
+         string = "%02d" % int(value)
       opts = {"verticalalignment":"center","horizontalalignment":"center"}
-
-      # No reported weather
-      if value == 508: return
 
       self._place_symbol_(-.8,0,string,"ww",opts)
 
@@ -214,14 +214,16 @@ class synopsymbol( drawbarb.drawbarb ):
       font_color = None
       bg_color   = None
       # Yellow for fog
-      if orig_string[0] == "4" or orig_string in ["10","11","12","28"]:
+      if orig_string[0] == "4" or orig_string in ["08","09","10","11","12","28"]:
          font_color = "#aca20d"
          bg_color   = "#f2f1da"
       # Green for rain
-      elif orig_string[0] in ["5","6","7"] or orig_string in ["20","21","22","23"]:
+      elif orig_string[0] in ["5","6","7"] or orig_string in ["20","21","22","23","24"]:
          font_color = "#009933"
          bg_color   = "#d9efe0"
-
+      elif orig_string[0] in ["8","9"] or orig_string in ["13","17","18","19","25","29"]:
+         font_color = "#009933"
+         bg_color   = "#ff0000"
       return font_color,bg_color
 
    # ----------------------------------------------------------------
@@ -236,7 +238,7 @@ class synopsymbol( drawbarb.drawbarb ):
       fontopts = dict(verticalalignment='top',
                       horizontalalignment='center',
                       color="black",fontsize=self.config.fontsize)
-      for key in fontopts.keys():
+      for key in list(fontopts.keys()):
          if key in opts: fontopts[key] = opts[key]
 
       from matplotlib.font_manager import FontProperties
@@ -315,10 +317,10 @@ class synopsymbol( drawbarb.drawbarb ):
       """!Saves the figure self.fig into the output file specified.
       @param file. Required, string. Name of the output file.
       @return No return."""
-      
+
       log.info("SAVE FIGURE NOW AS:  %s" % file)
-      with open(file, 'w') as outfile:
-         self.fig.canvas.print_png(outfile)
+      #with open(file, "w", encoding="utf-8") as outfile:
+      self.fig.canvas.print_png( file )
 
    # ----------------------------------------------------------------
    # Copy to current (last produced == current synop)

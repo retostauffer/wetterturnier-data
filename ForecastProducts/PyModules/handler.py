@@ -250,7 +250,7 @@ class handler( object ):
 
       # Now slicing all the different images out of that thing
       checker = []
-      for key,attr in products.iteritems():
+      for key,attr in products.items():
 
          # If the key contains YYYYmmdd and/or HHMM: replace
          key = key.replace('YYYYmmdd',self.YYYYmmdd).replace('HHMM',self.HHMM) \
@@ -285,7 +285,7 @@ class handler( object ):
          if product['type'] == 'meteograms' and product['lastrunfile'] is not None:
             lastrunfile = os.path.join( self.config.meteogramsdir, product['lastrunfile'] )
             lastrun_str = self.date_time.strftime("%Y-%m-%d %H:%M")
-            print lastrunfile
+            print(lastrunfile)
             log.info("  Write meteogram lastrun file containing %s into:" % lastrun_str)
             log.info("  - %s" % lastrunfile)
 

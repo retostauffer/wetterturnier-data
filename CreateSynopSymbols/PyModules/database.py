@@ -30,14 +30,14 @@ class database( object ):
          log.error("Table \"%s\" not existing in database. Stop." % self.config.mysql_table)
          sys.exit(9)
 
-   
+
    # ----------------------------------------------------------------
    # CONNECTING DATABASE
    # ----------------------------------------------------------------
    def dbConnect( self ):
       """!Connect to mysql database based on self.config. There
       is an optional input argument \"connection\". As we have to
-      use different login names and stuff, this can be used to 
+      use different login names and stuff, this can be used to
       use different login configs from the config.
       @param connection. String, optional. If \"None\", the config
          from [mysql] out of the config file will be used. If set to
@@ -90,7 +90,7 @@ class database( object ):
       if data is None: return None
 
       result = {}
-      for i in range(0,len(desc)): 
+      for i in range(0,len(desc)):
          key = str(desc[i][0]).lower()
          val = data[i]
          if val is None: continue
@@ -112,14 +112,14 @@ class database( object ):
       sql = []
       sql.append("SELECT * FROM information_schema.tables")
       sql.append("WHERE table_schema = '%s'" % self.config.mysql_database)
-      sql.append("AND table_name = '%s' LIMIT 1" % table) 
+      sql.append("AND table_name = '%s' LIMIT 1" % table)
       sql = " ".join(sql)
 
       cur = self.dbCursor()
       cur.execute( sql )
       res = cur.fetchone()
 
-      if not res: return False 
+      if not res: return False
       return True
 
    # ----------------------------------------------------------------
@@ -151,20 +151,3 @@ class database( object ):
       for rec in desc: cols.append( rec[0] )
 
       return cols,data
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
