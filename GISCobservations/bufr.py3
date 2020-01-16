@@ -48,7 +48,7 @@ def extract_bufr_file(config,stint,file,verbose):
 
 
 # -------------------------------------------------------------------
-# - If started as main, searching bufr files (TODO)
+# - If started as main, searching bufr files
 # -------------------------------------------------------------------
 if __name__ == "__main__":
 
@@ -126,7 +126,6 @@ if __name__ == "__main__":
                utils.movefile(config,stint,file,'bufr',cx)
 
 
-
    # ----------------------------------------------------------------
    # - Compute derived variables
    # ----------------------------------------------------------------
@@ -141,15 +140,3 @@ if __name__ == "__main__":
    # - End of the script 
    # ----------------------------------------------------------------
    print('\n  * All done, good night!\n')
-
-
-
-
-
-
-
-
-
-
-
-

@@ -234,14 +234,14 @@ class extractBUFR( object ):
       #### NOTE; Using a modified version of the bufrread.pl script provided by the norvegian meteorological service
       ### It is located in the same "PyModules" folder (even though it is not actually a .py file, KISS-wise)
 
-      cmd = ['PyModules/bufrread.pl',file,'--data_only','--width', '%d' % self.WIDTH]
+      cmd = ['PyModules3/bufrread.pl',file,'--data_only','--width', '%d' % self.WIDTH]
       #'--on_error_stop'
       #--tableformat <ECCODES> ???
       if filterfile:
          cmd.append("--filter"); cmd.append(filterfile)
 
       if self.VERBOSE: print("[]-> Calling: %s" % " ".join(cmd))
-      p = sub.Popen(cmd,stdout=sub.PIPE,stderr=sub.PIPE)
+      p = sub.Popen(cmd, stdout=sub.PIPE, stderr=sub.PIPE, encoding="iso-8859-1")
       out, err = p.communicate()
       if not p.returncode == 0:
          print(out)
@@ -249,7 +249,7 @@ class extractBUFR( object ):
          print('subprocess reading BUFR with perl script returned error.')
          return None
 
-      content = str(out).split('\n')
+      content = out.split('\n')
 
       # - Store the "sections" from content to dict array
       all_sections = []
@@ -276,7 +276,6 @@ class extractBUFR( object ):
             continue
          elif not in_data_section: continue
          elif len(line.strip()) == 0: continue
-   
          # - Else store the information to tmp
          entry = bufrentry(line,self.WIDTH)
          tmp.append( entry )
@@ -374,7 +373,6 @@ class extractBUFR( object ):
 
             # - Returns paramclass object if found 
             drop, param = self.__get_param_obj__( rec, displacement, verticalsign, sensorheight )
-         
             # - Dropped: Ignore current entry and go further
             if drop:
                #'%5d  %06d %7.2fm \"%s\" (%s)' % (displacement,
@@ -388,7 +386,7 @@ class extractBUFR( object ):
             if self.VERBOSE: print('        -- %s' % param.name)
 
             # - Load/scale data 
-            data = rec.value 
+            data = rec.value
             if type(data) == type(float()):
                # - Do not scale missing value.
                if not data == self.MISSING_VALUE:
@@ -407,7 +405,7 @@ class extractBUFR( object ):
             else:
                for i in range(0,100):
                   rep_name = '%s_%d' % (param.name,i)
-                  if not rep_name in tmp_sec: break 
+                  if not rep_name in tmp_sec: break
                tmp_sec[ rep_name ] = data
                # - Appending unique keys
                if not rep_name in self.keys: self.keys.append( rep_name )
@@ -416,7 +414,6 @@ class extractBUFR( object ):
             #   database (has its equivalent in self.bufrdesc). If not,
             #   we have to insert a new line into the obs.bufrdesc table.
             self.__check_bufrdesc_and_add_if_necessary__(rec,param)
-   
 
          # - Append full block to self.data
          self.data.append( tmp_sec )
@@ -437,7 +434,7 @@ class extractBUFR( object ):
          if param.name == elem.param:
             desc = elem
             break;
-      
+
       # - If not found:
       if desc == None:
          print("    %s not in bufrdesc database: append row" % param.name)
@@ -979,29 +976,3 @@ class extractBUFR( object ):
    def dbClose(self):
       if self.VERBOSE: print('    Close database connection')
       self.db.db.close()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
