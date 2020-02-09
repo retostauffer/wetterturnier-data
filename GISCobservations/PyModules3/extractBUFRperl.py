@@ -95,7 +95,11 @@ class bufrentry(object):
       except Exception as e:
          print(e)
          print(string)
-         sys.exit('ERROR in bfrentry class. Cannot extract necessary infos from \n%s\n' % string)
+         print('ERROR in bfrentry class. Cannot extract necessary infos from \n%s\n' % string)
+         self.count  = 0
+         self.bufrid = 0
+         self.value  = ""
+         self.desc   = ""
 
       # - Extracting unit from description
       tmp = re.findall(r'\[([^]]*)\]',self.desc)
@@ -107,7 +111,7 @@ class bufrentry(object):
          self.unit = '%s' % tmp[0]
          # - Remove unit from description
          self.desc = self.desc.replace("[%s]" % self.unit,"").strip()
-         
+
          if self.value.strip().upper() == 'MISSING':
             self.value = self.MISSING_VALUE 
          elif self.unit.upper().find('CCITTIA5') >= 0:
