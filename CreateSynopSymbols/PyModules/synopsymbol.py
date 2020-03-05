@@ -8,7 +8,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2015-12-12, RS: Created file on pc24-c707.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2017-06-20 10:34 on prognose2.met.fu-berlin.de
+# - L@ST MODIFIED: 2019-06-22 21:36 on prognose2
 # -------------------------------------------------------------------
 
 import logging
@@ -125,8 +125,7 @@ class synopsymbol( drawbarb.drawbarb ):
       import numpy as np
       value = int(value)
       if value > 0:
-         value = int(np.floor( float(value) / 100. * 8. )) + 1
-         if value > 8: value = 8
+         value = int(np.floor( float(value) / 100. * 8. ))
       string = "%d" % value ###int(np.round(float(value)/100*8))
       opts = {"verticalalignment":"center","horizontalalignment":"center"}
       self._place_symbol_(0,0,string,"cc",opts)

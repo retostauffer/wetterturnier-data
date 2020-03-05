@@ -124,7 +124,7 @@ class database( object ):
       for rec in columns:
          if not rec in db_columns:
             # - WOOOO column does not exist.
-            #   Tell the database object that he should ALTER the table
+            #   Tell the database object to ALTER the table
             #   and append the column.
             self.addcolumn( rec )
 

@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2015-02-04, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2018-01-20 20:51 on marvin
+# - L@ST MODIFIED: 2019-06-17 23:24 on prognose2
 # -------------------------------------------------------------------
 
 
@@ -350,14 +350,16 @@ class extractBUFR( object ):
             check_displacement = self.__check_displacement__(rec)
             if not check_displacement == False:
                displacement = check_displacement
-               #print '     + set displacement time to %8d' % displacement
+               if self.VERBOSE:
+                  print '     + set displacement time to %8d' % displacement
                continue
 
             # - Checking sensor height
             check_sensorheight = self.__check_sensorheight__(rec)
             if not check_sensorheight == False:
                sensorheight = check_sensorheight
-               #print '     + set sensorheight to %10.2f' % sensorheight
+               if self.VERBOSE:
+                  print '     + set sensorheight to %10.2f' % sensorheight
                continue
 
             # - Check if current message defines a vertical significance
@@ -366,7 +368,8 @@ class extractBUFR( object ):
             check_verticalsign = self.__check_verticalsign__(rec)
             if not check_verticalsign == False:
                verticalsign = check_verticalsign
-               # print '     + set vertical significance to %8d' % verticalsign
+               if self.VERBOSE:
+                  print '     + set vertical significance to %8d' % verticalsign
                continue
 
             # - Returns paramclass object if found 
@@ -618,6 +621,7 @@ class extractBUFR( object ):
       # - Kees we need
       necessary = ['wmoblock','statnr','year','month','hour','minute']
 
+      counter=0 #dropped stations counter
       # - Check if keys exist and manipulate if necessary.
       for sec in range(0,len(self.data)):
 
@@ -632,16 +636,30 @@ class extractBUFR( object ):
          #   'to_drop' sections will be removed at the end.
          for nec in necessary:
             if not nec in keys:
-               print 'UPS: missing key \"%s\" in \"%s\" drop.' % (nec,self.file.split("/")[-1])
+               if self.VERBOSE:
+                  print 'UPS: missing key \"%s\" in \"%s\" drop.' % (nec,self.file.split("/")[-1])
                to_drop.append(sec)
                skip_this = True
                break
 
          # - Skip 
-         if skip_this: continue
-
+         if skip_this:
+            continue
+         
          # - Manipulate station
          rec['statnr'] = rec['wmoblock']*1e3 + rec['statnr']
+
+         #print self.config['cleanup_stations']
+         #TODO: get current stations from wpwt->wp_wetterturnier_stations
+         #      -> grant read to wpwt on obs user
+         
+         if rec['statnr'] not in self.config['cleanup_stations']:
+            to_drop.append(sec)
+            if self.VERBOSE:
+               print "Station %d skipped since not used in tournament!" % rec['statnr']
+            else: counter+=1
+            continue
+         
    
          # - Create different date formats
          from datetime import datetime as dt
@@ -681,6 +699,7 @@ class extractBUFR( object ):
       # - If there were sections with corrupt date/time info,
       #   drop them.
       print '    Dropping %d messages from totally %d' % (len(to_drop),len(self.data))
+      print "    %d station(s) dropped because not used in tournament" % counter
       if len(to_drop) > 0:
          hold = self.data; self.data = []
          for sec in range(0,len(hold)):
@@ -806,7 +825,7 @@ class extractBUFR( object ):
    # - Update stations table
    # ----------------------------------------------------------------
    def update_stations( self ):
-
+      return #disabled
       print "\n  * Update stations table in the database"
 
       cur = self.db.cursor()
@@ -850,14 +869,15 @@ class extractBUFR( object ):
    # - Show dropped entries 
    # ----------------------------------------------------------------
    def showdropped(self):
+      if self.VERBOSE:
+         if len( self.dropped ) == 0:
+            print '\n    NO DROPPED ENTRIES/VARIABLES AT THE MOMENT\n\n'
 
-      if len( self.dropped ) == 0:
-         print '\n    NO DROPPED ENTRIES/VARIABLES AT THE MOMENT\n\n'
-
-      print '\n    DROPPED THE FOLLOWING ENTRIES/VARIABLES (not defined in config)'
-      for rec in self.dropped:
-         print '    - %s' % rec
-      print ''
+         print '\n    DROPPED THE FOLLOWING ENTRIES/VARIABLES (not defined in config)'
+         for rec in self.dropped:
+            print '    - %s' % rec
+         print ''
+      else: pass
 
 
    # ----------------------------------------------------------------

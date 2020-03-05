@@ -236,7 +236,6 @@ for ( c in cities ) {
 
    dev.off()
 
-
 }
 
 # - Overlay images
@@ -262,7 +261,7 @@ for ( c in cities ) {
 
 # - Create text file with current date/time to check when
 #   the script was called last.
-cat(sprintf(' * Crate lastrun logfile\n'))
+cat(sprintf(' * Create lastrun logfile\n'))
 write(strftime(Sys.time(),'%Y-%m-%d %H:%M'),file=sprintf('%s/lastrun',config$dstdir))
 
 

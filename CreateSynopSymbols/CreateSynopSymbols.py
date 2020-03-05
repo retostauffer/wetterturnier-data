@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2015-12-12, RS: Created file on pc24-c707.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2019-06-17 20:23 on prognose2
+# - L@ST MODIFIED: 2019-08-28 15:56 on prognose2
 # -------------------------------------------------------------------
 
 
@@ -15,6 +15,12 @@
 import logging, logging.config
 logging.config.fileConfig('logging.conf')
 log = logging.getLogger(__name__)
+
+from optparse import OptionParser
+
+parser = OptionParser()
+parser.add_option("-t", "--time", dest="t", default=1)
+(options, args) = parser.parse_args()
 
 if __name__ == "__main__":
 
@@ -40,10 +46,10 @@ if __name__ == "__main__":
    now_timestamp = int(np.floor(float(dt.now().strftime("%s"))/3600)*3600)
 
    # If tmax > 0 the thing will perform the creation of SynopSymbols
-   # tmax hours backwards in time. For recreation. Default is 1, only
-   # the latest hour will be visualized.
-   tmax = 1
-   #TODO: option -t or config [tmax]
+   # tmax hours backwards in time. For recreation. Default is 3, only
+   # the latest 3 hours will be visualized. (see optparser default above)
+   tmax = int(options.t)
+
    for t in range(0, tmax+1):
 
       # Note: the (tmax-t) is required as - if reproducing figures - the

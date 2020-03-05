@@ -7,7 +7,7 @@
 # -------------------------------------------------------------------
 # - EDITORIAL:   2015-07-22, RS: Created file on thinkreto.
 # -------------------------------------------------------------------
-# - L@ST MODIFIED: 2015-12-13 08:31 on prognose2.met.fu-berlin.de
+# - L@ST MODIFIED: 2019-06-17 23:03 on prognose2
 # -------------------------------------------------------------------
 
 
@@ -148,7 +148,7 @@ class derivedvars( object ):
       sql = "\n".join(sql)
 
       cur = self.db.cursor()
-      print sql
+      
       cur.execute( sql )
       # - Column description
       desc = []

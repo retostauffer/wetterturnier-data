@@ -1,7 +1,7 @@
 # -----------------------------------------------
 # - List of the stations and cities where to
 #   visualize the lightning maps.
-#   Not that the city-hash has to be identical
+#   Note that the city-hash has to be identical
 #   to the city hash from the wetterturnier
 #   to get the images shown at the end.
 #   The station position is from the ZAMG
