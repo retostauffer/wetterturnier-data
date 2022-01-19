@@ -1,0 +1,10 @@
+#!/bin/bash
+
+pyscript=$1
+source venv3/bin/activate
+which python
+
+if [ -n "$pyscript" ]; then
+	python $pyscript
+fi
+ls

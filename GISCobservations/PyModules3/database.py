@@ -23,7 +23,7 @@ class database( object ):
       database = config['mysql_database']
 
       # - Try to connect to the database. If not, exit.
-      import MySQLdb
+      import pymysql as MySQLdb
       try:
          self.db = MySQLdb.connect(host=host,user=user,passwd=passwd,db=database)
       except Exception as e:

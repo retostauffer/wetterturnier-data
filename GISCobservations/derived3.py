@@ -46,7 +46,7 @@ if __name__ == "__main__":
    import sys, os
    import socket
    # - On prognose server: change working dir
-   if socket.gethostname() == "prognose2.met.fu-berlin.de":
+   if socket.gethostname() == "wetterturnier.de":
       os.chdir('/home/imgi/gisc-mail')
    os.environ['TZ'] = 'UTC'
    sys.path.append('PyModules3')

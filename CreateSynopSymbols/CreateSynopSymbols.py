@@ -42,7 +42,7 @@ if __name__ == "__main__":
    # If tmax > 0 the thing will perform the creation of SynopSymbols
    # tmax hours backwards in time. For recreation. Default is 0, only
    # the latest hour will be visualized.
-   tmax = 1
+   tmax = 48
    for t in range(0, tmax+1):
 
       # Note: the (tmax-t) is required as - if reproducing figures - the

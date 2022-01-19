@@ -45,7 +45,8 @@ class database( object ):
          database connection (used by getWBFXdata.py)."""
 
       if not self.db is None: return
-      import MySQLdb, sys
+      import pymysql as MySQLdb
+      import sys
 
       # Default
       try:
