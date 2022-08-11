@@ -1,0 +1,136 @@
+# -------------------------------------------------------------------
+# - NAME:        config.conf
+# - AUTHOR:      Reto Stauffer (IMGI@prognose2)
+# - DATE:        2015-02-04
+# -------------------------------------------------------------------
+# - DESCRIPTION:
+# -------------------------------------------------------------------
+# - EDITORIAL:   2015-02-04, RS: Created file on thinkreto.
+# -------------------------------------------------------------------
+# - L@ST MODIFIED: 2019-05-11 00:07 on prognose2
+# -------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------
+# - Basic settings
+# -------------------------------------------------------------------
+
+# - Path to the directory where the bufrtables are stored (bufrtables)
+#   The second one (showtables) is a boolean flag wether python-bufr
+#   should show which table it is loading or not.
+[settings]
+
+# - Used as --width argument for the bufrread.pl file.
+#   It has to be wide enough not to cut the data (e.g., file names)
+#   I hope 35 shold be enough for all stations.
+pl_width     = 150
+
+# - Output sort order. Tries to sort (if data avilable) in the
+#   order specified here. All other variables will be appended to
+#   the end.
+sortorder    = statnr,T,Td,rel,Tmin,Tmax,Tg,sonne,sonnetag,dd,ff,boe,ww,W1,W2,VV,Pg,Pp,p,RR24,rrrtyp,N 
+# - You can skip columns while printing in the showdata method.
+showskip     = lon, lat, stationname, stationtype, hbaro, height
+# - Parameter you wont have in the database
+dbskip       = lon, lat, height, hbaro, stationname, stationtype
+
+# - Incoming data directory where we are storing the
+#   synop and/or bufr messages. Note that there can be several
+#   input/output directories. The name of the setting (if
+#   setting is [settings essential] the data coming from this
+#   directory will be labeled as "stint='essential'". Note that
+#   column 'stint' only takes a few predefined values. If you
+#   declare a new class do not forget to alter the 'stint' column
+#   in the live and in the archive database!
+#   - essential: data published with WMO essential constraint
+[settings essential]
+indir       = /home/imgi/GISCobservations/incoming-essential
+outdir      = /home/imgi/GISCobservations/data-processed
+#   - essential: data published with WMO essential constraint
+[settings additional]
+indir       = /home/imgi/GISCobservations/incoming-additional
+outdir      = /home/imgi/GISCobservations/data-processed
+
+[dwd ftp]
+host        = ftp-outgoing.dwd.de
+user        = mbeyer
+passwd      = koi=Foa2
+dir         = .
+#DWD OpenData
+#host        = opendata.dwd.de/
+#user        = None
+#passwd      = None
+#dir         = weather/weather_reports/synoptic/germany/
+
+# files is a PROPER regexp expression. All files not matching
+# this pattern will be ignored.
+files       = IS[\W\w]+[EDZW|LSSW][\W\w]+
+
+# -------------------------------------------------------------------
+# - The MySQL database configuration we need.
+# -------------------------------------------------------------------
+[mysql]
+host         = localhost
+user         = obs
+passwd       = #0bsDa&a
+database     = obs
+
+# - Mysql table configuration for synop messages
+[mysql synop]
+tablename    = live
+create       = sqltemplates/synop_create.dat
+columns      = sqltemplates/synop_columns.dat
+
+# - Mysql table configuration for bufr messages
+[mysql bufr]
+tablename    = live
+create       = sqltemplates/bufr_create.dat
+columns      = sqltemplates/bufr_columns.dat
+
+# - Mysql table with bufr parameter description 
+[mysql bufrdesc]
+tablename    = description
+create       = sqltemplates/description_create.dat
+
+# - Basic table create statement for the station table (stations)
+[mysql stations]
+create       = sqltemplates/stations_create.dat
+
+
+
+# -------------------------------------------------------------------
+# - Configuration for the cleanup process. 
+#   Relies on the mysql database connection as defined above.
+# -------------------------------------------------------------------
+[cleanup]
+
+# - We create a copy of the observation table and put the data
+#   into the long term storage for all station numbers defined
+#   in the list below
+#   If you comment the line out the script wont copy any data
+#   into the 'archive database'.
+#   FROM srctable TO dsttable
+srctable        = live
+dsttable        = archive
+
+# - Note: the live database will be dumped into the archive
+#   database once of a few times a day. However after a certain
+#   time we are dropping ALL data from the live database.
+#   The 'db_days' variable is controlling this. 
+db_days         = 30
+
+# - We are also deleting the incoming files from the gisc-wisc
+#   once in a while. the file_days defines after how many days
+#   the files (in data-processed; outdir) will be removed.
+#   WARNING: the DWD FTP sever contains files like 20 days back
+#   or so. If you do delete the files too early the downloader
+#   might download the files again and again and again.
+file_days       = 30
+
+# - Only files with these postfixes will be deleted
+#   Not case sensitive!
+#   TXT is for the synop messages (not in use at the moment)
+#   BIN is for the binary BUFR files
+file_endings    = TXT,txt,BIN,bin,BUFR,bufr
+
+stations =  10382,10381,10384,10385,10469,10471,11035,11036,11120,11121,11320,10637,10641,10513,10519,10334,10338,10147,10146,10739,10738,10865,10870,10453,6660,6670
