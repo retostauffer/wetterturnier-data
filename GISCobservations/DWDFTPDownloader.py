@@ -17,19 +17,19 @@ if __name__ == "__main__":
    from datetime import datetime as dt
 
    os.environ['TZ'] = 'UTC'
-   sys.path.append('PyModules')
+   sys.path.append('PyModules3')
 
    import utils
    from readconfig import *
 
-   print '\n  * Welcome to the extractor script called %s' % os.path.basename(__file__)
+   print('\n  * Welcome to the extractor script called %s' % os.path.basename(__file__))
 
    # ----------------------------------------------------------------
    # - Reading config file
    # ----------------------------------------------------------------
    configfile = '%s_config.conf' % socket.gethostname()
    if not os.path.isfile( configfile ):   configfile = 'config.conf'
-   print '    Reading config file: %s' % configfile
+   print('    Reading config file: %s' % configfile)
    config = readconfig(configfile)
    config = readbufrconfig(config)
 
@@ -38,12 +38,12 @@ if __name__ == "__main__":
       sys.exit("No valid dwd_ftp config from config file. Stop  here.")
 
    # FTP listing
-   print "  * Establishing ftp connection"
+   print("  * Establishing ftp connection")
    ftp = ftplib.FTP( config["dwd_ftp"]["host"] )
    ftp.login( config["dwd_ftp"]["user"], config["dwd_ftp"]["passwd"] )
    ftp.cwd( config["dwd_ftp"]["dir"] )
    data = []
-   print "    Reading ftp file listing"
+   print("    Reading ftp file listing")
    ftp.dir(data.append)
 
    # Specify where to store and check the files
@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
    # Looping trough listing, search for a specific type of file
    # and download the data if not yet on disc.
-   print "    Check for matching files"
+   print("    Check for matching files")
    now = int(dt.now().strftime("%s"))
    pattern = "(\w{3}\s+\d+\s+\d+:\d+)\s+" + "({0:s})".format(config["dwd_ftp"]["files"])
    for line in data:
@@ -71,10 +71,10 @@ if __name__ == "__main__":
          continue
 
       # Downloading file
-      print "Downloading {0:s}".format(filename)
+      print("Downloading {0:s}".format(filename))
       ftp.retrbinary('RETR %s' % filename, open("{0:s}/{1:s}".format(outputdir,filename),"wb").write )
    
-   print "    Close ftp connection ..."
+   print("    Close ftp connection ...")
    ftp.quit()
 
-   print "  * All done ..."
+   print("  * All done ...")

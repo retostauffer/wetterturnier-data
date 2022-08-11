@@ -46,15 +46,15 @@ if __name__ == "__main__":
    import sys, os
    import socket
    # - On prognose server: change working dir
-   if socket.gethostname() == "prognose2.met.fu-berlin.de":
+   if socket.gethostname() == "wetterturnier.de":
       os.chdir('/home/imgi/gisc-mail')
    os.environ['TZ'] = 'UTC'
-   sys.path.append('PyModules')
+   sys.path.append('PyModules3')
 
    import utils
    from readconfig import * 
 
-   print '  * Welcome to the derived vars calculus script called %s' % os.path.basename(__file__)
+   print('  * Welcome to the derived vars calculus script called %s' % os.path.basename(__file__))
 
    # ----------------------------------------------------------------
    # - Reading inputs. The only option is to explicitly set an
@@ -64,7 +64,7 @@ if __name__ == "__main__":
    try:
       opts,args = getopt.getopt(sys.argv[1:],'v',['verbose'])
    except Exception as e:
-      print e
+      print(e)
       sys.exit('Wrong input to this file.')
    verbose  = False
    for o, a in opts:
@@ -75,10 +75,10 @@ if __name__ == "__main__":
    # ----------------------------------------------------------------
    configfile = '%s_config.conf' % socket.gethostname()
    if not os.path.isfile( configfile ):   configfile = 'config.conf' 
-   print '    Reading config file: %s' % configfile
+   print('    Reading config file: %s' % configfile)
    config = readconfig(configfile)
 
    compute_derived(config)
 
-   print '\n  * All done, good night!\n'
+   print('\n  * All done, good night!\n')
 

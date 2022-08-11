@@ -36,9 +36,14 @@ if ( ! file.exists(config$imgdir) ) dir.create(config$imgdir)
 if ( ! file.exists(config$dstdir) ) dir.create(config$dstdir)
 
 # - Loading necessary packages
-stopifnot( require('RSQLite') )
-stopifnot( require('colorspace') )
-stopifnot( require('sp') )
+packages=c("RSQLite","colorspace","sp")
+for ( p in packages ) {
+	install.packages(p)
+	stopifnot( require( p ) )
+}
+#stopifnot( require('RSQLite') )
+#stopifnot( require('colorspace') )
+#stopifnot( require('sp') )
 
 # - Loading station.txt file
 if ( ! file.exists('stations.txt') ) stop('Cannot find stations.txt file')

@@ -56,8 +56,9 @@ wget "${URL}?res=list&beg=${BEGIN}&end=${END}&ecenter=${CENTER}" -O $LST
 
 # Extract the bufr files we would like to get from ogimet
 printf "Extracting the files we would like to download\n"
-nfiles=`cat ${LST} | egrep -oE ">\S+IS(MD|ID|ND)23\S+\\.bufr<" | wc -l`
-files=`cat ${LST} | egrep -oE ">\S+IS(MD|ID|ND)23\S+\\.bufr<" | sed -e "s/<//g" -e "s/>//g"`
+regex='+IS(MD|ID|ND)23'
+nfiles=`cat ${LST} | egrep -oE ">\S$regex\S+\\.bufr<" | wc -l`
+files=`cat ${LST} | egrep -oE ">\S$regex\S+\\.bufr<" | sed -e "s/<//g" -e "s/>//g"`
 printf "Number of files to be considered: %d\n" $nfiles
 
 if [ $nfiles -eq 0 ] ; then
@@ -91,7 +92,7 @@ for file in ${files[@]} ; do
     fi
 done
 
-# At the end: remove all bufr files older than 24 hours.
+# At the end: remove all bufr files older than 48 hours.
 # not needed. They are just kept inside the TMPDIR folder
 # to track what we have already processed and what's new
 # in the listing.

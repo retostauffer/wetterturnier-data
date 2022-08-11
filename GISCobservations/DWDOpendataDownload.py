@@ -34,7 +34,7 @@ if __name__ == "__main__":
    for ftp_dir in ftp_dirs:
       ftp = ftplib.FTP( ftp_server )
       ftp.login( ftp_username, ftp_password )
-      print ftp_dir
+      print(ftp_dir)
       ftp.cwd( ftp_dir )
       data = []
       ftp.dir(data.append)
@@ -65,7 +65,7 @@ if __name__ == "__main__":
             continue
       
          # Downloading file
-         print "Downloading {0:s}".format(filename)
+         print("Downloading {0:s}".format(filename))
          ftp.retrbinary('RETR %s' % filename, open("{0:s}/{1:s}".format(outputdir,filename),"wb").write )
       
    ftp.close()
