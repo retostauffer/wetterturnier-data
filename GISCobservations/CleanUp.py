@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
    import sys, os, socket
    os.environ['TZ'] = 'UTC'
-   sys.path.append('PyModules3')
+   sys.path.append('PyModules')
 
    import utils
    from readconfig import * 

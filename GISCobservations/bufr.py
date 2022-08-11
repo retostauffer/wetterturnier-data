@@ -24,9 +24,9 @@ def extract_bufr_file(config,stint,file,verbose):
       return None
 
    obj.extractdata()
-   #print "----------------- dropped --------------------"
+   print("----------------- dropped --------------------")
    obj.showdropped()
-   #print "----------------- dropped --------------------"
+   print("----------------- dropped --------------------")
 
 
    check = obj.manipulatedata()
@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
    import sys, os, socket
    os.environ['TZ'] = 'UTC'
-   sys.path.append('PyModules3')
+   sys.path.append('PyModules')
 
    import utils
    from readconfig import * 
@@ -129,7 +129,7 @@ if __name__ == "__main__":
    # ----------------------------------------------------------------
    # - Compute derived variables
    # ----------------------------------------------------------------
-   from derived3 import compute_derived
+   from derived import compute_derived
    print("\n  * Calling compute_derived from derived.py to compute")
    print("    derived variables like relative humidity if only")
    print("    temperature and dew point are given.")

@@ -22,8 +22,8 @@
 
 # - Used as --width argument for the bufrread.pl file.
 #   It has to be wide enough not to cut the data (e.g., file names)
-#   I hope 35 shold be enough for all stations.
-pl_width     = 35
+#   I hope 150 shold be enough for all stations.
+pl_width     = 150
 
 # - Output sort order. Tries to sort (if data avilable) in the
 #   order specified here. All other variables will be appended to
@@ -122,7 +122,7 @@ file_days       = 30
 #   Not case sensitive!
 #   TXT is for the synop messages (not in use at the moment)
 #   BIN is for the binary BUFR files
-file_endings    = txt,BIN
+file_endings    = txt,TXT,bin,BIN,bufr,BUFR
 
 stations =  6660,6670,10382,10384,10385,10469,10471,11035,11036,11120,11121,11320
 

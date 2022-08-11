@@ -49,7 +49,7 @@ if __name__ == "__main__":
    if socket.gethostname() == "wetterturnier.de":
       os.chdir('/home/imgi/gisc-mail')
    os.environ['TZ'] = 'UTC'
-   sys.path.append('PyModules3')
+   sys.path.append('PyModules')
 
    import utils
    from readconfig import * 

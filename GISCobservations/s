@@ -1,10 +1,15 @@
 #!/bin/bash
 
 pyscript=$1
-source ../venv3/bin/activate
-which python
+source ../venv/bin/activate
 
 if [ -n "$pyscript" ]; then
 	python $pyscript
 fi
+
+venv="../venv/bin/"
+
+alias python="${venv}python3"
+alias pip="${venv}pip3"
+
 ls
