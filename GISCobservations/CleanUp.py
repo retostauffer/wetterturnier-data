@@ -23,7 +23,7 @@ if __name__ == "__main__":
    import utils
    from readconfig import * 
 
-   print '  * Welcome to the cleanup/archive script called %s' % os.path.basename(__file__)
+   print('  * Welcome to the cleanup/archive script called %s' % os.path.basename(__file__))
 
    # ----------------------------------------------------------------
    # - Reading inputs. The only option is to explicitly set an
@@ -33,7 +33,7 @@ if __name__ == "__main__":
    try:
       opts,args = getopt.getopt(sys.argv[1:],'v',['verbose'])
    except Exception as e:
-      print e
+      print(e)
       sys.exit('Wrong input to this file.')
    verbose  = False
    for o, a in opts:
@@ -44,7 +44,7 @@ if __name__ == "__main__":
    # ----------------------------------------------------------------
    configfile = '%s_config.conf' % socket.gethostname()
    if not os.path.isfile( configfile ):   configfile = 'config.conf' 
-   print '    Reading config file: %s' % configfile
+   print('    Reading config file: %s' % configfile)
    config = readconfig(configfile)
 
 
@@ -52,7 +52,7 @@ if __name__ == "__main__":
    # - Initialize cleanup.
    # ----------------------------------------------------------------
    from cleanup import cleanup 
-   print "  * Initialize CleanUp"
+   print("  * Initialize CleanUp")
    cleanup = cleanup( config )
    
    # - delete old files
@@ -65,8 +65,8 @@ if __name__ == "__main__":
    cleanup.cleanup_live_table()
 
 
-   print ""
-   print "  * CleanUp has done his jobs."
+   print("")
+   print("  * CleanUp has done his jobs.")
    cleanup.closeDB()
 
 

@@ -34,7 +34,9 @@ printf " - End:     %s\n" "${END}"
 
 # Only extracting CENTER LSSW (and only ISMD/ISID/ISND, see regex
 # expression in the egrep command below).
+declare -a CENTERS=(LSSW LOWM)
 CENTER="LSSW"
+#CENTER2="LOWM"
 LST="listing.html"
 URL="http://www.ogimet.com/getbufr.php"
 
@@ -54,16 +56,26 @@ if [ -f ${LST} ] ; then rm ${LST} ; fi
 printf " - wget ${URL}?res=list&beg=${BEGIN}&end=${END}&ecenter=${CENTER}"
 wget "${URL}?res=list&beg=${BEGIN}&end=${END}&ecenter=${CENTER}" -O $LST
 
+#printf " - wget ${URL}?res=list&beg=${BEGIN}&end=${END}&ecenter=${CENTER2}"
+#wget "${URL}?res=list&beg=${BEGIN}&end=${END}&ecenter=${CENTER2}" -O ->> $LST
+
 # Extract the bufr files we would like to get from ogimet
 printf "Extracting the files we would like to download\n"
-nfiles=`cat ${LST} | egrep -oE ">\S+IS(MD|ID|ND)23\S+\\.bufr<" | wc -l`
-files=`cat ${LST} | egrep -oE ">\S+IS(MD|ID|ND)23\S+\\.bufr<" | sed -e "s/<//g" -e "s/>//g"`
+regex=">\S+IS(MD|ID|ND)23\S+\\.bufr<"
+#regex=">+\\.bufr<"
+nfiles=`cat ${LST} | egrep -oE $regex | wc -l`
+files=`cat ${LST} | egrep -oE $regex | sed -e "s/<//g" -e "s/>//g"`
+#nfiles=`cat ${LST} | wc -l`
+#files=`cat ${LST} | sed -e "s/<//g" -e "s/>//g"`
 printf "Number of files to be considered: %d\n" $nfiles
 
 if [ $nfiles -eq 0 ] ; then
     printf "No files, stop ...\n\n"
     exit 0
 fi
+
+# If a CCX exists we should remove all filess but the latest correction
+# TODO here or maybe better in bufr.py???
 
 # Loop over files and download if not yet available. If
 # we download a new file: move the file to the incoming
@@ -73,25 +85,32 @@ printf "Start downloading new bufr files (if there are any)\n"
 for file in ${files[@]} ; do
     local=`printf "%s/%s" ${TMPDIR} ${file}`
     if [ ! -f ${local} ] ; then
-        printf " - Downloading %s\n" ${file}
-        wget --no-check-certificate "${URL}?file=${file}" -O ${local} || rm -f ${local}
-        #delete file if size == 0byte
-        if [ ! -s ${local} ]; then
-           rm -f ${local}
-        fi
-        if [ -f ${local} ]; then
-           cp ${local} ${OUTDIR}/
-        else
-           echo "- 0-BYTE FILE DOWNLOADED!, WILL SKIP AND TRY LATER!"
-           echo "`date`: 0-BYTE ERROR" >> ${logfile}
-           #TODO: try until suceeded?
-        fi
+        success=0
+        ii=0
+        while [ $success -eq 0 ] && [ $ii -lt 3 ]; do
+            printf " - Downloading %s\n" ${file}
+            wget --no-check-certificate "${URL}?file=${file}" -O ${local} || rm -f ${local}
+            #delete file if size == 0byte
+            if [ ! -s ${local} ]; then
+               rm -f ${local}
+               success=0
+               echo "0 BYTE FILE!"
+            fi
+            if [ -f ${local} ]; then
+               cp ${local} ${OUTDIR}/
+               succes=1
+               echo "SUCCESS!"
+            else
+               echo "FILE NOT DOWNLOADED!"
+            fi
+            ii+=1
+        done
     else
         printf " - Already processed: %s\n" ${file}
     fi
 done
 
-# At the end: remove all bufr files older than 24 hours.
+# At the end: remove all bufr files older than 48 hours.
 # not needed. They are just kept inside the TMPDIR folder
 # to track what we have already processed and what's new
 # in the listing.

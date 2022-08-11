@@ -36,7 +36,7 @@ class paramclass( object ):
             p,u = period.split(' ')
             self.period = int(p)
          except Exception as e:
-            print e
+            print(e)
             import sys
             sys.exit('paramclass: cannot parse period %s correctly!' % period) 
 
@@ -54,14 +54,14 @@ class paramclass( object ):
 
    def show(self):
 
-      print "    - PARAMCLASS ENTRY:"
-      print "      Name:     %s" % self.name
-      print "      Search:   %s" % self.search
-      print "      BufrID:   %06d" % self.bufrid
-      print "      Offset:   ",self.offset
-      print "      Factor:   ",self.factor
-      print "      Period:   ",self.period," (%d h)" % int(self.period/60)
-      print "      height:   ",self.sensorheight
+      print("    - PARAMCLASS ENTRY:")
+      print("      Name:     %s" % self.name)
+      print("      Search:   %s" % self.search)
+      print("      BufrID:   %06d" % self.bufrid)
+      print("      Offset:   ",self.offset)
+      print("      Factor:   ",self.factor)
+      print("      Period:   ",self.period," (%d h)" % int(self.period/60))
+      print("      height:   ",self.sensorheight)
 
 
 

@@ -10,6 +10,10 @@
 # - L@ST MODIFIED: 2015-01-11 17:22 on thinkreto
 # -------------------------------------------------------------------
 
+#install neccesary packages
+install.packages("pacman"); require(pacman)
+p_load(RSQLite, colorspace, sp)
+
 # - UTC
 Sys.setenv('TZ'='UTC')
 

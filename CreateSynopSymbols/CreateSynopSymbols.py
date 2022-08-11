@@ -58,6 +58,7 @@ if __name__ == "__main__":
          # Else loading data
          data = db.loadData(station,time)
          if data is None:
+            #print("NONE\n" * 100)
             log.warning("No data for station %d: skip this one ..." % station)
             continue
          # Initialize synop symbol 

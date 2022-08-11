@@ -45,13 +45,13 @@ class bufrdesc(object):
       """
       Shows content of the object
       """
-      print "    Content of the bufrdesc object:"
-      print "    %-15s %d"   % ("%s:"%"BUFR ID",     self.bufrid )
-      print "    %-15s %s"   % ("%s:"%"Parameter",   self.param  )
-      print "    %-15s %s"   % ("%s:"%"Description", self.desc   )
-      print "    %-15s %s"   % ("%s:"%"Unit",        self.unit   )
-      print "    %-15s %.2f" % ("%s:"%"Offset",      self.offset )
-      print "    %-15s %.2f" % ("%s:"%"Factor",      self.factor )
+      print("    Content of the bufrdesc object:")
+      print("    %-15s %d"   % ("%s:"%"BUFR ID",     self.bufrid ))
+      print("    %-15s %s"   % ("%s:"%"Parameter",   self.param  ))
+      print("    %-15s %s"   % ("%s:"%"Description", self.desc   ))
+      print("    %-15s %s"   % ("%s:"%"Unit",        self.unit   ))
+      print("    %-15s %.2f" % ("%s:"%"Offset",      self.offset ))
+      print("    %-15s %.2f" % ("%s:"%"Factor",      self.factor ))
 
    # ----------------------------------------------------------------
    # - Helper class loading element
@@ -64,7 +64,7 @@ class bufrdesc(object):
       try:
          i = self.cols.index( what )
       except Exception as e:
-         print e
+         print(e)
          sys.exit("[!] ERROR in object bufrdesc. Cannot find %s" % what)
       return self.rec[i]
       
@@ -93,22 +93,26 @@ class bufrentry(object):
          self.value  = str(string[15:(16+width)]).strip().upper()
          self.desc   = str(string[(16+width):]).strip().upper()
       except Exception as e:
-         print e
-         print string
+         print(e)
+         print(string)
          print('ERROR in bfrentry class. Cannot extract necessary infos from \n%s\n' % string)
-         continue
+         self.count  = 0
+         self.bufrid = 0
+         self.value  = ""
+         self.desc   = ""
 
       # - Extracting unit from description
       tmp = re.findall(r'\[([^]]*)\]',self.desc)
       if len(tmp) == 0:
-         print 'CANNOT EXTRACT UNIT FROM STRING \"%s\"' % self.desc
+         pass
+         #print('CANNOT EXTRACT UNIT FROM STRING \"%s\"' % self.desc)
          #sys.exit('CANNOT EXTRACT UNIT FROM STRING \"%s\"' % self.desc)
       else:
          # - Take first element as unit
          self.unit = '%s' % tmp[0]
          # - Remove unit from description
          self.desc = self.desc.replace("[%s]" % self.unit,"").strip()
-         
+
          if self.value.strip().upper() == 'MISSING':
             self.value = self.MISSING_VALUE 
          elif self.unit.upper().find('CCITTIA5') >= 0:
@@ -120,15 +124,15 @@ class bufrentry(object):
    # - Helper function to show recotrd if necessary
    # ----------------------------------------------------------------
    def show(self):
-      print "    - BUFR ENTRY:"
-      print "      Count:       %6d"  % (self.count)
-      print "      Bufrid:      %06d" % (self.bufrid)
+      print("    - BUFR ENTRY:")
+      print("      Count:       %6d"  % (self.count))
+      print("      Bufrid:      %06d" % (self.bufrid))
       if type(self.value) == type(str()):
-         print "      Value:       %s"   % (self.value)
+         print("      Value:       %s"   % (self.value))
       else:
-         print "      Value:       %f"   % (self.value)
-      print "      Description: %s"   % (self.desc)
-      print "      Unit:        %s"   % (self.unit)
+         print("      Value:       %f"   % (self.value))
+      print("      Description: %s"   % (self.desc))
+      print("      Unit:        %s"   % (self.unit))
 
 
    def string(self):
@@ -241,14 +245,14 @@ class extractBUFR( object ):
       if filterfile:
          cmd.append("--filter"); cmd.append(filterfile)
 
-      if self.VERBOSE: print "[]-> Calling: %s" % " ".join(cmd)
-      p = sub.Popen(cmd,stdout=sub.PIPE,stderr=sub.PIPE)
+      if self.VERBOSE: print("[]-> Calling: %s" % " ".join(cmd))
+      p = sub.Popen(cmd, stdout=sub.PIPE, stderr=sub.PIPE, encoding="iso-8859-1")
       out, err = p.communicate()
       if not p.returncode == 0:
-         print out
-         print err
-         print 'subprocess reading BUFR with perl script returned error.'
-         return None 
+         print(out)
+         print(err)
+         print('subprocess reading BUFR with perl script returned error.')
+         return None
 
       content = out.split('\n')
 
@@ -277,7 +281,6 @@ class extractBUFR( object ):
             continue
          elif not in_data_section: continue
          elif len(line.strip()) == 0: continue
-   
          # - Else store the information to tmp
          entry = bufrentry(line,self.WIDTH)
          tmp.append( entry )
@@ -317,7 +320,7 @@ class extractBUFR( object ):
       # - Looping over all sections
       for sec in range(0,len(self.raw)):
 
-         if self.VERBOSE: print "    - Extracting section %d/%d" % (sec,len(self.raw))
+         if self.VERBOSE: print("    - Extracting section %d/%d" % (sec,len(self.raw)))
 
          tmp_sec = {}
 
@@ -340,7 +343,7 @@ class extractBUFR( object ):
          #   on 'dropped'). Else store on self.data
          for rec in self.raw[sec]: 
 
-            if self.VERBOSE: print '%6d %s' % (displacement,rec.string())
+            if self.VERBOSE: print('%6d %s' % (displacement,rec.string()))
             if rec.value == self.MISSING_VALUE: continue
 
             # - Check if current message defines a displacement time.
@@ -352,7 +355,7 @@ class extractBUFR( object ):
             if not check_displacement == False:
                displacement = check_displacement
                if self.VERBOSE:
-                  print '     + set displacement time to %8d' % displacement
+                  print('     + set displacement time to %8d' % displacement)
                continue
 
             # - Checking sensor height
@@ -360,7 +363,7 @@ class extractBUFR( object ):
             if not check_sensorheight == False:
                sensorheight = check_sensorheight
                if self.VERBOSE:
-                  print '     + set sensorheight to %10.2f' % sensorheight
+                  print('     + set sensorheight to %10.2f' % sensorheight)
                continue
 
             # - Check if current message defines a vertical significance
@@ -370,12 +373,11 @@ class extractBUFR( object ):
             if not check_verticalsign == False:
                verticalsign = check_verticalsign
                if self.VERBOSE:
-                  print '     + set vertical significance to %8d' % verticalsign
+                  print('     + set vertical significance to %8d' % verticalsign)
                continue
 
             # - Returns paramclass object if found 
             drop, param = self.__get_param_obj__( rec, displacement, verticalsign, sensorheight )
-         
             # - Dropped: Ignore current entry and go further
             if drop:
                #'%5d  %06d %7.2fm \"%s\" (%s)' % (displacement,
@@ -386,10 +388,10 @@ class extractBUFR( object ):
                   self.dropped.append( drop )
                continue
 
-            if self.VERBOSE: print '        -- %s' % param.name
+            if self.VERBOSE: print('        -- %s' % param.name)
 
             # - Load/scale data 
-            data = rec.value 
+            data = rec.value
             if type(data) == type(float()):
                # - Do not scale missing value.
                if not data == self.MISSING_VALUE:
@@ -408,7 +410,7 @@ class extractBUFR( object ):
             else:
                for i in range(0,100):
                   rep_name = '%s_%d' % (param.name,i)
-                  if not rep_name in tmp_sec: break 
+                  if not rep_name in tmp_sec: break
                tmp_sec[ rep_name ] = data
                # - Appending unique keys
                if not rep_name in self.keys: self.keys.append( rep_name )
@@ -417,7 +419,6 @@ class extractBUFR( object ):
             #   database (has its equivalent in self.bufrdesc). If not,
             #   we have to insert a new line into the obs.bufrdesc table.
             self.__check_bufrdesc_and_add_if_necessary__(rec,param)
-   
 
          # - Append full block to self.data
          self.data.append( tmp_sec )
@@ -438,10 +439,10 @@ class extractBUFR( object ):
          if param.name == elem.param:
             desc = elem
             break;
-      
+
       # - If not found:
       if desc == None:
-         print "    %s not in bufrdesc database: append row" % param.name
+         print("    %s not in bufrdesc database: append row" % param.name)
 
          # - Pick period, offset, and factor
          if param.period == False:
@@ -485,7 +486,7 @@ class extractBUFR( object ):
    def __check_displacement__(self,rec):
 
       is_displacement = False
-      if rec.bufrid in [004024,004025]:
+      if rec.bufrid in [0o04024,0o04025]:
          is_displacement = True
       elif rec.desc.find("TIME PERIOD OR DISPLACEMENT") >= 0:
          is_displacement = True
@@ -520,7 +521,7 @@ class extractBUFR( object ):
    def __check_sensorheight__(self,rec):
 
       is_sensorheight = False
-      if rec.bufrid in [00703]:
+      if rec.bufrid in [0o0703]:
          is_sensorheight = True
       elif rec.desc.find("HEIGHT OF SENSOR ABOVE LOCAL GROUND") >= 0:
          is_sensorheight = True
@@ -613,7 +614,7 @@ class extractBUFR( object ):
    def manipulatedata(self):
 
       if len(self.data) == 0:
-         print '[!] Cannot manipulate data - no data loaded yet.'
+         print('[!] Cannot manipulate data - no data loaded yet.')
          return
 
       # - Store sections to drop (if time information wrong)
@@ -622,14 +623,15 @@ class extractBUFR( object ):
       # - Kees we need
       necessary = ['wmoblock','statnr','year','month','hour','minute']
 
-      counter=0 #dropped stations counter
+      counter = 0 #dropped stations counter
       # - Check if keys exist and manipulate if necessary.
       for sec in range(0,len(self.data)):
 
          # - Take out record
          rec       = self.data[sec]
-         keys      = rec.keys()
+         keys      = list(rec.keys())
          skip_this = False
+         short_station = False
 
          # - If one of the necessary keys is missing, append
          #   section index to 'to_drop' and set skip_this = True.
@@ -638,26 +640,39 @@ class extractBUFR( object ):
          for nec in necessary:
             if not nec in keys:
                if self.VERBOSE:
-                  print 'UPS: missing key \"%s\" in \"%s\" drop.' % (nec,self.file.split("/")[-1])
-               to_drop.append(sec)
-               skip_this = True
-               break
+                  print('UPS: missing key \"%s\" in \"%s\" drop.' % (nec,self.file.split("/")[-1]))
+               if nec == "wmoblock":
+                  if "shortstation" in keys:
+                     short_station = True
+                     break
+                  else:
+                     to_drop.append(sec)
+                     skip_this = True
+                     break
 
          # - Skip 
          if skip_this:
+            if self.VERBOSE: print("SKIP!")
             continue
          
          # - Manipulate station
-         rec['statnr'] = rec['wmoblock']*1e3 + rec['statnr']
+         if short_station:
+            rec['statnr'] = rec['shortstation'] if rec['shortstation'] != "N769" else 2878
+         else:
+            try:
+               rec['statnr'] = rec['wmoblock']*1e3 + rec['statnr']
+            except:
+               rec['statnr'] = None
 
-         #print self.config['cleanup_stations']
+         #print(self.config['cleanup_stations'])
          #TODO: get current stations from wpwt->wp_wetterturnier_stations
          #      -> grant read to wpwt on obs user
          
          if rec['statnr'] not in self.config['cleanup_stations']:
             to_drop.append(sec)
             if self.VERBOSE:
-               print "Station %d skipped since not used in tournament!" % rec['statnr']
+               print(rec['statnr'])
+               print("Station %d skipped since not used in tournament!" % rec['statnr'])
             else: counter+=1
             continue
          
@@ -666,10 +681,10 @@ class extractBUFR( object ):
          from datetime import datetime as dt
          if rec['year'] < 0 or rec['month'] < 1 or rec['day'] < 1 or rec['hour'] < 0 or \
             rec['hour'] > 24 or rec['minute'] < 0 or rec['minute'] > 60:
-            print '[!] Problems with time description! Fancy values. Skip this.'
+            print('[!] Problems with time description! Fancy values. Skip this.')
             
-            print "   Year: %4d Month: %2d Day: %2d Hour: %2d Minute: %2d" % \
-                  (rec['year'],rec['month'],rec['day'],rec['hour'],rec['minute'])
+            print("   Year: %4d Month: %2d Day: %2d Hour: %2d Minute: %2d" % \
+                  (rec['year'],rec['month'],rec['day'],rec['hour'],rec['minute']))
 
             # - Remove this entry from self.data!
             #   We cannot do this here because then the loop index
@@ -686,8 +701,10 @@ class extractBUFR( object ):
          rec['datumsec']  = int(date.strftime('%s'))
          rec['datum']     = int(date.strftime('%Y%m%d'))
          rec['stdmin']    = int(date.strftime('%H%M'))
-   
-         del rec['wmoblock']
+  
+         try:
+            del rec['wmoblock']
+         except: del rec['shortstation']
          del rec['year']
          del rec['month']
          del rec['day']
@@ -699,8 +716,8 @@ class extractBUFR( object ):
 
       # - If there were sections with corrupt date/time info,
       #   drop them.
-      print '    Dropping %d messages from totally %d' % (len(to_drop),len(self.data))
-      print "    %d station(s) dropped because not used in tournament" % counter
+      print('    Dropping %d messages from totally %d' % (len(to_drop),len(self.data)))
+      print("    %d station(s) dropped because not used in tournament" % counter)
       if len(to_drop) > 0:
          hold = self.data; self.data = []
          for sec in range(0,len(hold)):
@@ -709,10 +726,13 @@ class extractBUFR( object ):
       # - No messages left?
       if len(self.data) == 0: return False
 
-      print "    Leftover (valid messages): %d" % (len(self.data))
+      print("    Leftover (valid messages): %d" % (len(self.data)))
 
       # - Remove from keys
-      self.keys.remove('wmoblock')
+      try:
+          self.keys.remove('wmoblock')
+      except:
+          self.keys.remove('shortstation')
       self.keys.remove('year')
       self.keys.remove('month')
       self.keys.remove('day')
@@ -736,7 +756,7 @@ class extractBUFR( object ):
       # - First check out how many different parameter we have in the
       #   data.
       for rec in self.data:
-         for key in rec.keys():
+         for key in list(rec.keys()):
             if key in self.config['dbskip']:
                continue
             elif not key in par:
@@ -755,7 +775,7 @@ class extractBUFR( object ):
 
       # - Fill in the data
       for r in range(0,len(self.data)):
-         for key in self.data[r].keys():
+         for key in list(self.data[r].keys()):
             if self.data[r][key] == self.MISSING_VALUE: continue
             if not key in par: continue
             c = par.index( key )
@@ -766,15 +786,15 @@ class extractBUFR( object ):
       # - If verbose, show data which we would like to insert
       #   into the database.
       if self.VERBOSE:
-         print "    PREPARED DATA FOR DATABASE:"
+         print("    PREPARED DATA FOR DATABASE:")
 
          for i in range(0,len(self.PREPARED['parameter'])):
-            print "    - %-10s " % self.PREPARED['parameter'][i],
+            print("    - %-10s " % self.PREPARED['parameter'][i], end=' ')
             for j in range(0,len(self.PREPARED['data'])):
                val = self.PREPARED['data'][j][i],
                if np.isnan(val): val = -999
-               print "%12d " % val, 
-            print ""
+               print("%12d " % val, end=' ') 
+            print("")
 
 
    # ----------------------------------------------------------------
@@ -783,12 +803,12 @@ class extractBUFR( object ):
    def write_to_db(self):
 
       if self.db == None:
-         print '[!] Database connection not established. Return.'
+         print('[!] Database connection not established. Return.')
          return
 
       # - No data?
       if self.PREPARED['data'].shape[0] == 0:
-         print '    No data to write into the database.'
+         print('    No data to write into the database.')
          return
 
       # - Columns
@@ -816,7 +836,7 @@ class extractBUFR( object ):
          data.append( df )
          #data.append( tuple(self.PREPARED['data'][i,]) )
 
-      print "    Write %d entries into the database" % len(data)
+      print("    Write %d entries into the database" % len(data))
       cur = self.db.cursor()
       cur.executemany( '\n'.join(sql), data )
 
@@ -827,7 +847,7 @@ class extractBUFR( object ):
    # ----------------------------------------------------------------
    def update_stations( self ):
 
-      print "\n  * Update stations table in the database"
+      print("\n  * Update stations table in the database")
 
       cur = self.db.cursor()
       cur.execute( "SELECT statnr FROM stations" )
@@ -839,7 +859,9 @@ class extractBUFR( object ):
       for rec in self.data:
          # - If in database: skip
          try:
-            if rec['statnr'] in stations: continue
+            if rec['statnr'] in stations:
+               print(f"{statnr} is in stations")
+               
          except:
             continue
          # - Else create tuple and append to res
@@ -855,12 +877,16 @@ class extractBUFR( object ):
                       rec['height'],-999)
             # if something else was missing:
             except:
+               print("sth else is missing!")
                continue
          # - Append now
          res.append( tmp )
+         print(tmp)
+
+      print(res)
 
       # - Update
-      print "    Updating stations database table: adding %d stations" % len(res)
+      print("    Updating stations database table: adding %d stations" % len(res))
       sql = "INSERT INTO obs.stations (statnr,nr,name,lon,lat,hoehe,hbaro) " + \
             "VALUES (%s,%s,%s,%s,%s,%s,%s)"
       cur.executemany( sql, res )
@@ -872,12 +898,12 @@ class extractBUFR( object ):
    def showdropped(self):
       if self.VERBOSE:
          if len( self.dropped ) == 0:
-            print '\n    NO DROPPED ENTRIES/VARIABLES AT THE MOMENT\n\n'
+            print('\n    NO DROPPED ENTRIES/VARIABLES AT THE MOMENT\n\n')
 
-         print '\n    DROPPED THE FOLLOWING ENTRIES/VARIABLES (not defined in config)'
+         print('\n    DROPPED THE FOLLOWING ENTRIES/VARIABLES (not defined in config)')
          for rec in self.dropped:
-            print '    - %s' % rec
-         print ''
+            print('    - %s' % rec)
+         print('')
       else: pass
 
 
@@ -886,7 +912,7 @@ class extractBUFR( object ):
    # ----------------------------------------------------------------
    def __showdata_sort_order__(self,force=None):
    
-      if not self.config['sortorder']: return self.data.keys()
+      if not self.config['sortorder']: return list(self.data.keys())
 
       # - Else create new sort list
       if force == None:
@@ -919,7 +945,7 @@ class extractBUFR( object ):
 
       # - No data?
       if len(self.data) == 0:
-         print '[!] NO DATA TO SHOW RIGHT NOW!'
+         print('[!] NO DATA TO SHOW RIGHT NOW!')
          return
 
       # - Create key sort list 
@@ -940,17 +966,17 @@ class extractBUFR( object ):
             # - If there are data: show data
             if len(self.data) > 0:
                for col in column_order: 
-                  print ' %7s' % col,
-               print '\n',
+                  print(' %7s' % col, end=' ')
+               print('\n', end=' ')
 
          # - If there are data: show data
          for col in column_order:
-            if not col in rec.keys():
-               print " %7.1f" % self.MISSING_VALUE,
+            if not col in list(rec.keys()):
+               print(" %7.1f" % self.MISSING_VALUE, end=' ')
             else:
                value = self.__getval__( rec[col] )
-               print ' %7.1f' % value, 
-         print '\n',
+               print(' %7.1f' % value, end=' ') 
+         print('\n', end=' ')
 
 
    # ----------------------------------------------------------------
@@ -959,11 +985,11 @@ class extractBUFR( object ):
    def dbConnect(self):
    
       if self.db == None:
-         if self.VERBOSE: print '  * Establishing database connection' 
+         if self.VERBOSE: print('  * Establishing database connection') 
          from database import database
          self.db = database(self.config,type='bufr')
       else:
-         if self.VERBOSE: print '    Database connection already open.' 
+         if self.VERBOSE: print('    Database connection already open.') 
 
    # ----------------------------------------------------------------
    # - Some db helpers
@@ -978,31 +1004,5 @@ class extractBUFR( object ):
    # - Close database connection
    # ----------------------------------------------------------------
    def dbClose(self):
-      if self.VERBOSE: print '    Close database connection'
+      if self.VERBOSE: print('    Close database connection')
       self.db.db.close()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

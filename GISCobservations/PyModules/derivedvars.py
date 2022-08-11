@@ -43,10 +43,10 @@ class derivedvars( object ):
          i_td       = desc.index('td')
          i_t        = desc.index('t')
       except Exception as e:
-         print e
+         print(e)
          sys.exit("Problems to find variable indizes!!!")
 
-      print "    Found %d entries where we have to compute rh (from t/td)" % len(data)
+      print("    Found %d entries where we have to compute rh (from t/td)" % len(data))
       
       # - Comute new values. Store in list with corresponding
       #   data we need for the update (statnr, datumsec, msgtyp)
@@ -69,7 +69,7 @@ class derivedvars( object ):
       try:
          cur.executemany(sql,result)
       except Exception as e:
-         print e
+         print(e)
          self.db.rollback()
          sys.exit('Problems executing statement %s' % sql)
 
@@ -96,10 +96,10 @@ class derivedvars( object ):
          i_rh       = desc.index('rh')
          i_t        = desc.index('t')
       except Exception as e:
-         print e
+         print(e)
          sys.exit("Problems to find variable indizes!!!")
 
-      print "    Found %d entries where we have to compute td (from t/rh)" % len(data)
+      print("    Found %d entries where we have to compute td (from t/rh)" % len(data))
       
       # - Comute new values. Store in list with corresponding
       #   data we need for the update (statnr, datumsec, msgtyp)
@@ -110,7 +110,7 @@ class derivedvars( object ):
 
          td = 243.04 * ( np.log(rh)+((17.625*t)/(243.04+t)) ) \
                      / ( 17.625-np.log(rh)-((17.625*t)/(243.04+t)) )
-         print td,'  ',
+         print(td,'  ', end=' ')
          td = int(np.round(td*10))
          # - Append result
          result.append( (td, rec[i_statnr], rec[i_datumsec], rec[i_msgtyp]) )
@@ -122,7 +122,7 @@ class derivedvars( object ):
       try:
          cur.executemany(sql,result)
       except Exception as e:
-         print e
+         print(e)
          self.db.rollback()
          sys.exit('Problems executing statement %s' % sql)
 

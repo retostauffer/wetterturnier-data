@@ -17,11 +17,11 @@ class cleanup(object):
    # - Initialize the object
    def __init__( self, config ):
 
-      print "    Cleanup class initialized"
+      print("    Cleanup class initialized")
       self.config = config
 
       from database import database
-      print "    Open database connection"
+      print("    Open database connection")
       self.db = database(config)
 
    # ----------------------------------------------------------------
@@ -45,25 +45,25 @@ class cleanup(object):
          postfix = self.config['cleanup_file_endings']
          maxage  = np.floor(time.time() / 86400)*86400 - days*86400
 
-         print ""
-         print "  - Searching for old files in \"%s\" older than about %d days" % (dir,days)
-         print "    Or exactly: files older than %s" % dt.fromtimestamp( maxage ) 
+         print("")
+         print("  - Searching for old files in \"%s\" older than about %d days" % (dir,days))
+         print("    Or exactly: files older than %s" % dt.fromtimestamp( maxage )) 
          files = self.getOldFiles(dir,maxage,postfix)
 
          # - No old files? Pff
          if len(files) == 0:
-            print "    No old files found. Skip this method. Done."
+            print("    No old files found. Skip this method. Done.")
             return True
 
          # - Else delete these files
-         print "    Found %d old files on disc" % len(files)
+         print("    Found %d old files on disc" % len(files))
 
          # - Delete em all
          for file in files:
             #eprint file
             os.remove( file )
 
-         print "    Old files removed from %s. Done." % dir
+         print("    Old files removed from %s. Done." % dir)
 
    # ----------------------------------------------------------------
    # - Helper function loading old files
@@ -106,8 +106,8 @@ class cleanup(object):
       'cleanup:dsttable' (see config.conf file).
       """
 
-      print ""
-      print "  - Migrate \"live\" database to \"archive\" database"
+      print("")
+      print("  - Migrate \"live\" database to \"archive\" database")
 
       srctable = self.config['cleanup_srctable']
       dsttable = self.config['cleanup_dsttable']
@@ -115,36 +115,36 @@ class cleanup(object):
 
       # - If one of both is None: skip
       if not srctable or not dsttable:
-         print "    In config.conf: srctable or dsttable in [cleanup]"
-         print "    not set. Archive of data not wished. Return."
+         print("    In config.conf: srctable or dsttable in [cleanup]")
+         print("    not set. Archive of data not wished. Return.")
          return True
 
-      print "    From database:   %s" % srctable
-      print "    To   database:   %s" % dsttable
+      print("    From database:   %s" % srctable)
+      print("    To   database:   %s" % dsttable)
 
       # - No stations
       if len(stations) == 0:
-         print "    But no stations defined in the config.conf file"
-         print "    in [cleanup]. Seems that you dont want any"
-         print "    observation data in the archive table. Return."
+         print("    But no stations defined in the config.conf file")
+         print("    in [cleanup]. Seems that you dont want any")
+         print("    observation data in the archive table. Return.")
          return True
 
-      print "    Have to backup:  %s stations" % len(stations)
+      print("    Have to backup:  %s stations" % len(stations))
 
       # - Source table does not exist?
       if not self.db.__does_table_exist__( srctable ):
-         print "[!] Source table %s does not exist! RETURN!\n" % srctable
+         print("[!] Source table %s does not exist! RETURN!\n" % srctable)
          return False
 
       # - Check if table exists. 
       if not self.db.__does_table_exist__( dsttable ):
-         print "[!] Table does not exist, we have to create it first"
+         print("[!] Table does not exist, we have to create it first")
          sql = "CREATE TABLE %s LIKE %s" % (dsttable,srctable)
          cur = self.db.cursor()
          cur.execute( sql )
          self.db.commit()
       else:
-         print "    Table existing, migrate data ..."
+         print("    Table existing, migrate data ...")
 
       # - Checking columns in both tables. All columns in 'srctable'
       #   have to exist in the 'dsttable'. Else altering the dsttable.
@@ -166,7 +166,7 @@ class cleanup(object):
       for col in srccols:
          if col in dstcols: continue
          # - Search config
-         print "[!] Column \"%s\" does not exist in table %s: ALTER" % (col,dsttable)
+         print("[!] Column \"%s\" does not exist in table %s: ALTER" % (col,dsttable))
          for rec in coldef:
             if rec[0] == col:
                # - Create alter statement
@@ -184,7 +184,7 @@ class cleanup(object):
       desc = cur.description
       data = cur.fetchall()
 
-      print "    %d rows to copy from %s -> %s" % (len(data),srctable,dsttable)
+      print("    %d rows to copy from %s -> %s" % (len(data),srctable,dsttable))
       cols = []
       for rec in desc: cols.append( rec[0] )
 
@@ -193,7 +193,7 @@ class cleanup(object):
 
       self.db.commit()
 
-      print "    Data copied to %s table. Done." % dsttable
+      print("    Data copied to %s table. Done." % dsttable)
    
 
        
@@ -219,15 +219,15 @@ class cleanup(object):
       maxage  = np.floor(time.time() / 86400)*86400 - days*86400
       srctable = self.config['cleanup_srctable']
 
-      print ""
-      print "  - Delete old observations from %s table" % srctable
+      print("")
+      print("  - Delete old observations from %s table" % srctable)
 
       # - Source table does not exist?
       if not self.db.__does_table_exist__( srctable ):
-         print "[!] Source table %s does not exist! RETURN!\n" % srctable
+         print("[!] Source table %s does not exist! RETURN!\n" % srctable)
          return False
 
-      print "    Delete observations older than %s" % dt.fromtimestamp( maxage ) 
+      print("    Delete observations older than %s" % dt.fromtimestamp( maxage )) 
 
 
       # - SQL - delete
@@ -237,7 +237,7 @@ class cleanup(object):
 
       self.db.commit()
 
-      print "    Old observations deleted. Done."
+      print("    Old observations deleted. Done.")
 
 
 

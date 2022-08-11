@@ -23,11 +23,11 @@ class database( object ):
       database = config['mysql_database']
 
       # - Try to connect to the database. If not, exit.
-      import MySQLdb
+      import pymysql as MySQLdb
       try:
          self.db = MySQLdb.connect(host=host,user=user,passwd=passwd,db=database)
       except Exception as e:
-         print e
+         print(e)
          sys.exit('Cannot connect to the database.')
 
       # - Store table name
@@ -76,7 +76,7 @@ class database( object ):
       try:
          fid = open( setup, 'r' )
       except Exception as e:
-         print e
+         print(e)
          sys.exit('Problems reading file \"%s\".' % setup)
 
       # - Now reading content
@@ -137,7 +137,7 @@ class database( object ):
 
       import re
 
-      print '    Appending column to existing database: %s' % name
+      print('    Appending column to existing database: %s' % name)
       
       # - If setupfile not read: do
       DBSETUP   = self.read_table_setup()
@@ -184,7 +184,7 @@ class database( object ):
          return
 
       # - Create
-      print '    - Table %s does not exist, create now' % name
+      print('    - Table %s does not exist, create now' % name)
 
       # - We are using the scheme from the ZAMG synop table.
       #   Check if we can find the file. If not, stop.
@@ -208,18 +208,18 @@ class database( object ):
       cur.close()
 
    def rollback(self):
-      print "[!] Database rollback called ..."
+      print("[!] Database rollback called ...")
       self.db.rollback()
 
    def commit(self):
-      print "[!] Database commit called ..."
+      print("[!] Database commit called ...")
       self.db.commit()
 
    def cursor(self):
       return self.db.cursor()
 
    def close(self):
-      print '    Close database now'
+      print('    Close database now')
       self.db.commit()
       self.db.close()
 

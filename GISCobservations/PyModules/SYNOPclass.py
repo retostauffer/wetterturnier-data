@@ -69,15 +69,15 @@ class synop(object):
 
       # - Show blocks if VERBOSE
       if self.VERBOSE:
-         print rec
-         print bcolors.OKBLUE
-         print "    Block 0:  %s" % self.b0
-         print "    Block 3:  %s" % self.b3
-         print "    Block 4:  %s" % self.b4
-         print "    Block 5:  %s" % self.b5
-         print "    Block 6:  %s" % self.b6
-         print "    Block 9:  %s" % self.b9
-         print bcolors.ENDC
+         print(rec)
+         print(bcolors.OKBLUE)
+         print("    Block 0:  %s" % self.b0)
+         print("    Block 3:  %s" % self.b3)
+         print("    Block 4:  %s" % self.b4)
+         print("    Block 5:  %s" % self.b5)
+         print("    Block 6:  %s" % self.b6)
+         print("    Block 9:  %s" % self.b9)
+         print(bcolors.ENDC)
 
 
    # ----------------------------------------------------------------
@@ -149,21 +149,21 @@ class synop(object):
    def show(self):
 
       if self.NIL:
-         print '    - MESSAGE CONTAINED \"NIL\": no data'
+         print('    - MESSAGE CONTAINED \"NIL\": no data')
       else:
-         print '    - %-20s %02d%02d%02d%d' % ('YYGGggIw:',self.day,self.hour,self.minute,self.iw) 
-         print '    - %-20s %7d'            % ('Station:',self.station)
+         print('    - %-20s %02d%02d%02d%d' % ('YYGGggIw:',self.day,self.hour,self.minute,self.iw)) 
+         print('    - %-20s %7d'            % ('Station:',self.station))
 
 
       if len(self.DATA) > 0:
-         print bcolors.OKRED
+         print(bcolors.OKRED)
          for i in range(0,len(self.DATA)):
-            print '    [] %-10s ' % self.DATA[i][0], 
+            print('    [] %-10s ' % self.DATA[i][0], end=' ') 
             if type(self.DATA[i][1]) == type(int()):
-               print '%8d' % self.DATA[i][1]
+               print('%8d' % self.DATA[i][1])
             else:
-               print self.DATA[i][1]
-         print bcolors.ENDC
+               print(self.DATA[i][1])
+         print(bcolors.ENDC)
 
 
    # ----------------------------------------------------------------
@@ -209,7 +209,7 @@ class synop(object):
       # -------------------------------------------------------------
       # - Block 0 
       # -------------------------------------------------------------
-      if self.VERBOSE: print ' EXTRACTING BLOCK 000 NOW ... '
+      if self.VERBOSE: print(' EXTRACTING BLOCK 000 NOW ... ')
       # - Extracting wind idx
       self.knots = False # will be changed if Iw == 3 or Iw == 4
       if len(self.b0.split()) > 3:
@@ -235,7 +235,7 @@ class synop(object):
       # -------------------------------------------------------------
       # - Block 3
       # -------------------------------------------------------------
-      if self.VERBOSE: print ' EXTRACTING BLOCK 333 NOW ... '
+      if self.VERBOSE: print(' EXTRACTING BLOCK 333 NOW ... ')
       if not len(self.b3) == 0:
          self.__get333_1sTTT__()
          self.__get333_2sTTT__()
@@ -270,7 +270,7 @@ class synop(object):
          try:
             minute = int(rec[-2:])
          except Exception as e:
-            print e
+            print(e)
             sys.exit('Problems extracting the minute from %s' % rec)
             minute = self.MISSING_INT
       return day, hour, minute
@@ -402,7 +402,7 @@ class synop(object):
          if sign == 0:    val = int(rec[-3:]) 
          else:            val = int(rec[-3:]) * (-1)
       except:
-         print e
+         print(e)
          val = self.MISSING_NUM
       self.DATA.append( ('t',val) )
 

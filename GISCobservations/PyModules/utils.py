@@ -21,7 +21,7 @@ def movefile(config,stint,file,typ,ok):
       sys.exit('Problems calling utils.movefile. Input ok has to be logical.')
 
    # - Source file:
-   print '    Source file: %s' % file
+   print('    Source file: %s' % file)
 
    # - Destination directory
    #   not ok means ok == False .. however :D 
@@ -36,7 +36,7 @@ def movefile(config,stint,file,typ,ok):
 
    # - Destination file:
    dstfile = '%s/%s' % (dstdir,file.split('/')[-1])
-   print '    Destination is: %s' % dstfile
+   print('    Destination is: %s' % dstfile)
 
    os.rename(file,dstfile)
 

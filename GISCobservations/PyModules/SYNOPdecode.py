@@ -44,14 +44,14 @@ class SYNOPdecode( object ):
       self.date = self.__get_yyyymm_from_filename__(file)
       raw  = self.__read_synop_file__()
       if raw == None:
-         print '[!] Could not find any messages. Return None'
+         print('[!] Could not find any messages. Return None')
          self.ERROR = True
          return
       head,station,data = self.__parse_raw_data__(raw)
       #for line in data:
       #   print line
       if data == None:
-         print '[!] File content seems to be unpropper. Return None'
+         print('[!] File content seems to be unpropper. Return None')
          self.ERROR = True
          return
       # - Write data to self.data
@@ -93,7 +93,7 @@ class SYNOPdecode( object ):
             # - Date
             date = dt.date(year,mon,day)
       
-            print '[!] Corredted expected date to: %s' % date.strftime('%Y-%m-%d')
+            print('[!] Corredted expected date to: %s' % date.strftime('%Y-%m-%d'))
 
       return date
 
@@ -117,7 +117,7 @@ class SYNOPdecode( object ):
          except:
             date = dt.date.today()
 
-      print '    - Expected date of the synop file: %s' % date.strftime('%Y-%m-%d')
+      print('    - Expected date of the synop file: %s' % date.strftime('%Y-%m-%d'))
       return date
 
 
@@ -147,8 +147,8 @@ class SYNOPdecode( object ):
       # - First checking if this is a land station indicated
       #   by the keyword AAXX. If not, stop at the moment.
       if ' '.join(raw).find('AAXX') < 0:
-         print '[!] COULD NOT FIND INDICATOR \"AAXX\".'
-         print '    Skip this file ...'
+         print('[!] COULD NOT FIND INDICATOR \"AAXX\".')
+         print('    Skip this file ...')
          return None,None,None
 
       # - As long as we have not found 'AAXX' we append the
@@ -193,7 +193,7 @@ class SYNOPdecode( object ):
 
       # - No data?
       if self.data == None:
-         print '[!] Problem in SYNOPcode.decode: no data loaded.'
+         print('[!] Problem in SYNOPcode.decode: no data loaded.')
          return None
 
       # - Which message?
@@ -206,7 +206,7 @@ class SYNOPdecode( object ):
 
       # - For rec in data: extract necessary infos
       for rec in data:
-         print rec
+         print(rec)
          if re.findall('AAXX',rec) < 0: continue # no propper message
 
          # - Create synop object out of this message
@@ -259,19 +259,19 @@ class SYNOPdecode( object ):
    def show_prepared(self):
 
       if not self.PREPARED:
-         print '[!] No data prepared. Can\'t show the data.'
+         print('[!] No data prepared. Can\'t show the data.')
          return
 
       # - Print header
       for p in self.PREPARED['parameter']:
-         print "%-8s" % p,
-      print ''
+         print("%-8s" % p, end=' ')
+      print('')
    
       # - Print data
       for r in range(0,self.PREPARED['data'].shape[0]):
          for c in range(0,self.PREPARED['data'].shape[1]):
-            print "%8.2f" % self.PREPARED['data'][r,c],
-         print ''
+            print("%8.2f" % self.PREPARED['data'][r,c], end=' ')
+         print('')
 
    # ----------------------------------------------------------------
    # - Write the data we have found into the database now.
@@ -279,12 +279,12 @@ class SYNOPdecode( object ):
    def write_to_db(self):
 
       if self.db == None:
-         print '[!] Database connection not established. Return.'
+         print('[!] Database connection not established. Return.')
          return
 
       # - No data?
       if self.PREPARED['data'].shape[0] == 0:
-         print '    No data to write into the database.'
+         print('    No data to write into the database.')
          return
 
       # - Columns
@@ -313,7 +313,7 @@ class SYNOPdecode( object ):
          data.append( df )
 
 
-      print "    Write %d entries into the database" % len(data)
+      print("    Write %d entries into the database" % len(data))
       cur = self.db.cursor()
       cur.executemany( '\n'.join(sql), data )
 

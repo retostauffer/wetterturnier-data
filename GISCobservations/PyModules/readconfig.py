@@ -17,7 +17,7 @@ def readconfig( file = 'config.conf' ):
    import sys, os
    if not os.path.isfile( file ): sys.exit("ERROR: readconfig cannot find file %s" % file)
    # - Else parse important data
-   from ConfigParser import ConfigParser
+   from configparser import ConfigParser
    CNF = ConfigParser()
    CNF.read( file )
    config = {}
@@ -59,12 +59,12 @@ def readconfig( file = 'config.conf' ):
       if not re.match(r"^(settings)(\s)(.?)",section): continue
       stint = section.split()[1]
       config['stints'].append( stint )
-      print "    Found section/data type: %s (stint name)" % stint
+      print("    Found section/data type: %s (stint name)" % stint)
       try:
          config['%s_indir'  % stint] = CNF.get('settings %s' % stint,'indir')
          config['%s_outdir' % stint] = CNF.get('settings %s' % stint,'outdir')
       except Exception as e:
-         print e
+         print(e)
          sys.exit('Problems in config file. indir/outdir not set propperly.')
       # - Check if these exist
       if not os.path.isdir( config['%s_indir' % stint] ):
@@ -87,7 +87,7 @@ def readconfig( file = 'config.conf' ):
       config['mysql_passwd']        = CNF.get('mysql','passwd')
       config['mysql_database']      = CNF.get('mysql','database')
    except Exception as e:
-      print e
+      print(e)
       sys.exit("ERROR: readconfig problems reading mysql settings")
 
 
@@ -101,7 +101,7 @@ def readconfig( file = 'config.conf' ):
                            "files":    CNF.get('dwd ftp','files'),
                            "dir":      CNF.get('dwd ftp','dir') }
    except Exception as e:
-      print "[!] No valid dwd_ftp specification. Return None here."
+      print("[!] No valid dwd_ftp specification. Return None here.")
       config['dwd_ftp'] = None
 
 
@@ -113,7 +113,7 @@ def readconfig( file = 'config.conf' ):
       config['mysql_synop_create']    = CNF.get('mysql synop','create')
       config['mysql_synop_columns']   = CNF.get('mysql synop','columns')
    except Exception as e:
-      print e
+      print(e)
       sys.exit('Problems with the [mysql synop] configuration in config file.')
    # - If these do not exist, stop
    if not os.path.isfile( config['mysql_synop_create'] ):
@@ -131,7 +131,7 @@ def readconfig( file = 'config.conf' ):
       config['mysql_bufr_create']    = CNF.get('mysql bufr','create')
       config['mysql_bufr_columns']   = CNF.get('mysql bufr','columns')
    except Exception as e:
-      print e
+      print(e)
       sys.exit('Problems with the [mysql bufr] configuration in config file.')
    # - If these do not exist, stop
    if not os.path.isfile( config['mysql_bufr_create'] ):
@@ -148,7 +148,7 @@ def readconfig( file = 'config.conf' ):
    try:
       config['mysql_bufrdesc_create']  = CNF.get('mysql bufrdesc','create')
    except Exception as e:
-      print e
+      print(e)
       sys.exit('Problems with the [mysql bufrdesc] configuration in config file.')
    # - If these do not exist, stop
    if not os.path.isfile( config['mysql_bufrdesc_create'] ):
@@ -161,7 +161,7 @@ def readconfig( file = 'config.conf' ):
    try:
       config['mysql_stations_create']  = CNF.get('mysql stations','create')
    except Exception as e:
-      print e
+      print(e)
       sys.exit('Problems with the [mysql stations] configuration in config file.')
    # - If these do not exist, stop
    if not os.path.isfile( config['mysql_stations_create'] ):
@@ -223,7 +223,7 @@ def readbufrconfig(input=None,file='bufr_config.conf'):
    from paramclass import paramclass
    if not os.path.isfile( file ): sys.exit("ERROR: readbufrconfig cannot find file %s" % file)
    # - Else parse important data
-   from ConfigParser import ConfigParser
+   from configparser import ConfigParser
    CNF = ConfigParser()
    CNF.read( file )
    config = {}
@@ -240,7 +240,7 @@ def readbufrconfig(input=None,file='bufr_config.conf'):
       try:
          search = CNF.get(sec,'search')
       except Exception as e:
-         print e
+         print(e)
          sys.exit("ERROR: config file section [%s] not well defined (search string missing)" % sec)
       # - Loading bufrid from config. If bufrid
       #   is set (integer) bufrid will be used
@@ -281,7 +281,7 @@ def readbufrconfig(input=None,file='bufr_config.conf'):
 
    # - appending
    if type(input) == type(dict()):
-      for k in input.keys():
+      for k in list(input.keys()):
          config[k] = input[k]
 
    return config
