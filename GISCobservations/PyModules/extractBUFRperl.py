@@ -104,7 +104,8 @@ class bufrentry(object):
       # - Extracting unit from description
       tmp = re.findall(r'\[([^]]*)\]',self.desc)
       if len(tmp) == 0:
-         print('CANNOT EXTRACT UNIT FROM STRING \"%s\"' % self.desc)
+         pass
+         #print('CANNOT EXTRACT UNIT FROM STRING \"%s\"' % self.desc)
          #sys.exit('CANNOT EXTRACT UNIT FROM STRING \"%s\"' % self.desc)
       else:
          # - Take first element as unit
@@ -630,6 +631,7 @@ class extractBUFR( object ):
          rec       = self.data[sec]
          keys      = list(rec.keys())
          skip_this = False
+         short_station = False
 
          # - If one of the necessary keys is missing, append
          #   section index to 'to_drop' and set skip_this = True.
@@ -639,16 +641,30 @@ class extractBUFR( object ):
             if not nec in keys:
                if self.VERBOSE:
                   print('UPS: missing key \"%s\" in \"%s\" drop.' % (nec,self.file.split("/")[-1]))
-               to_drop.append(sec)
-               skip_this = True
-               break
+               if nec == "wmoblock":
+                  if "shortstation" in keys:
+                     print("SHORT STAIION")
+                     print(rec["shortstation"])
+                     short_station = True
+                  else:
+                     to_drop.append(sec)
+                     skip_this = True
+                     break
 
          # - Skip 
          if skip_this:
+            if self.VERBOSE: print("SKIP!")
             continue
          
          # - Manipulate station
-         rec['statnr'] = rec['wmoblock']*1e3 + rec['statnr']
+         if short_station:
+            rec['statnr'] = rec['shortstation']
+            print(rec['statnr'])
+         else:
+            try:
+               rec['statnr'] = rec['wmoblock']*1e3 + rec['statnr']
+            except:
+               rec['statnr'] = None
 
          #print(self.config['cleanup_stations'])
          
@@ -658,8 +674,11 @@ class extractBUFR( object ):
                print("Station %d skipped since not used in tournament!" % rec['statnr'])
             else: counter+=1
             continue
-         
-   
+        
+         if short_station:
+            self.dbConnect(db="wp")
+            rec['statnr'] = self.wpdb.get_wmo(rec['shortstation'])
+
          # - Create different date formats
          from datetime import datetime as dt
          if rec['year'] < 0 or rec['month'] < 1 or rec['day'] < 1 or rec['hour'] < 0 or \
@@ -685,7 +704,8 @@ class extractBUFR( object ):
          rec['datum']     = int(date.strftime('%Y%m%d'))
          rec['stdmin']    = int(date.strftime('%H%M'))
    
-         del rec['wmoblock']
+         try: del rec['wmoblock']
+         except: del rec['shortstation']
          del rec['year']
          del rec['month']
          del rec['day']
@@ -710,7 +730,8 @@ class extractBUFR( object ):
       print("    Leftover (valid messages): %d" % (len(self.data)))
 
       # - Remove from keys
-      self.keys.remove('wmoblock')
+      try: self.keys.remove('wmoblock')
+      except: self.keys.remove('shortstation')
       self.keys.remove('year')
       self.keys.remove('month')
       self.keys.remove('day')
@@ -957,12 +978,16 @@ class extractBUFR( object ):
    # ----------------------------------------------------------------
    # - Connecting database
    # ----------------------------------------------------------------
-   def dbConnect(self):
+   def dbConnect(self, db="obs"):
    
       if self.db == None:
-         if self.VERBOSE: print('  * Establishing database connection') 
+         if self.VERBOSE: print('  * Establishing database connection to obs') 
          from database import database
          self.db = database(self.config,type='bufr')
+      elif db == "wp":
+         if self.VERBOSE: print('  * Establishing database connection to wpwt')
+         from database import database
+         self.wpdb = database(self.config,database=db)
       else:
          if self.VERBOSE: print('    Database connection already open.') 
 

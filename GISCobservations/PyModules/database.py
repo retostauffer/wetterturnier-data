@@ -17,7 +17,7 @@ class database( object ):
    import sys, os, pymysql
 
    def __init__(self,config,type=None,stationtable='stations',database="obs"):
-      print("INIT")
+      
       # - Simply pick the infos we need.
       host        = config['mysql_host']
       user        = config['mysql_user']
@@ -36,15 +36,16 @@ class database( object ):
          print(e)
          sys.exit('Cannot connect to the database.')
 
-      # - Store table name
-      self.table        = None
-      self.type         = type 
-
       # - Store config
       self.config       = config
 
       if database == "obs":
+         
+         # - Store table name
+         self.table        = None
+         self.type         = type
          self.stationtable = stationtable
+
          # - Create 'bufr' table. If not existing using
          #   config['mysql_bufr_create'] file to create the table.
          if not self.type == None:
@@ -188,7 +189,7 @@ class database( object ):
 
       # - If allready existing, just skip
       if self.__does_table_exist__(name):
-         print("Table bufrdesc already exists!")
+         #print("Table bufrdesc already exists!")
          return
 
       # - Create
@@ -236,7 +237,7 @@ class database( object ):
    # ----------------------------------------------------------------
    # - get tournament stations from wordpress database (obs needs read permits)
    # ----------------------------------------------------------------
-   def get_stations(self,active=True):
+   def get_stations(self, active=True):
     
       #connect to wpwt database as obs user (read-only)
       active = " WHERE active=1" if active else ""
@@ -257,3 +258,20 @@ class database( object ):
       print(ids)
 
       return ids
+
+
+   def get_wmo(self, dwd):
+      
+      sql = f'SELECT wmo FROM wp_wetterturnier_stations WHERE dwd LIKE "{dwd}"'
+
+      cur = self.db.cursor()
+      cur.execute(sql)
+      
+      try:
+         res = cur.fetchone()
+         print(res)
+         wmo = int(res[0])
+         print(wmo)
+         return wmo
+      except:
+         return None

@@ -202,8 +202,8 @@ def readconfig( file = 'config.conf' ):
    # - Which stations should be migrated into the archive table
    try:
       from database import database
-      db = database(config,database="wp")
-      config['cleanup_stations'] = db.get_stations()
+      wpdb = database(config, database="wp")
+      config['cleanup_stations'] = wpdb.get_stations()
    except:
       sys.exit("[!] ERROR: cannot access wordpress database")
 
