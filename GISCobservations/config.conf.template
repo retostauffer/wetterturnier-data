@@ -67,8 +67,9 @@ files       = IS[\W\w]+[EDZW|LSSW][\W\w]+
 [mysql]
 host         = localhost
 user         = obs
-passwd       = ************
+passwd       = ***** 
 database     = obs
+wp_database  = *****
 
 # - Mysql table configuration for synop messages
 [mysql synop]
@@ -123,13 +124,3 @@ file_days       = 30
 #   TXT is for the synop messages (not in use at the moment)
 #   BIN is for the binary BUFR files
 file_endings    = txt,TXT,bin,BIN,bufr,BUFR
-
-stations =  6660,6670,10382,10384,10385,10469,10471,11035,11036,11120,11121,11320
-
-
-
-
-
-
-
-
