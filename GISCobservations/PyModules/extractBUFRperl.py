@@ -226,7 +226,7 @@ class extractBUFR( object ):
    # ----------------------------------------------------------------
    # - Reading bufr file
    # ----------------------------------------------------------------
-   def __read_bufr_file__(self,file,filterfile=None):
+   def __read_bufr_file__( self, file, filterfile = None ):
       """
       Function reading the BUFR file. Actually calling the perl
       Geo::BUFR library to convert the binary files into ASCII table
@@ -237,9 +237,10 @@ class extractBUFR( object ):
       import subprocess as sub
 
       #### NOTE; Using a modified version of the bufrread.pl script provided by the norvegian meteorological service
-      ### It is located in the same "PyModules" folder (even though it is not actually a .py file, KISS-wise)
 
-      cmd = ['PyModules/bufrread.pl',file,'--data_only','--width', '%d' % self.WIDTH]
+      pearlscript = 'PyModules/bufrread.pl'
+
+      cmd = [ pearlscript, file, '--data_only', '--width', '%d' % self.WIDTH ]
       #'--on_error_stop'
       #--tableformat <ECCODES> ???
       if filterfile:
@@ -408,8 +409,9 @@ class extractBUFR( object ):
             #   the occurance of param.nameX in the tmp_sec. Increase
             #   index if necessary and add.
             else:
-               for i in range(0,100):
-                  rep_name = '%s_%d' % (param.name,i)
+               for i in range(0, 100):
+                  print(param.name, i)
+                  rep_name = '%s_%d' % (param.name, i)
                   if not rep_name in tmp_sec: break
                tmp_sec[ rep_name ] = data
                # - Appending unique keys
@@ -643,8 +645,6 @@ class extractBUFR( object ):
                   print('UPS: missing key \"%s\" in \"%s\" drop.' % (nec,self.file.split("/")[-1]))
                if nec == "wmoblock":
                   if "shortstation" in keys:
-                     print("SHORT STAIION")
-                     print(rec["shortstation"])
                      short_station = True
                   else:
                      to_drop.append(sec)
@@ -659,7 +659,6 @@ class extractBUFR( object ):
          # - Manipulate station
          if short_station:
             rec['statnr'] = rec['shortstation']
-            print(rec['statnr'])
          else:
             try:
                rec['statnr'] = rec['wmoblock']*1e3 + rec['statnr']
@@ -672,7 +671,7 @@ class extractBUFR( object ):
             to_drop.append(sec)
             if self.VERBOSE:
                print("Station %d skipped since not used in tournament!" % rec['statnr'])
-            else: counter+=1
+            else: counter += 1
             continue
         
          if short_station:
@@ -680,7 +679,7 @@ class extractBUFR( object ):
             rec['statnr'] = self.wpdb.get_wmo(rec['shortstation'])
 
          # - Create different date formats
-         from datetime import datetime as dt
+         from datetime import datetime as dt, timezone as tz
          if rec['year'] < 0 or rec['month'] < 1 or rec['day'] < 1 or rec['hour'] < 0 or \
             rec['hour'] > 24 or rec['minute'] < 0 or rec['minute'] > 60:
             print('[!] Problems with time description! Fancy values. Skip this.')
@@ -697,7 +696,7 @@ class extractBUFR( object ):
 
          # - Everything ok with date, convert.
          date = dt(int(rec['year']),int(rec['month']),int(rec['day']), \
-                   int(rec['hour']),int(rec['minute']) )
+                   int(rec['hour']),int(rec['minute']), tzinfo = tz.utc )
          
          # - Store date/time
          rec['datumsec']  = int(date.strftime('%s'))
@@ -880,7 +879,6 @@ class extractBUFR( object ):
          # - Append now
          res.append( tmp )
     
-      print(res)
       # - Update
       print("    Updating stations database table: adding %d stations" % len(res))
       sql = "INSERT INTO obs.stations (statnr,nr,name,lon,lat,hoehe,hbaro) " + \
@@ -944,15 +942,16 @@ class extractBUFR( object ):
          print('[!] NO DATA TO SHOW RIGHT NOW!')
          return
 
-      # - Create key sort list 
-      column_order = self.__showdata_sort_order__(force=['statnr','datum','stdmin','datumsec'])
+      # - Create key sort list
+      order = ['statnr','datum','stdmin','datumsec']
+      column_order = self.__showdata_sort_order__( force = order )
 
       # - Flag to indicate if head was allready printed or not.
       head_shown = False
 
-      # - Looping over all observations we hve found first (Dates)
+      # - Looping over all observations we have found first (Dates)
       #   And show date, station number and position and such shit.
-      for sec in range(0,len(self.data)):
+      for sec in range( len( self.data ) ):
 
          # - Take record
          rec = self.data[sec]
@@ -968,10 +967,10 @@ class extractBUFR( object ):
          # - If there are data: show data
          for col in column_order:
             if not col in list(rec.keys()):
-               print(" %7.1f" % self.MISSING_VALUE, end=' ')
+               print(" %7d" % self.MISSING_VALUE, end=' ')
             else:
                value = self.__getval__( rec[col] )
-               print(' %7.1f' % value, end=' ') 
+               print(' %7d' % value, end=' ') 
          print('\n', end=' ')
 
 

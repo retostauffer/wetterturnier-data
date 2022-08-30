@@ -75,6 +75,9 @@ class readconfig( object ):
          except:
             self.exit("Cannot convert \"%s\" into integer. Stop. Error in station config." % rec)
          self.stations.append( stn )
+      if len(self.stations) == 0:
+         pass
+         #TODO get stations from database
 
       # -------------------------------------------------------------
       # Reading font specifications 
@@ -103,10 +106,3 @@ class readconfig( object ):
    def exit(self,msg,level=9):
       log.error( msg )
       import sys; sys.exit(level)
-
-
-
-
-
-
-

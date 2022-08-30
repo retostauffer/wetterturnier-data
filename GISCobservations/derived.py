@@ -24,7 +24,7 @@ def compute_derived(config):
    from derivedvars import derivedvars
    obj = derivedvars(config)
 
-   nhours = 100 # how long to go back in time
+   nhours = 240 # how long to go back in time
 
    # ----------------------------------------------------------------
    # - Compute rh from (t,td), compute td from (t,rh)

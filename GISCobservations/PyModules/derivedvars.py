@@ -14,6 +14,9 @@
 from database import database
 import os, sys
 
+# constants for conversion
+a = 17.625; b = 243.04
+
 class derivedvars( object ):
 
    def __init__(self, config, table = 'live' ):
@@ -50,13 +53,14 @@ class derivedvars( object ):
       
       # - Comute new values. Store in list with corresponding
       #   data we need for the update (statnr, datumsec, msgtyp)
+      
       result = []
+      
       for rec in data:
          td = np.float( rec[i_td] ) / 10. # in celsius
          t  = np.float( rec[i_t]  ) / 10. # in celsius
 
-         rh = 100. * ( np.exp((17.625*td)/(243.04+td)) \
-                       / np.exp((17.625*t)/(243.04+t))  )
+         rh = 100. * ( np.exp( (a*td) / (b+td) ) / np.exp( (a*t) / (b+t) ) )
          rh = np.minimum(np.maximum( rh,0),100)
          rh = int( np.round(rh) )
          # - Append result
@@ -103,13 +107,14 @@ class derivedvars( object ):
       
       # - Comute new values. Store in list with corresponding
       #   data we need for the update (statnr, datumsec, msgtyp)
+      
       result = []
+      
       for rec in data:
          rh = np.float( rec[i_rh] ) / 100. # between 0 and 1
          t  = np.float( rec[i_t]  ) / 10.  # in celsius
 
-         td = 243.04 * ( np.log(rh)+((17.625*t)/(243.04+t)) ) \
-                     / ( 17.625-np.log(rh)-((17.625*t)/(243.04+t)) )
+         td = b * (np.log(rh) + ((a*t)/(b+t)) ) / (a - np.log(rh) - ((a*t)/(b+t)) )
          print(td,'  ', end=' ')
          td = int(np.round(td*10))
          # - Append result

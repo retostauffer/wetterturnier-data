@@ -40,12 +40,15 @@ tgnd15       ; smallint
 
 # - Wind
 dd           ; smallint unsigned
+ddx          ; smallint unsigned
 ffinst       ; smallint unsigned
 ff           ; smallint unsigned
 ffx          ; smallint unsigned
 ffx1         ; smallint unsigned
 ffx3         ; smallint unsigned
 ffx6         ; smallint unsigned
+ffx12        ; smallint unsigned
+ffx24        ; smallint unsigned
 ffmax        ; smallint unsigned
 ffmax1       ; smallint unsigned
 ffmax3       ; smallint unsigned
@@ -114,11 +117,14 @@ soldir6      ; int
 soldir12     ; int
 soldir24     ; int
 
-rr3          ; smallint
 rr24         ; smallint
-
+rracc        ; smallint
+rracc1       ; smallint
+rrmax        ; smallint
+rrint        ; smallint
 rrr05        ; smallint
 rrr1         ; smallint
+rrp1         ; smallint
 rrr3         ; smallint
 rrr6         ; smallint
 rrr12        ; smallint
@@ -148,24 +154,3 @@ E            ; tinyint unsigned
 Esnow        ; tinyint unsigned
 snow         ; smallint unsigned
 newsnow      ; smallint unsigned
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

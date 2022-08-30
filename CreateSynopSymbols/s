@@ -2,6 +2,7 @@
 
 pyscript=$1
 source ../venv/bin/activate
+alias python="../venv/bin/python"
 which python
 
 if [ -n "$pyscript" ]; then

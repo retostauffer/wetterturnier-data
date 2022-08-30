@@ -233,7 +233,6 @@ class database( object ):
       self.db.close()
 
 
-
    # ----------------------------------------------------------------
    # - get tournament stations from wordpress database (obs needs read permits)
    # ----------------------------------------------------------------
@@ -254,8 +253,6 @@ class database( object ):
             ids.append(i[0])
          else:
             ids.append(i[1])
-      
-      print(ids)
 
       return ids
 
@@ -269,9 +266,6 @@ class database( object ):
       
       try:
          res = cur.fetchone()
-         print(res)
-         wmo = int(res[0])
-         print(wmo)
-         return wmo
+         return int(res[0])
       except:
          return None

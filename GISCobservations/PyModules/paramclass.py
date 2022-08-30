@@ -58,11 +58,15 @@ class paramclass( object ):
       print("      Name:     %s" % self.name)
       print("      Search:   %s" % self.search)
       print("      BufrID:   %06d" % self.bufrid)
-      print("      Offset:   ",self.offset)
-      print("      Factor:   ",self.factor)
-      print("      Period:   ",self.period," (%d h)" % int(self.period/60))
-      print("      height:   ",self.sensorheight)
-
-
-
-
+      print("      Offset:   ", self.offset)
+      print("      Factor:   ", self.factor)
+      if self.period == False:
+         period_string = ""
+      elif self.period >= 86400:
+         period_string = f"({int( self.period // 86400)} d)"
+      elif self.period < 3600:
+         period_string = f"({int( self.period // 60)} min)"
+      else:
+         period_string = f"({int(self.period / 3600)} h)"
+      print("      Period:   ", self.period, period_string)
+      print("      height:   ", self.sensorheight)

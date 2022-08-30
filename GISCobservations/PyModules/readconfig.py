@@ -216,11 +216,12 @@ def readconfig( file = 'config.conf' ):
 # - Reading bufr config. If input is a dict object (e.g., config)
 #   we are appending all the new elements to this dict!
 # -------------------------------------------------------------------
-def readbufrconfig(input=None,file='bufr_config.conf'):
+def readbufrconfig( input = None, file = 'bufr_config.conf' ):
 
    import sys, os
    from paramclass import paramclass
-   if not os.path.isfile( file ): sys.exit("ERROR: readbufrconfig cannot find file %s" % file)
+   if not os.path.isfile( file ):
+      sys.exit("ERROR: readbufrconfig cannot find file %s" % file)
    # - Else parse important data
    from configparser import ConfigParser
    CNF = ConfigParser()
@@ -277,6 +278,9 @@ def readbufrconfig(input=None,file='bufr_config.conf'):
       # - Append
       config['parameter'].append( paramclass(paramname,search,bufrid,offset, \
                                              factor,period,sensorheight,verticalsign,repeat) )
+
+   for p in config['parameter']:
+      print(p.show())
 
    # - appending
    if type(input) == type(dict()):
