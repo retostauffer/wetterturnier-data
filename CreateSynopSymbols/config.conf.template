@@ -14,7 +14,7 @@
 [main]
 
 # For which station this should be done
-stations = 6660,6670,10382,10384,10385,10469,10471,11035,11036,11120,11121,11320
+stations = 6660,6670,10381,10385,10469,2878,10471,11035,11040,11120,11121,11320
 
 
 # Where to store the images
@@ -35,8 +35,8 @@ fontsize      = 15
 # -------------------------------------------------------------------
 [mysql]
 host          = localhost
-username      = **********
-password      = **********
+username      = obs
+password      = *****
 database      = obs
 table         = live
 

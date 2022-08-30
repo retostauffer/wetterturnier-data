@@ -2,3 +2,4 @@
 
 # Ignore config
 config.conf
+!config.conf.template

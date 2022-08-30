@@ -680,7 +680,7 @@ class extractBUFR( object ):
             rec['statnr'] = self.wpdb.get_wmo(rec['shortstation'])
 
          # - Create different date formats
-         from datetime import datetime as dt, timezone as tz
+         from datetime import datetime as dt
          if rec['year'] < 0 or rec['month'] < 1 or rec['day'] < 1 or rec['hour'] < 0 or \
             rec['hour'] > 24 or rec['minute'] < 0 or rec['minute'] > 60:
             print('[!] Problems with time description! Fancy values. Skip this.')
@@ -697,7 +697,7 @@ class extractBUFR( object ):
 
          # - Everything ok with date, convert.
          date = dt(int(rec['year']),int(rec['month']),int(rec['day']), \
-                   int(rec['hour']),int(rec['minute']), tzinfo = tz.utc )
+                   int(rec['hour']),int(rec['minute']) )
          
          # - Store date/time
          rec['datumsec']  = int(date.strftime('%s'))
