@@ -644,7 +644,6 @@ class extractBUFR( object ):
                if nec == "wmoblock":
                   if "shortstation" in keys:
                      short_station = True
-                     break
                   else:
                      to_drop.append(sec)
                      skip_this = True

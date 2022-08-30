@@ -1,0 +1,143 @@
+ 000001 TABLE A: ENTRY                                                   CCITTIA5                   0            0  24
+ 000002 TABLE A: DATA CATEGORY DESCRIPTION, LINE 1                       CCITTIA5                   0            0 256
+ 000003 TABLE A: DATA CATEGORY DESCRIPTION, LINE 2                       CCITTIA5                   0            0 256
+ 000005 BUFR EDITION NUMBER                                              CCITTIA5                   0            0  24
+ 000010 F DESCRIPTOR TO BE ADDED OR DEFINED                              CCITTIA5                   0            0   8
+ 000011 X DESCRIPTOR TO BE ADDED OR DEFINED                              CCITTIA5                   0            0  16
+ 000012 Y DESCRIPTOR TO BE ADDED OR DEFINED                              CCITTIA5                   0            0  24
+ 000013 ELEMENT NAME, LINE 1                                             CCITTIA5                   0            0 256
+ 000014 ELEMENT NAME, LINE 2                                             CCITTIA5                   0            0 256
+ 000015 UNITS NAME                                                       CCITTIA5                   0            0 192
+ 000016 UNITS SCALE SIGN                                                 CCITTIA5                   0            0   8
+ 000017 UNITS SCALE                                                      CCITTIA5                   0            0  24
+ 000018 UNITS REFERENCE SIGN                                             CCITTIA5                   0            0   8
+ 000019 UNITS REFERENCE VALUE                                            CCITTIA5                   0            0  80
+ 000020 ELEMENT DATA WIDTH                                               CCITTIA5                   0            0  24
+ 000030 DESCRIPTOR DEFINING SEQUENCE                                     CCITTIA5                   0            0  48
+ 001007 SAID     TABLE B ENTRY - SATELLITE IDENTIFICATION                CODE TABLE   1007          0            0  10
+ 001192 SID      TABLE B ENTRY - STATION IDENTIFICATION                  CCITTIA5                   0            0  64  
+ 001193 TYP      TABLE B ENTRY - OI/SSI REPORT TYPE                      CODE TABLE   1193          0            0   9  
+ 001194 CAT      TABLE B ENTRY - NMC OFFICE NOTE 29 VERTICAL SOUND SIGN  CODE TABLE   1194          0            0   6  
+ 001195 PRG      TABLE B ENTRY - SOURCE DATA PROCESSING PROGRAM          CODE TABLE   1195          0            0   8
+ 001196 SRC      TABLE B ENTRY - DATA SOURCE                             CODE TABLE   1196          0            0   8
+ 001197 T29      TABLE B ENTRY - NMC OFFICE NOTE 29 REPORT TYPE          CODE TABLE   1197          0            0  10  
+ 002019 SATELLITE INSTRUMENT                                             CODE TABLE   2019          0            0  11
+ 002028 SSNX     SEGMENT SIZE AT NADIR IN X DIRECTION                    M                          0            0  18
+ 002029 SSNY     SEGMENT SIZE AT NADIR IN Y DIRECTION                    M                          0            0  18
+ 002151 RAID     RADIOMETER IDENTIFIER                                   CODE TABLE   2151          0            0  11
+ 002153 SCCF     SATELLITE CHANNEL CENTER FREQUENCY                      Hz                         8            0  26
+ 002154 SCBW     SATELLITE CHANNEL BAND WIDTH                            Hz                         8            0  26
+ 002192 ITP      TABLE B ENTRY - RADIOSONDE TYPE                         CODE TABLE   2192          0            0  10  
+ 004001 YEAR     YEAR                                                    YEAR                       0            0  12  
+ 004002 MNTH     MONTH                                                   MONTH                      0            0   4  
+ 004003 DAYS     DAY                                                     DAY                        0            0   6  
+ 004004 HOUR     HOUR                                                    HOUR                       0            0   5  
+ 004005 MINU     MINUTE                                                  MINUTE                     0            0   6  
+ 004006 SECO     TABLE B ENTRY - SECOND                                  SECOND                     0            0   6
+ 004024 TPHR     TABLE B ENTRY - FORECAST -RETRIEVAL TIME DIFFERENCE     HOURS                      0        -2048  12
+ 005001 CLATH    LATITUDE (HIGH ACCURACY)                                DEGREES                    5     -9000000  25
+ 005002 CLAT     TABLE B ENTRY - LATITUDE                                DEGREE                     2        -9000  15
+ 005021 BEARAZ   BEARING OR AZIMUTH                                      DEGREE TRUE                2            0  16
+ 005022 SOLAZI   SOLAR AZIMUTH                                           DEGREE TRUE                2            0  16
+ 005039 SCNM     TABLE B ENTRY - SCAN NUMBER                             NUMERIC                    0            0   8
+ 005040 ORBN     TABLE B ENTRY - ORBIT NUMBER                            NUMERIC                    0            0  24
+ 005041 DFRM     TABLE B ENTRY - DATA FRAME NUMBER                       NUMERIC                    0            0   8
+ 005042 CHNM     TABLE B ENTRY - CHANNEL NUMBER                          NUMERIC                    0            0   6
+ 005043 FOVN     TABLE B ENTRY - FOV NUMBER IN THE SCAN LINE             NUMERIC                    0            0   8
+ 006001 CLONH    LONGITUDE (HIGH ACCURACY)                               DEGREES                    5    -18000000  26
+ 006002 CLON     TABLE B ENTRY - LONGITUDE                               DEGREE                     2       -18000  16
+ 007001 SELV     TABLE B ENTRY - SURFACE ELEVATION                       M                          0         -400  15
+ 007002 HEIGHT OR ALTITUDE                                               M                         -1          -40  16
+ 007003 GEOPOTENTIAL                                                     M**2/S**2                 -1         -400  17
+ 007004 PRLC     TABLE B ENTRY - OBSERVED PRESSURE                       PA                        -1            0  14
+ 007021 ELEV     TABLE B ENTRY - SATELLITE ZENITH ANGLE                  DEGREE                     2        -9000  15
+ 007022 SOEL     TABLE B ENTRY - SOLAR ZENITH ANGLE                      DEGREE                     2        -9000  15
+ 007024 SATELLITE ZENITH ANGLE                                           DEGREE                     2        -9000  15
+ 007025 SOLAR ZENITH ANGLE                                               DEGREE                     2        -9000  15
+ 007192 POB      TABLE B ENTRY - PRESSURE OBSERVATION                    MB                         1            0  14  
+ 007193 PQM      TABLE B ENTRY - PRESSURE (QUALITY) MARKER               CODE TABLE   7193          0            0   5  
+ 007194 PCC      TABLE B ENTRY - PRESSURE (SURFACE) CQC CORRECTED VALUE  MB                         1            0  14
+ 007196 PFC      TABLE B ENTRY - PRESSURE FORECAST VALUE                 MB                         1            0  14  
+ 007198 PAN      TABLE B ENTRY - PRESSURE ANALYSED VALUE                 MB                         1            0  14  
+ 008002 VSSO     VERTICAL SIGNIFICANCE (SURFACE OBSERVATION)             CODE TABLE   8002          0            0   6
+ 008011 CHCM     TABLE B ENTRY - CHANNEL COMB FLAG                       CODE TABLE                 0            0   2
+ 008012 LSQL     TABLE B ENTRY - LAND/SEA/COAST                          CODE TABLE                 0            0   2
+ 008013 DNQL     TABLE B ENTRY - DAY/NIGHT FLAGS                         CODE TABLE                 0            0   2
+ 008192 CAT      TABLE B ENTRY - NMC OFFICE NOTE 29 VERTICAL SOUND SIGN  CODE TABLE   8192          0            0   4  
+ 010001 HEIGHT OF LAND SURFACE                                           M                          0         -400  15
+ 010004 PRES     TABLE B ENTRY - FORECAST SURFACE PRESSURE               PA                         1            0  14
+ 010061 3HPC     3 HOUR PRESSURE CHANGE                                  PA                        -1         -500  10
+ 010063 CHPT     CHARACTERISTIC OF PRESSURE TENDENCY                     CODE TABLE  10063          0            0   4
+ 010192 PMO      TABLE B ENTRY - MEAN SEA-LEVEL PRESSURE OBSERVATION     MB                         1            0  14  
+ 010194 ELV      TABLE B ENTRY - STATION ELEVATION                       METER                      0        -1000  16  
+ 010195 ZOB      TABLE B ENTRY - HEIGHT OBSERVATION                      METER                      0        -1000  17  
+ 010196 ZQM      TABLE B ENTRY - HEIGHT (QUALITY) MARKER                 CODE TABLE  10196          0            0   5  
+ 010197 ZCC      TABLE B ENTRY - HEIGHT CQC CORRECTION                   METER                      0        -1000  17  
+ 010198 ZRC      TABLE B ENTRY - HEIGHT RADIATION CORRECTION             METER                      0        -1000  17  
+ 010199 ZFC      TABLE B ENTRY - HEIGHT FORECAST VALUE                   METER                      0        -1000  17  
+ 010200 ZAN      TABLE B ENTRY - HEIGHT ANALYSED VALUE                   METER                      0        -1000  17  
+ 011001 DDO      TABLE B ENTRY - WIND DIRECTION OBSERVATION              DEGREE TRUE                0            0   9
+ 011002 FFO      TABLE B ENTRY - WIND SPEED OBSERVATION                  M/S                        1            0  12
+ 011003 UOB      TABLE B ENTRY - U-COMPONENT WIND OBSERVATION            M/S                        1        -4096  13  
+ 011004 VOB      TABLE B ENTRY - V-COMPONENT WIND OBSERVATION            M/S                        1        -4096  13  
+ 011192 WQM      TABLE B ENTRY - WIND (QUALITY) MARKER                   CODE TABLE  11192          0            0   5  
+ 011195 UFC      TABLE B ENTRY - U-COMPONENT FORECAST VALUE              M/S                        1        -4096  13  
+ 011196 VFC      TABLE B ENTRY - V-COMPONENT FORECAST VALUE              M/S                        1        -4096  13  
+ 011197 UAN      TABLE B ENTRY - U-COMPONENT ANALYSED VALUE              M/S                        1        -4096  13  
+ 011198 VAN      TABLE B ENTRY - V-COMPONENT ANALYSED VALUE              M/S                        1        -4096  13  
+ 012055 FGST     TABLE B ENTRY - FIRST GUESS SURF TEMPERATURE            K                          1            0  12
+ 012056 FGRH     TABLE B ENTRY - FIRST GUESS RELATIVE HUMIDITY           KG/KG                      5            0  14
+ 012057 FGSP     TABLE B ENTRY - FIRST GUESS SURFACE PRESSURE            PA                        -1            0  14
+ 012058 FGSF     TABLE B ENTRY - FIRST GUESS SURFACE TEMPERATURE         K                          1            0  12
+ 012059 FGSC     TABLE B ENTRY - FIRST GUESS SCAN TEMPERATURE            KG/KG                      5            0  14
+ 012060 FGPF     TABLE B ENTRY - FIRST GUESS PROFILE FLAG                FLAG TABLE                 0            0  14
+ 012061 TMSK     TABLE B ENTRY - SKIN TEMPERATURE                        K                          1            0  12
+ 012062 FGTM     TABLE B ENTRY - FIRST GUESS TEMP PROF                   K                          0            0  19
+ 012063 TMBR     TABLE B ENTRY - CLR EQUIVALENT BLACK BODY TEMPERATURE   K                          2            0  19
+ 012064 TMINST   INSTRUMENT TEMPERATURE                                  K                          1            0  12
+ 012075 SPRD     SPECTRAL RADIANCE                                       WM**(-3)SR**(-1)           3            0  16
+ 012076 RDNE     RADIANCE                                                WM**(-2)SR**(-1)           3            0  16
+ 012163 TMBRST   BRIGHTNESS TEMPERATURE                                  K                          2            0  16
+ 012192 TOB      TABLE B ENTRY - REPORTED TEMPERATURE OBSERVATION        DEG C                      1        -2732  13  
+ 012193 TDO      TABLE B ENTRY - TEMPERATURE DEW POINT                   DEG C                      1        -2732  13
+ 012195 TQM      TABLE B ENTRY - REPORTED TEMPERATURE (QUALITY) MARKER   CODE TABLE  12195          0            0   5  
+ 012196 TCC      TABLE B ENTRY - TEMPERATURE CQC CORRECTION              DEG C                      1        -2732  13  
+ 012197 TRC      TABLE B ENTRY - TEMPERATURE RADIATION CORRECTION        DEG C                      1        -2732  13  
+ 012198 TFC      TABLE B ENTRY - REPORTED TEMPERATURE FORECAST VALUE     DEG C                      1        -2732  13  
+ 012199 TAN      TABLE B ENTRY - REPORTED TEMPERATURE ANALYSED VALUE     DEG C                      1        -2732  13  
+ 013001 ABMR     TABLE B ENTRY - AMSU-B MIXING RATIO                     KG/KG                      5            0  14
+ 013002 MIXR     TABLE B ENTRY - FIRST GUESS MIXING RATIO                KG/KG                      5            0  14
+ 013013 TOSD     TOTAL SNOW DEPTH                                        M                          2           -2  16
+ 013016 TPWT     TABLE B ENTRY - TOTAL PRECIPITABLE WATER                KG/M**2                    0            0   7
+ 013021 TP06     TOTAL PRECIPITATION PAST 06 HOURS                       KG/M**2                    1           -1  14
+ 013022 TP12     TOTAL PRECIPITATION PAST 12 HOURS                       KG/M**2                    1           -1  14
+ 013023 TP24     TOTAL PRECIPITATION PAST 24 HOURS                       KG/M**2                    1           -1  14
+ 013039 TERR     TABLE B ENTRY - TERRAIN - SNOW/ICE FLAG                 CODE TABLE                 0            0   2
+ 013191 LPWT     TABLE B ENTRY - LAYER PRECIPITABLE WATER                KG/M**2                    2            0  12
+ 013192 CH2O     TABLE B ENTRY - CLOUD LIQUID WATER                      KG/M**2                    2            0  12
+ 013193 QQM      TABLE B ENTRY - SPECIFIC HUMIDITY (QUALITY) MARKER      CODE TABLE  13193          0            0   5  
+ 013194 QCC      TABLE B ENTRY - SPECIIC HUMIDITY CQC CORRECTED VALUE    MG/KG                      0            0  16
+ 013196 QFC      TABLE B ENTRY - SPECIFIC HUMIDITY FORECAST VALUE        MG/KG                      0            0  16  
+ 013197 QAN      TABLE B ENTRY - SPECIFIC HUMIDITY ANALYSED VALUE        MG/KG                      0            0  16  
+ 020001 HOVI     HORIZONTAL VISIBILITY                                   M                         -1            0  13
+ 020003 PRWE     PRESENT WEATHER                                         CODE TABLE  20003          0            0   9
+ 020004 PSW1     PAST WEATHER (1)                                        CODE TABLE  20004          0            0   5
+ 020005 PSW2     PAST WEATHER (2)                                        CODE TABLE  20005          0            0   5
+ 020010 TOCC     CLOUD COVER (TOTAL)                                     %                          0            0   7
+ 020011 CLAM     CLOUD AMOUNT                                            CODE TABLE  20011          0            0   4
+ 020012 CLTP     CLOUD TYPE                                              CODE TABLE  20012          0            0   6
+ 020013 HOCB     HEIGHT OF BASE OF CLOUD                                 M                         -1          -40  11
+ 025053 OBQU     TABLE B ENTRY - OBSERVATION QUALITY FLAG                FLAG TABLE                 0            0  12
+ 025070 MJFC     MAJOR FRAME COUNT                                       NUMERIC                    0            0   4 
+ 025075 SACV     SATELLITE ANTENNA CORRECTIONS VERSION NUMBER            NUMERIC                    0            0   5
+ 025076 LOGRCW    LOG-10 OF (TEMPERATURE-RADIANCE CENTRAL WAVENUMBER)    LOG/M                      8            0  30
+ 025077 BWCC1    BANDWIDTH CORRECTION COEFFICIENT 1 FOR ATOVS            NUMERIC                    5            0  17
+ 025078 BWCC2    BANDWIDTH CORRECTION COEFFICIENT 2 FOR ATOVS            NUMERIC                    5            0  17
+ 031000 DRF1BIT                                                          NUMERIC                    0            0   1  
+ 031001 DRF8BIT                                                          NUMERIC                    0            0   8  
+ 031002 DRF16BIT                                                         NUMERIC                    0            0  16  
+ 033032 ACQF     CHANNEL QUALITY FLAGS FOR ATOVS                         FLAG TABLE                 0            0  24
+ 033033 FOVQ     FIELD OF VIEW QUALITY FLAGS FOR ATOVS                   FLAG TABLE                 0            0  24
+ 055006 T29      TABLE B ENTRY - NMC OFFICE NOTE 29 REPORT TYPE          CODE TABLE  55006          0            0  10  
+ 063000 BYTCNT                                                           BYTES                      0            0  16  
+ 063255 BITPAD                                                           NONE                       0            0   1  
