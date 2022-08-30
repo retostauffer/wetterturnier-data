@@ -240,9 +240,10 @@ class extractBUFR( object ):
 
       pearlscript = 'PyModules/bufrread.pl'
 
-      cmd = [ pearlscript, file, '--data_only', '--width', '%d' % self.WIDTH ]
+      cmd = [ pearlscript, file, '--data_only', '--width', str(self.WIDTH), '--tableformat', 'ECCODES', '--tablepath', 'ectables' ]
       #'--on_error_stop'
-      #--tableformat <ECCODES> ???
+      #--tableformat ECCODES
+      #--tablepath bufrtables/ectables
       if filterfile:
          cmd.append("--filter"); cmd.append(filterfile)
 

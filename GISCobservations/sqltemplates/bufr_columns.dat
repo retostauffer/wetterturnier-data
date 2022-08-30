@@ -76,9 +76,9 @@ vv           ; int
 rh           ; tinyint unsigned
 
 # - Sun
-sun          ; tinyint unsigned
-sun6         ; tinyint unsigned
-sun12        ; tinyint unsigned
+sun          ; smallint unsigned
+sun6         ; smallint unsigned
+sun12        ; smallint unsigned
 sunday       ; smallint unsigned
 
 netrad1      ; int
