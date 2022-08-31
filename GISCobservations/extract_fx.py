@@ -23,7 +23,10 @@ with open( path + DATE.strftime(fmt) + ".json", "r" ) as f:
    d = json.load(f)
    for f in d["features"]:
       p = f["properties"]
-      fx[stations[int(p["station"])]] = p["parameters"]["vvmax"]["data"][0]
+      try:
+         fx[stations[int(p["station"])]] = p["parameters"]["vvmax"]["data"][0]
+      except:
+         fx[stations[int(p["station"])]] = None
 print(fx)
 
 sys.path.append('PyModules')
@@ -48,7 +51,11 @@ print(datumsec)
 
 #insert obs
 for i,f in enumerate(fx):
-   sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,fx24) VALUES ({f},{datum},{datumsec},0,{int(fx[f]*10)}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), fx24=VALUES(fx24);" )
+   try:
+      FX = int(fx[f]*10)
+   except:
+      FX = 'null'
+   sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES ({f},{datum},{datumsec},0,'bufr',{FX}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), fx24=VALUES(fx24);" )
 
 print(sql)
 
