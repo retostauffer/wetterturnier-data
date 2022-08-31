@@ -1,0 +1,47 @@
+#MAILTO="wetterturnier@met.fu-berlin.de"
+SHELL="/bin/sh"
+26,56	*	*	*	*	/opt/plesk/php/7.4/bin/php -f 'httpdocs/wp-cron.php'
+#- Avoid filling up the /var/spool/mail/ directory.
+#Do not mail cron output.
+#- Necessary that python (in cron) can find its executables
+#especially when calling subprocess.popen
+PATH="/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/imgi/bin"
+#- Downloading a set of forecast and analysis maps from the
+#mira.met.fu-berlin.de ftp server and prepare them for the
+#wetterturnier. ECMWF, ICON, COSMO-DE, ...
+#See README file inside the direcotry for more details.
+SHELL="/bin/bash"
+15-59/30	*	*	*	*	cd /home/imgi/ForecastProducts && timeout 1000 ionice -c 2 -n 0 ../venv/bin/python DownloadAll.py &> /home/imgi/cronlog/cron.DownloadAll.log
+#- Produce GENS visualization and store data.
+#GENS is the GFS ENSEMBLE.
+30	*/1	*	*	*	cd /home/imgi/GENSvis && timeout 1800 ionice -c 2 -n 0 ../venv/bin/python GFSvis.py  > /home/imgi/cronlog/GFSvis.log 2>&1
+#- DWDOpendataDownload.py downloads some BUFR messages from an
+#open DWD ftp. As they are open they are copied into the
+#incoming-essential folder. Only files with a time stamp
+#newer than 24h are downloaded.
+*/5	*	*	*	*	cd /home/imgi/GISCobservations && ../venv/bin/python DWDOpendataDownload.py > /home/imgi/cronlog/DWDOpendataDownloader.log 2>&1
+#- bufr.py takes all available BUFR observation messages and
+#puts them into the 'obs.live' database.
+
+#download fx24 data from zamg (4x daily)
+0 1,7,13,20 * * * cd /home/imgi/GISCobservations && ./get_fx.sh > /home/imgi/cronlog/get_fx.log 2>&1
+
+#bufr.py also calls derived.py computing some derived
+#variables.
+*/5	*	*	*	*	cd /home/imgi/GISCobservations && ../venv/bin/python bufr.py &> /home/imgi/cronlog/cron.bufr.log
+#Download BUFR (ICAO) from ogimet via getbufr.php (http://www.ogimet.com/getbufr_help.phtml.en)
+22,37	*	*	*	*	cd /home/imgi/OGIMETbufr && /bin/bash get_latest.sh &> /home/imgi/cronlog/cron.ogimet.log
+25,42 *  *  *  *  cd /home/imgi/OGIMETbufr && /bin/bash get_latest_unterlaa.sh &> /home/imgi/cronlog/cron.ogimet_unterlaa.log
+#- Downloading additionals from FTP, marcus beyers user
+*/20	*	*	*	*	cd /home/imgi/GISCobservations && timeout 600 ionice -c 2 -n 0 ../venv/bin/python DWDFTPDownloader.py &> /home/imgi/cronlog/cron.DWFFTPdownloader.log
+#- There is a python script generating SynopSymbol images (these small things).
+#This is the script which tries to generate them. Once visualized, it will be
+#skiped, so you can call this job quite regularely.
+*/5	*	*	*	*	cd /home/imgi/CreateSynopSymbols && timeout 300 ionice -c 2 -n 0 ../venv/bin/python CreateSynopSymbols.py &> /home/imgi/cronlog/cron.CreateSynopSymbols.log
+#- CleanUp: clean upd the database.
+#Every 6th hour CleanUp
+#i:   delets old bufr/synop messages from GISCobservations/data-processed
+#ii:  migrates the 'obs.live' database into the 'obs.archive' database
+#regarding the config in config.conf (GISCobservations/config.conf)
+#iii: removes old observations from 'obs.live' (again, see config.conf)
+10	*/6	*	*	*	cd /home/imgi/GISCobservations && ionice -c 2 -n 0 ../venv/bin/python CleanUp.py &> /home/imgi/cronlog/cron.CleanUp.log
