@@ -19,7 +19,7 @@ echo "Looking for BUFR files not older than ${N} hour(s)..."
 
 set -u
  
-logfile="errorlog.txt"
+logfile="errorlog_unterlaa.txt"
 if [ -n ${logfile} ]; then
    touch $logfile
 fi
@@ -35,7 +35,7 @@ printf " - End:     %s\n" "${END}"
 # Only extracting CENTER LOWM (and only specific files, see regex
 # expression in the egrep command below).
 CENTER="LOWM"
-LST="listing.html"
+LST="listing_unterlaa.html"
 URL="http://www.ogimet.com/getbufr.php"
 
 # Where the files should be stored for further processing
