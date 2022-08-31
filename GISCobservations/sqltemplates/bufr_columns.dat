@@ -18,6 +18,7 @@ timecolumn   ; smallint unsigned
 datumsec     ; int(11) 
 
 t            ; smallint
+t5           ; smallint
 td           ; smallint
 
 tmin1        ; smallint
