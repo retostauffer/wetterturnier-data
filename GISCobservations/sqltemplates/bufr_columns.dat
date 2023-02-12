@@ -22,18 +22,28 @@ t5           ; smallint
 td           ; smallint
 
 tmin1        ; smallint
+t2min1       ; smallint
 tmin3        ; smallint
+t2min3       ; smallint
 tmin6        ; smallint
+t2min6       ; smallint
 tmin12       ; smallint
+t2min12      ; smallint
 tmin15       ; smallint
 tmin24       ; smallint
+t2min24      ; smallint
 
 tmax1        ; smallint
+t2max1       ; smallint
 tmax3        ; smallint
+t2max3       ; smallint
 tmax6        ; smallint
+t2max6       ; smallint
 tmax12       ; smallint
+t2max12      ; smallint
 tmax15       ; smallint
 tmax24       ; smallint
+t2max24      ; smallint
 
 tgnd         ; smallint
 tgnd12       ; smallint
@@ -123,6 +133,7 @@ rracc        ; smallint
 rracc1       ; smallint
 rrmax        ; smallint
 rrint        ; smallint
+rrr10        ; smallint
 rrr05        ; smallint
 rrr1         ; smallint
 rrp1         ; smallint

@@ -168,7 +168,7 @@ class database( object ):
          else:
             col = DBSETUP[name]
          # - Create alter statement
-         sql = 'ALTER TABLE %s ADD %s %s;' % (self.table, \
+         sql = 'ALTER TABLE %s ADD %s %s IF NOT EXISTS;' % (self.table, \
                name,col['type'])
 
          # - Append column

@@ -19,6 +19,8 @@ else:
 
 path = "ZAMG/"
 
+none_counter = 0
+
 with open( path + DATE.strftime(fmt) + ".json", "r" ) as f:
    d = json.load(f)
    for f in d["features"]:
@@ -27,7 +29,10 @@ with open( path + DATE.strftime(fmt) + ".json", "r" ) as f:
          fx[stations[int(p["station"])]] = p["parameters"]["vvmax"]["data"][0]
       except:
          fx[stations[int(p["station"])]] = None
-print(fx)
+         none_counter += 1
+
+if none_counter == len(stations.keys()):
+    sys.exit("NO DATA!")
 
 sys.path.append('PyModules')
 from readconfig import readconfig

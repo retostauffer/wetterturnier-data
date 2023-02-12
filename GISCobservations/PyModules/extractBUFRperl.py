@@ -230,7 +230,7 @@ class extractBUFR( object ):
       """
       Function reading the BUFR file. Actually calling the perl
       Geo::BUFR library to convert the binary files into ASCII table
-      and pase the output to extract the necessary information.
+      and parse the output to extract the necessary information.
       """
 
       import os
@@ -240,7 +240,7 @@ class extractBUFR( object ):
 
       pearlscript = 'PyModules/bufrread.pl'
 
-      cmd = [ pearlscript, file, '--data_only', '--width', str(self.WIDTH), '--tableformat', 'ECCODES', '--tablepath', 'ectables' ]
+      cmd = [ pearlscript, file, '--data_only', '--width', str(self.WIDTH), '--tableformat', 'ECCODES', '--tablepath', 'tables' ]
       #'--on_error_stop'
       #--tableformat ECCODES
       #--tablepath bufrtables/ectables
@@ -681,19 +681,22 @@ class extractBUFR( object ):
 
          # - Create different date formats
          from datetime import datetime as dt
-         if rec['year'] < 0 or rec['month'] < 1 or rec['day'] < 1 or rec['hour'] < 0 or \
-            rec['hour'] > 24 or rec['minute'] < 0 or rec['minute'] > 60:
-            print('[!] Problems with time description! Fancy values. Skip this.')
-            
-            print("   Year: %4d Month: %2d Day: %2d Hour: %2d Minute: %2d" % \
-                  (rec['year'],rec['month'],rec['day'],rec['hour'],rec['minute']))
+         try:
+             if rec['year'] < 0 or rec['month'] < 1 or rec['day'] < 1 or rec['hour'] < 0 or \
+                rec['hour'] > 24 or rec['minute'] < 0 or rec['minute'] > 60:
+                print('[!] Problems with time description! Fancy values. Skip this.')
+                
+                print("   Year: %4d Month: %2d Day: %2d Hour: %2d Minute: %2d" % \
+                      (rec['year'],rec['month'],rec['day'],rec['hour'],rec['minute']))
 
-            # - Remove this entry from self.data!
-            #   We cannot do this here because then the loop index
-            #   will get crazy. Therefore mark this section as
-            #   'to drop'. We do that at the end of the manipulation
-            #   method.
-            to_drop.append(sec); continue
+                # - Remove this entry from self.data!
+                #   We cannot do this here because then the loop index
+                #   will get crazy. Therefore mark this section as
+                #   'to drop'. We do that at the end of the manipulation
+                #   method.
+                to_drop.append(sec); continue
+         
+         except: to_drop.append(sec); continue
 
          # - Everything ok with date, convert.
          date = dt(int(rec['year']),int(rec['month']),int(rec['day']), \
@@ -816,7 +819,7 @@ class extractBUFR( object ):
 
       # - Prepare update statement
       update = []
-      for col in columns: update.append('%s=VALUES(%s)' % (col,col))
+      for col in columns: update.append(f'{col} = COALESCE( VALUES({col}), {col})')
 
       sql = []
       sql.append('INSERT INTO %s'        % self.db.table)
