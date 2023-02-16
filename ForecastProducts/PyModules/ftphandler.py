@@ -74,6 +74,39 @@ class ftphandler( object ):
 
 
    # ----------------------------------------------------------------
+   # Just download the raw file
+   # ----------------------------------------------------------------
+   def download( self, filename ):
+      """Downloads the given file and saves it on disk.
+      @param filename. Name of the file. Can include wildcards,
+         but if not exactly one file matches the string, the
+         method will return False instead of the filename.
+      @return Returns the name of the downloaded file if succesful.
+         If the download failed it returns False."""
+     
+      filename_split = filename.rsplit( '/', 1 )
+      # get the path location
+      path = filename_split[0]
+      # removing the path to get just the filename
+      outfile = filename_split[1]
+      
+      # If ftp connection not established, open
+      if not self.ftp: self._ftp_connect_()
+      # Change directory to filepath
+      self.ftp.cwd( "/" + path )
+
+      # Downloading the file
+      try:
+         self.ftp.retrbinary(f"RETR {outfile}" , open( outfile, 'wb').write )
+      # To avoid all possible errors.
+      except:
+         print("ERROR! Could not download file:")
+         print(filename)
+         return False
+      
+      return outfile
+
+   # ----------------------------------------------------------------
    # Loading image from ftp (into temporary file)
    # ----------------------------------------------------------------
    def getImage( self, filename ):
@@ -89,7 +122,7 @@ class ftphandler( object ):
          but if not exactly one file matches the string, the
          method will return False instead of an image.
       @return Returns a file handler on a spooled temporary
-         file object."""
+         file object if succesfully downloaded, else False."""
 
       import tempfile
       from PIL import Image
@@ -101,7 +134,13 @@ class ftphandler( object ):
       # Create new temporary file
       tmpfile = tempfile.SpooledTemporaryFile()
       # Downloading the image
-      self.ftp.retrbinary("RETR %s" % filename , tmpfile.write )
+      try:
+         self.ftp.retrbinary("RETR %s" % filename , tmpfile.write )
+      except EOFError:
+         print("EOF (end of file) error! Could not download file:")
+         print(filename)
+         return False
+
       # Reading the image
       img = Image.open( tmpfile )
       return img

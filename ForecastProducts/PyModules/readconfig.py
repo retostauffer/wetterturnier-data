@@ -66,6 +66,7 @@ class readconfig( object ):
          self.ftp_user      = CNF.get("ftp","user")
          self.ftp_password  = CNF.get("ftp","password")
          self.ftp_directory = CNF.get("ftp","directory")
+         self.ftp_dahlem    = CNF.get("ftp","dahlem")
       except Exception as e:
          log.error(e)
          self.exit("Problems reading the [ftp] section in %s" % file)
