@@ -33,9 +33,11 @@ if __name__ == "__main__":
 
    # Reading the config(s)
    config = readconfig("config.conf") 
-
+   
    dahlem = config.ftp_dahlem
    
    ftp = ftphandler( config )
+
+   print(f"Download file '{dahlem}'")
    ftp.download( dahlem )
    ftp.close()
