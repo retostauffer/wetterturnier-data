@@ -13,7 +13,9 @@ PATH="/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/imgi/bi
 SHELL="/bin/bash"
 15-59/30	*	*	*	*	cd /home/imgi/ForecastProducts && timeout 1000 ionice -c 2 -n 0 ../venv/bin/python DownloadAll.py > /home/imgi/cronlog/cron.DownloadAll.log
 
-* * * * * cd /home/imgi/ForecastProducts && timeout 1000 ionice -c 2 -n 0 ../venv/bin/python DownloadDahlem.py > /home/imgi/cronlog/cron.DownloadDahlem.log
+*/30 * * * * cd /home/imgi/ForecastProducts && timeout 1000 ionice -c 2 -n 0 ../venv/bin/python DownloadDahlem.py > /home/imgi/cronlog/cron.DownloadDahlem.log
+
+1 * * * * cd /home/imgi/GISCobservations && timeout 1000 ionice -c 2 -n 0 ../venv/bin/python ExtractDahlem.py > /home/imgi/cronlog/cron.ExtractDahlem.log
 
 #- Produce GENS visualization and store data.
 #GENS is the GFS ENSEMBLE.
