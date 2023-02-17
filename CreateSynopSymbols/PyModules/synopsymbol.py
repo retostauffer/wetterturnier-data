@@ -351,8 +351,9 @@ class synopsymbol( drawbarb.drawbarb ):
 
       new = file.replace(m[0],"synop_current_")
       log.info("Create copy from %s to %s" % (file,new))
+      print("Create copy from %s to %s" % (file,new))
       import shutil
-      shutil.copy(file,new)
+      shutil.copyfile(file,new)
 
 
    # ----------------------------------------------------------------
