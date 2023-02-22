@@ -46,8 +46,9 @@ if __name__ == "__main__":
    # If all observations for this day are in, we copy the file to "dahlem/hwerte_YYYYMMDD.txt (date of yesterday).
    
    hwerte = "dahlem/hwerte_"
+   n      = "neu.txt"
    
-   with open( dahlem, "r", encoding="ISO-8859-1" ) as fp:
+   with open( hwerte + n, "r", encoding="ISO-8859-1" ) as fp:
       
       lines = len(fp.readlines())
       if lines >= 64:
@@ -56,4 +57,4 @@ if __name__ == "__main__":
          from datetime import date, timedelta
          
          day = date.today().strftime("%Y%m%d")
-         copy2( hwerte + "neu.txt", hwerte + "{day}.txt" )
+         copy2( hwerte + n, hwerte + "{day}.txt" )

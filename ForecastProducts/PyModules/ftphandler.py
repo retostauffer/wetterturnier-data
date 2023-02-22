@@ -91,7 +91,7 @@ class ftphandler( object ):
       filename  = filename_split[1]
       # path to which we download the file 
       outfile = outpath + "/" + filename
-      print("outfile:",outfile)
+      print("outfile:", outfile)
 
       # If ftp connection not established, open
       if not self.ftp: self._ftp_connect_()
