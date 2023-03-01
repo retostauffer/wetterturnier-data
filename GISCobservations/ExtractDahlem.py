@@ -8,9 +8,12 @@ import json, sys
 head = [i for i in range(0,9)]
 enc  = "ISO-8859-1"
 cols = [0,8,9]
+#path to input file from FU mira FTP server
 name = "../ForecastProducts/dahlem/hwerte_neu.txt"
+#name = "../ForecastProducts/dahlem/hwerte_2023-02-27.txt"
 eng  = "python"
 
+#read the tab-seperated table with pandas and convert it to a pandas dataframe
 df = pd.read_csv(name, sep="\t", encoding=enc, skiprows=head, skipfooter=4, engine=eng, usecols=cols)
 df.columns = ["dt", "ff", "fx"]
 
@@ -30,7 +33,10 @@ cur = db.cursor()
 obs = {}
 # for ff we use the 13 MET (12 UTC) obs
 obs["ff"] = df.loc[df["dt"] == today_str + " 13:00"]["ff"]
-print("ff (12z):", float(obs["ff"]))
+if len(obs["ff"]) == 1:
+   print("ff (12z):", float(obs["ff"]))
+else:
+   print("No ff @12z observed!")
 
 # fx is more complicated because we need the daily maximum, of the UTC-day!
 fx = df["fx"]
@@ -40,11 +46,12 @@ print("fx (max):", fx[2:].max())
 
 # save day and timestamp (ts) variables
 day = today.strftime("%Y%m%d")
+
+#convert today's datetime object to timestamp, we will need this later
 ts = dt.combine( today, dt.min.time() )
 ts = int( ts.replace( tzinfo = tz.utc ).timestamp() )
 
-
-if len(fx) == 48: # take last 23 hours
+if len(fx) == 47: # take last 23 hours
    obs["fx"] = df["fx"][2:].max()
 elif len(fx) == 2: # just take first hour
    # correct fx of yesterday only if higher than current fx of yesterday
@@ -58,7 +65,7 @@ elif len(fx) == 2: # just take first hour
    # yesterday
    yd = day - td(days=1)
    # timestamp of yesterday
-   ts_yd -= 86400
+   ts_yd = ts - 86400
    sql = "SELECT fx24 FROM live WHERE statnr=10381, datum={yd}, datumsec={ts_yd}, stdmin=0, msgtyp='bufr'"
    cur.execute( sql )
    try:
@@ -77,6 +84,7 @@ elif len(fx) == 2: # just take first hour
 sql = []
 sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `fx24` SMALLINT(5) NULL DEFAULT NULL")
 sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `ff12` SMALLINT(5) NULL DEFAULT NULL")
+
 for s in sql: cur.execute( s )
 
 
@@ -85,7 +93,6 @@ try:
    FF = int( obs["ff"] * 10 )
 except:
    FF = 'null'
-   ts = dt.combine( today, dt.min.time() )
 
 sql = []
 if "fx" in obs.keys():
@@ -97,7 +104,7 @@ if "fx" in obs.keys():
 elif "fx_yd" in obs.keys() and overwrite == True:
    FX = int( obs["fx_yd"] * 10 )
    sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES (10381,{yd},{ts_yd},0,'bufr',{FX}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), fx24=VALUES(fx24);" )
-if "ff" in obs.keys():
+if len(obs["ff"]) == 1:
    sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,ff12) VALUES (10381,{day},{ts},0,'bufr',{FF}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), ff12=VALUES(ff12);")
 
 for s in sql: cur.execute( s )

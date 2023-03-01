@@ -51,10 +51,13 @@ if __name__ == "__main__":
    with open( hwerte + n, "r", encoding="ISO-8859-1" ) as fp:
       
       lines = len(fp.readlines())
-      if lines >= 64:
-         
+      from datetime import date, timedelta
+      day = date.today().strftime("%Y-%m-%d")
+      
+      daily_file = hwerte + f"{day}.txt"
+      
+      # if file is finished and daily file doesnt exist yet
+      if lines == 65 and not os.path.exists( daily_file ):
+          
          from shutil import copy2
-         from datetime import date, timedelta
-         
-         day = date.today().strftime("%Y%m%d")
-         copy2( hwerte + n, hwerte + "{day}.txt" )
+         copy2( hwerte + n, daily_file )

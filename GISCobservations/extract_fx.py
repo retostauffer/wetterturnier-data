@@ -52,7 +52,7 @@ today = DATE + td1
 datum = today.strftime("%Y%m%d")
 datumsec = dt.combine( today, dt.min.time() )
 datumsec = int( datumsec.replace( tzinfo = tz.utc ).timestamp() )
-print(datumsec)
+#print(datumsec)
 
 #insert obs
 for i,f in enumerate(fx):
@@ -62,7 +62,7 @@ for i,f in enumerate(fx):
       FX = 'null'
    sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES ({f},{datum},{datumsec},0,'bufr',{FX}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), fx24=VALUES(fx24);" )
 
-print(sql)
+#print(sql)
 
 for s in sql:
    cur.execute( s )
