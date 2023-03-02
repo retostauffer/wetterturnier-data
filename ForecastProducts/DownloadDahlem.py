@@ -58,6 +58,12 @@ if __name__ == "__main__":
       
       # if file is finished and daily file doesnt exist yet
       if lines == 65 and not os.path.exists( daily_file ):
-          
+         from datetime import date, timedelta
          from shutil import copy2
+
+         today      = date.today()
+         yesterday  = today - timedelta(days=1)
+         day        = yesterday.strftime("%Y-%m-%d")
+         daily_file = hwerte + f"{day}.txt" 
+         
          copy2( hwerte + n, daily_file )
