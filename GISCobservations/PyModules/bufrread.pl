@@ -34,7 +34,9 @@ use constant DEFAULT_TABLE_FORMAT => 'BUFRDC';
 #use constant DEFAULT_TABLE_PATH_BUFRDC => '/lib/bufrtables';
 #use constant DEFAULT_TABLE_PATH_ECCODES => '/share/eccodes/definitions/bufr/tables';
 use constant DEFAULT_TABLE_PATH_BUFRDC => '/home/imgi/GISCobservations/bufrtables';
-use constant DEFAULT_TABLE_PATH_ECCODES => '/home/imgi/GISCobservations/eccodes/share/eccodes/definitions/bufr/tables';
+#use constant DEFAULT_TABLE_PATH_ECCODES => '/home/imgi/GISCobservations/ectables';
+use constant DEFAULT_TABLE_PATH_ECCODES => '/home/imgi/eccodes/tables';
+
 # Ought to be your most up-to-date code table(s)
 use constant DEFAULT_CTABLE_BUFRDC => 'C0000000000000029000';
 use constant DEFAULT_CTABLE_ECCODES => '0/wmo/31';

@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 if __name__ == "__main__":
 
    import sys, os
-   os.environ['TZ'] = 'UTC' # Important, all dates/times in UTC
+   os.environ['TZ'] = 'MET' # Important, all dates/times in MET
    sys.path.append('PyModules')
 
    # Import readconfig class
@@ -32,12 +32,38 @@ if __name__ == "__main__":
    from ftphandler import ftphandler
 
    # Reading the config(s)
-   config = readconfig("config.conf") 
-   
+   config = readconfig("config.conf")
+
    dahlem = config.ftp_dahlem
-   
+
    ftp = ftphandler( config )
 
    print(f"Download file '{dahlem}'")
-   ftp.download( dahlem )
+   ftp.download( dahlem, "dahlem" )
    ftp.close()
+
+   # Now we count the number of lines in the file. If it is 64 or more, we consider the day as finished.
+   # If all observations for this day are in, we copy the file to "dahlem/hwerte_YYYYMMDD.txt (date of yesterday).
+
+   hwerte = "dahlem/hwerte_"
+   n      = "neu.txt"
+
+   with open( hwerte + n, "r", encoding="ISO-8859-1" ) as fp:
+      
+      lines = len(fp.readlines())
+      from datetime import date, timedelta
+      day = date.today().strftime("%Y-%m-%d")
+
+      daily_file = hwerte + f"{day}.txt"
+
+      # if file is finished and daily file doesnt exist yet
+      if lines == 65 and not os.path.exists( daily_file ):
+         from datetime import date, timedelta
+         from shutil import copy2
+
+         today      = date.today()
+         yesterday  = today - timedelta(days=1)
+         day        = yesterday.strftime("%Y-%m-%d")
+         daily_file = hwerte + f"{day}.txt"
+
+         copy2( hwerte + n, daily_file )

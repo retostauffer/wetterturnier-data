@@ -88,7 +88,7 @@ class bufrentry(object):
    def __init__(self,string,width):
       import sys
       try:
-         self.count  = int(string[0:6])
+         self.count  = string[0:6]
          self.bufrid = int(string[7:14])
          self.value  = str(string[15:(16+width)]).strip().upper()
          self.desc   = str(string[(16+width):]).strip().upper()
@@ -121,7 +121,7 @@ class bufrentry(object):
             self.value = float(self.value)
 
    # ----------------------------------------------------------------
-   # - Helper function to show recotrd if necessary
+   # - Helper function to show record if necessary
    # ----------------------------------------------------------------
    def show(self):
       print("    - BUFR ENTRY:")
@@ -149,7 +149,7 @@ class bufrentry(object):
 # -------------------------------------------------------------------
 class extractBUFR( object ):
 
-   WIDTH         = 40
+   WIDTH         = 150
    MISSING_VALUE = -9999.
    db            = None
 
