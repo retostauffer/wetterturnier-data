@@ -74,6 +74,43 @@ class ftphandler( object ):
 
 
    # ----------------------------------------------------------------
+   # Just download the raw file
+   # ----------------------------------------------------------------
+   def download( self, filename, outpath ):
+      """Downloads the given file and saves it on disk.
+      @param filename. Name of the file. Can include wildcards,
+         but if not exactly one file matches the string, the
+         method will return False instead of the filename.
+      @return Returns the name of the downloaded file if succesful.
+         If the download failed it returns False."""
+
+      filename_split = filename.rsplit( '/', 1 )
+      # get the path location
+      path = filename_split[0]
+      # removing the path to get just the filename
+      filename  = filename_split[1]
+      # path to which we download the file 
+      outfile = outpath + "/" + filename
+      print("outfile:", outfile)
+
+      # If ftp connection not established, open
+      if not self.ftp: self._ftp_connect_()
+      # Change directory to filepath
+      self.ftp.cwd( "/" + path )
+
+      # Downloading the file
+      try:
+         self.ftp.retrbinary(f"RETR {filename}" , open( outfile, 'wb').write )
+      # To avoid all possible errors.
+      except:
+         print("ERROR! Could not download file:")
+         print(filename)
+         return False
+
+      return outfile
+
+
+   # ----------------------------------------------------------------
    # Loading image from ftp (into temporary file)
    # ----------------------------------------------------------------
    def getImage( self, filename ):

@@ -1,6 +1,6 @@
 # -------------------------------------------------------------------
-# - NAME:        DownloadAll.py 
-# - AUTHOR:      Reto Stauffer
+# - NAME:        DownloadDahlem.py 
+# - AUTHOR:      Juri Hubrig
 # - DATE:        2015-12-17
 # -------------------------------------------------------------------
 # - DESCRIPTION:
@@ -23,92 +23,47 @@ log = logging.getLogger(__name__)
 if __name__ == "__main__":
 
    import sys, os
-   os.environ['TZ'] = 'UTC' # Important, all dates/times in UTC
+   os.environ['TZ'] = 'MET' # Important, all dates/times in MET
    sys.path.append('PyModules')
 
    # Import readconfig class
    from readconfig import readconfig
-   # Import forecastmaps class
-   from handler import handler
+   # Import ftphandler class
+   from ftphandler import ftphandler
 
    # Reading the config(s)
-   config = readconfig("config.conf") 
+   config = readconfig("config.conf")
 
-   import datetime 
-   import numpy as np
-   # Take latest full 6h
-   # ROUND to last full 6h interval to be sure that we (i) only
-   # process 00/06/12/18 UTC AND to be sure that the minute is
-   # exactly 00 as well.
-   current_timestamp = np.floor(int(datetime.datetime.now().strftime("%s")) / 21600) * 21600
-   current_timestamp = datetime.datetime.fromtimestamp( current_timestamp )
+   dahlem = config.ftp_dahlem
 
-   # Looping backwars over the last 12 hours.
-   # Therefore we do not depend on when the images will be on the
-   # ftp server. The handler itself automatically notices when a
-   # figure was already processed.
-   for lag in [-2,-1,0]: 
+   ftp = ftphandler( config )
 
-      # Compute 'loop timestamp'
-      date_time = current_timestamp + datetime.timedelta(0,lag*21600) 
+   print(f"Download file '{dahlem}'")
+   ftp.download( dahlem, "dahlem" )
+   ftp.close()
 
-      print("\n\n")
-      log.info("Processing date/time:    %s" % date_time.strftime("%Y-%m-%d %H:%M"))
+   # Now we count the number of lines in the file. If it is 64 or more, we consider the day as finished.
+   # If all observations for this day are in, we copy the file to "dahlem/hwerte_YYYYMMDD.txt (date of yesterday).
 
-      # Initialize the overall handler class
-      obj = handler(config,date_time)
+   hwerte = "dahlem/hwerte_"
+   n      = "neu.txt"
 
-      # Looping over all forecastmaps 
-      for rec in config.products:
-         original_file = rec['original_file']
-         products = rec['products']
+   with open( hwerte + n, "r", encoding="ISO-8859-1" ) as fp:
+      
+      lines = len(fp.readlines())
+      from datetime import date, timedelta
+      day = date.today().strftime("%Y-%m-%d")
 
-         obj.getImages( rec )
+      daily_file = hwerte + f"{day}.txt"
 
-      obj.close()
+      # if file is finished and daily file doesnt exist yet
+      if lines == 65 and not os.path.exists( daily_file ):
+         from datetime import date, timedelta
+         from shutil import copy2
 
+         today      = date.today()
+         yesterday  = today - timedelta(days=1)
+         day        = yesterday.strftime("%Y-%m-%d")
+         daily_file = hwerte + f"{day}.txt"
 
-
-   # ----------------------------------------------------------------
-   # Delete old files older than X days (see config file)
-   # ----------------------------------------------------------------
-   print("\n")
-   log.info("Delete old files now ...") 
-
-   # Delete files from originals directory
-   cmd = "find %s -type f -mtime +%d -exec rm {} \\;" % (config.originals,config.delete_images)
-   log.info("  - From originals directory, calling:")
-   log.info("    %s" % cmd)
-   os.system(cmd)
-
-   # Delete files from images directory
-   cmd = "find %s -type f -mtime +%d -exec rm {} \\;" % (config.meteogramsdir,config.delete_images)
-   log.info("  - From meteograms directory, calling:")
-   log.info("    %s" % cmd)
-   os.system(cmd)
-
-   # Delete files from images directory
-   cmd = "find %s -type f -mtime +%d -exec rm {} \\;" % (config.imagedir,config.delete_images)
-   log.info("  - From image directory, calling:")
-   log.info("    %s" % cmd)
-   os.system(cmd)
-
-   # Delete lockbits
-   cmd = "find %s -type f -mtime +%d -exec rm {} \\;" % (config.lockbitdir,config.delete_lockbits)
-   log.info("  - From lockbit directory, calling:")
-   log.info("    %s" % cmd)
-   os.system(cmd)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+         copy2( hwerte + n, daily_file )
