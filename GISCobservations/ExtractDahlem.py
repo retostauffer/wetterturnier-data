@@ -88,23 +88,25 @@ sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `ff12` SMALLINT(5) NULL DEFAULT
 for s in sql: cur.execute( s )
 
 
-# insert obs
-try:
-   FF = int( obs["ff"] * 10 )
-except:
-   FF = 'null'
-
 sql = []
+
 if "fx" in obs.keys():
    try:
       FX = int( obs["fx"] * 10 )
    except:
       FX = 'null'
    sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES (10381,{day},{ts},0,'bufr',{FX}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), fx24=VALUES(fx24);" )
+
 elif "fx_yd" in obs.keys() and overwrite == True:
    FX = int( obs["fx_yd"] * 10 )
    sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES (10381,{yd},{ts_yd},0,'bufr',{FX}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), fx24=VALUES(fx24);" )
+
 if len(obs["ff"]) == 1:
+   # insert obs
+   try:
+      FF = int( obs["ff"] * 10 )
+   except:
+      FF = 'null'
    sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,ff12) VALUES (10381,{day},{ts},0,'bufr',{FF}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), ff12=VALUES(ff12);")
 
 for s in sql: cur.execute( s )
