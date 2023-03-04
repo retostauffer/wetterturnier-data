@@ -109,6 +109,7 @@ class ftphandler( object ):
       
       return outfile
 
+
    # ----------------------------------------------------------------
    # Loading image from ftp (into temporary file)
    # ----------------------------------------------------------------
