@@ -7,20 +7,51 @@ import json, sys
 
 head = [i for i in range(0,9)]
 enc  = "ISO-8859-1"
-cols = [0,8,9]
+cols = [0,9]
 #path to input file from FU mira FTP server
-name = "../ForecastProducts/dahlem/hwerte_neu.txt"
-#name = "../ForecastProducts/dahlem/hwerte_2023-02-27.txt"
+name = "../ForecastProducts/dahlem/hwerte_"
 eng  = "python"
 
+from datetime import datetime as dt, timedelta, timezone as tz
+d = timedelta(days=1); fmt = "%Y-%m-%d"; Ymd = "%Y%m%d"
+
+def dt2ts( datetime ):
+   #convert today's datetime object to timestamp, we will need this later
+   ts = dt.combine( datetime, dt.min.time() )
+   return int( ts.replace( tzinfo = tz.utc ).timestamp() )
+
+if len(sys.argv) == 2:
+   td = dt.strptime( sys.argv[1], fmt ); yd = td - d
+   name_td = name + str(sys.argv[1])
+   name_yd = name + yd.strftime( fmt )
+   tm = td + d
+   ts_td   = dt2ts( tm )
+   day     = tm.strftime( Ymd ) 
+else:
+   td = dt.today(); yd = td - d
+   name_td = name + "neu"
+   name_yd = name + yd.strftime( fmt )
+   ts_td   = dt2ts( td )
+   day = td.strftime( Ymd )
+
+ts_yd = ts_td - 86400
+name_td += ".txt"; name_yd += ".txt"
+colnames = ["dt", "fx"]
+
 #read the tab-seperated table with pandas and convert it to a pandas dataframe
-df = pd.read_csv(name, sep="\t", encoding=enc, skiprows=head, skipfooter=4, engine=eng, usecols=cols)
-df.columns = ["dt", "ff", "fx"]
+df_td = pd.read_csv(name_td, sep="\t", encoding=enc, skiprows=head, skipfooter=4, engine=eng, usecols=cols)
+df_td.columns = colnames
 
-from datetime import datetime as dt, timedelta as td, timezone as tz
+obs = {}
 
-today = dt.today()
-today_str = today.strftime("%Y-%m-%d")
+try:
+   df_yd = pd.read_csv(name_yd, sep="\t", encoding=enc, skiprows=head, skipfooter=4, engine=eng, usecols=cols)
+   df_yd.columns = colnames
+   obs["fx_yd"] = df_yd["fx"][-2:].max()
+   print("fx_yd (max):", obs["fx_yd"])
+except Exception as e:
+   print(e); print("No obs from yesterday, setting to 0!")
+   obs["fx_yd"] = 0
 
 sys.path.append('PyModules')
 from readconfig import readconfig
@@ -30,83 +61,73 @@ from database import database
 db = database(config)
 cur = db.cursor()
 
-obs = {}
-# for ff we use the 13 MET (12 UTC) obs
-obs["ff"] = df.loc[df["dt"] == today_str + " 13:00"]["ff"]
-if len(obs["ff"]) == 1:
-   print("ff (12z):", float(obs["ff"]))
-else:
-   print("No ff @12z observed!")
-
 # fx is more complicated because we need the daily maximum, of the UTC-day!
-fx = df["fx"]
+fx = df_td["fx"]
 print("fx (0z-23z):")
 print(list(fx[2:]))
-print("fx (max):", fx[2:].max())
+print("fx_td (max):", fx[2:].max())
 
-# save day and timestamp (ts) variables
-day = today.strftime("%Y%m%d")
-
-#convert today's datetime object to timestamp, we will need this later
-ts = dt.combine( today, dt.min.time() )
-ts = int( ts.replace( tzinfo = tz.utc ).timestamp() )
-
+#if file is finished
 if len(fx) == 47: # take last 23 hours
-   obs["fx"] = df["fx"][2:].max()
-elif len(fx) == 2: # just take first hour
-   # correct fx of yesterday only if higher than current fx of yesterday
-   obs["fx_yd"] = df["fx"].max()
-   print("fx_yd (max):", obs["fx_yd"])
+   obs["fx"] = df_td["fx"][1:].max()
+   # correct fx of yesterday only if higher than last hour of yesterday
+   if obs["fx_yd"] > obs["fx"]:
+      obs["fx"] = obs["fx_yd"]
 
-   # find out if it's higher... if not skip, nothing to save here!
+#use BeautifulSoup to extract mammatus95 synopstalking page
+from bs4 import BeautifulSoup
+import requests
 
-   from datetime import timedelta as td
-   
-   # yesterday
-   yd = day - td(days=1)
-   # timestamp of yesterday
-   ts_yd = ts - 86400
-   sql = "SELECT fx24 FROM live WHERE statnr=10381, datum={yd}, datumsec={ts_yd}, stdmin=0, msgtyp='bufr'"
-   cur.execute( sql )
-   try:
-      fx_yd = cur.fetchone()[0] / 10
-      print("fx_yd (old):", fx_yd)
-   except:
-      print("ERROR, no fx saved for yesterday! Setting it to 0.")
-      fx_yd = 0
-   if obs["fx_yd"] > fx_yd:
-      overwrite = True
-      print("fx_yd (new):", obs["fx_yd"])
-   else: overwrite = False
-   
+soup=BeautifulSoup(requests.get("https://userpage.fu-berlin.de/mammatus95/turm/fm12/synopsturm.php").text,features="html.parser")
+# first we should find our table object:
+tables = soup.find_all('table')
+
+def find_ff( table, row ):
+   rows = []
+   for i, row in enumerate(table.find_all('tr')):
+      rows.append([el.text.strip() for el in row.find_all('td')])
+
+   for row in rows[4:]:
+      if row[0][7:9] == "12":
+         synops = row[0]
+
+   for i in synops.split("&nbsp"):
+      if i[0:4] == "555 ":
+         try: return int(i[18:21])
+         except Exception as e:
+            print(e); return 0
+
+obs["ff_td"] = find_ff( tables[0], 4 ); obs["ff_yd"] = find_ff( tables[1], 1 )
+
+print("ff @12z today:", float(obs["ff_td"]/10) )
+print("ff @12z yesterday:", float(obs["ff_yd"]/10) )
 
 # add columns
 sql = []
 sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `fx24` SMALLINT(5) NULL DEFAULT NULL")
 sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `ff12` SMALLINT(5) NULL DEFAULT NULL")
 
-for s in sql: cur.execute( s )
-
-
-sql = []
-
 if "fx" in obs.keys():
    try:
-      FX = int( obs["fx"] * 10 )
+      fx24 = int( obs["fx"] * 10 )
    except:
-      FX = 'null'
-   sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES (10381,{day},{ts},0,'bufr',{FX}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), fx24=VALUES(fx24);" )
+      fx24 = 'null'
+   sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES (10381,{day},{ts_td},0,'bufr',{fx24}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), fx24=VALUES(fx24);" )
+if "ff_td" in obs.keys() and "ff_yd" in obs.keys():
+   today = dt.today()
+   day = today.strftime( Ymd )
+   ts_td = dt2ts( today )
+   ts_td += 43200
+   ff12 = obs["ff_td"]
+   sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,ff12) VALUES (10381,{day},{ts_td},1200,'bufr',{ff12}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), ff12=VALUES(ff12);")
+   today = today - d
+   day = today.strftime( Ymd )
+   ts_td -= 86400
+   ff12 = obs["ff_yd"]
+   sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,ff12) VALUES (10381,{day},{ts_td},1200,'bufr',{ff12}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), ff12=VALUES(ff12);")
 
-elif "fx_yd" in obs.keys() and overwrite == True:
-   FX = int( obs["fx_yd"] * 10 )
-   sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES (10381,{yd},{ts_yd},0,'bufr',{FX}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), fx24=VALUES(fx24);" )
-
-if len(obs["ff"]) == 1:
-   # insert obs
-   try:
-      FF = int( obs["ff"] * 10 )
-   except:
-      FF = 'null'
-   sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,ff12) VALUES (10381,{day},{ts},0,'bufr',{FF}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), ff12=VALUES(ff12);")
+print(sql)
 
 for s in sql: cur.execute( s )
+
+db.commit()
