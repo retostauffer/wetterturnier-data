@@ -3,11 +3,12 @@
 #extracts obs data from hwerte_neu.txt file provided by ftp mira server (Freie UniversitÃt Berlin)
 
 import pandas as pd
+import numpy as np
 import json, sys
 
 head = [i for i in range(0,9)]
 enc  = "ISO-8859-1"
-cols = [0,11,16]
+cols = [0,11,16,18]
 #path to input file from FU mira FTP server
 name = "../ForecastProducts/dahlem/hwerte_"
 eng  = "python"
@@ -36,23 +37,38 @@ else:
 
 ts_yd = ts_td - 86400
 name_td += ".txt"; name_yd += ".txt"
-colnames = ["dt", "fx", "rr"]
+colnames = ["dt", "fx", "rr", "sd"]
+
+#get date of file (DOF)
+with open(name_td, "r", encoding=enc) as f:
+   lines    = f.readlines()
+   date_ger = lines[2][12:22]
+   DOF = dt.strptime( date_ger, "%d.%m.%Y" )
 
 #read the tab-seperated table with pandas and convert it to a pandas dataframe
 df_td = pd.read_csv(name_td, sep="\t", encoding=enc, skiprows=head, skipfooter=4, engine=eng, usecols=cols)
 df_td.columns = colnames
+df_td = df_td.replace(".", 0)
+df_td["sd"] = df_td["sd"].astype(float)
 
 obs = {}
 
 try:
    df_yd = pd.read_csv(name_yd, sep="\t", encoding=enc, skiprows=head, skipfooter=4, engine=eng, usecols=cols)
    df_yd.columns = colnames
+   df_yd = df_yd.replace(".",0)
+   df_yd["sd"] = df_yd["sd"].astype(float)
    obs["fx_yd"] = df_yd["fx"][-2:].max()
+   print("sd_yd:")
+   print( list(df_yd["sd"][-2:] ) )
+   obs["sd_yd"] = df_yd["sd"][-2:].sum()
    print("fx_yd (max):", obs["fx_yd"])
+   print("sd_yd (sum):", obs["sd_yd"])
    rr24 = list( df_yd["rr"][-2:] )
 except Exception as e:
    print(e); print("No obs from yesterday, setting to 0!")
    obs["fx_yd"] = 0
+   obs["sd_yd"] = 0
 
 sys.path.append('PyModules')
 from readconfig import readconfig
@@ -63,6 +79,9 @@ db = database(config)
 cur = db.cursor()
 
 fx = df_td["fx"]
+print(list(df_td["sd"][23:25]))
+obs["sd1"] = df_td["sd"][23:25].sum()
+print("sd1:", obs["sd1"])
 
 #if file is finished
 if len(fx) == 47: # take last 23 hours
@@ -71,6 +90,9 @@ if len(fx) == 47: # take last 23 hours
    if obs["fx_yd"] > obs["fx"]:
       obs["fx"] = obs["fx_yd"]
    
+   obs["sd24"] = df_td["sd"][1:].sum() + obs["sd_yd"] 
+   print("sd24:", obs["sd24"])
+
    rr1x = 0
    rr24 += list( df_td["rr"][1:] )
    
@@ -86,7 +108,7 @@ if len(fx) == 47: # take last 23 hours
       if i+1 < len(rr24):
          max_i = sum( rr24[i:i+2] )
       rr1x = max_i if max_i > rr1x else rr1x
-    
+   
    print( rr24 )
    print( rr1x )
 
@@ -135,11 +157,33 @@ sql = []
 sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `fx24` SMALLINT(5) NULL DEFAULT NULL")
 sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `ff12` SMALLINT(5) NULL DEFAULT NULL")
 sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `rr1x` SMALLINT(5) NULL DEFAULT NULL")
+sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `sun` SMALLINT(5) NULL DEFAULT NULL")
+sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `sunday` SMALLINT(5) NULL DEFAULT NULL")
 
+if "sd1" in obs.keys():
+   try:    sd1 = int( np.round( obs["sd1"] ) )
+   except: sd1 = 'null'
+   day = DOF.strftime( Ymd )
+   ts  = dt2ts( DOF )
+   ts += 43200
+   print(day)
+   print(ts)
+   print("SD1 (min):", sd1)
+   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,sun) VALUES (10381,{day},{ts},1200,'bufr',{sd1}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), sun=VALUES(sun);")
+if "sd24" in obs.keys():
+   try:    sd24 = int( np.round( obs["sd24"] ) )
+   except: sd24 = 'null'
+   date = DOF + d
+   day = date.strftime( Ymd )
+   ts  = dt2ts( date )
+   print(day)
+   print(ts)
+   print("SD24 (min):", sd24)
+   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,sunday) VALUES (10381,{day},{ts},0,'bufr',{sd24}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), sunday=VALUES(sunday);")
 if "rr" in obs.keys():
    try:    rr1x = int( obs["rr"] * 10 )
    except: rr1x = 'null'
-   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,rr1x) VALUES (10381,{day},{ts_td},0,'bufr',{rr1x}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), fx24=VALUES(rr1x);")
+   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,rr1x) VALUES (10381,{day},{ts_td},0,'bufr',{rr1x}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), rr1x=VALUES(rr1x);")
 if "fx" in obs.keys():
    try:    fx24 = int( obs["fx"] * 10 )
    except: fx24 = 'null'
@@ -160,6 +204,8 @@ if obs["ff_yd"]:
    ff12 = obs["ff_yd"]
    h = 1200
    sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,ff12) VALUES (10381,{day},{ts},{h},'bufr',{ff12}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), ff12=VALUES(ff12);")
+
+##sql.append( "INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,rr1x) VALUES (10381,20230305,1678017600,1200,'bufr',null) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), rr1x=VALUES(rr1x);")
 
 print(sql)
 
