@@ -62,8 +62,7 @@ if __name__ == "__main__":
          from shutil import copy2
 
          today      = date.today()
-         yesterday  = today - timedelta(days=1)
-         day        = yesterday.strftime("%Y-%m-%d")
+         day        = today.strftime("%Y-%m-%d")
          daily_file = hwerte + f"{day}.txt"
 
          copy2( hwerte + n, daily_file )
