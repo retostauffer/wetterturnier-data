@@ -160,7 +160,9 @@ sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `rr1x` SMALLINT(5) NULL DEFAULT
 sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `sun` SMALLINT(5) NULL DEFAULT NULL")
 sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `sunday` SMALLINT(5) NULL DEFAULT NULL")
 
-if "sd1" in obs.keys():
+hour = dt.utcnow().hour
+
+if "sd1" in obs.keys() and hour >= 12 and hour <= 13:
    try:    sd1 = int( np.round( obs["sd1"] ) )
    except: sd1 = 'null'
    day = DOF.strftime( Ymd )
@@ -181,13 +183,19 @@ if "sd24" in obs.keys():
    print("SD24 (min):", sd24)
    sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,sunday) VALUES (10381,{day},{ts},0,'bufr',{sd24}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), sunday=VALUES(sunday);")
 if "rr" in obs.keys():
+   date = DOF + d
+   day  = date.strftime( Ymd )
+   ts  = dt2ts( date )
    try:    rr1x = int( obs["rr"] * 10 )
    except: rr1x = 'null'
-   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,rr1x) VALUES (10381,{day},{ts_td},0,'bufr',{rr1x}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), rr1x=VALUES(rr1x);")
+   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,rr1x) VALUES (10381,{day},{ts},0,'bufr',{rr1x}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), rr1x=VALUES(rr1x);")
 if "fx" in obs.keys():
+   date = DOF + d
+   day  = date.strftime( Ymd )
+   ts  = dt2ts( date )
    try:    fx24 = int( obs["fx"] * 10 )
    except: fx24 = 'null'
-   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES (10381,{day},{ts_td},0,'bufr',{fx24}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), fx24=VALUES(fx24);")
+   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES (10381,{day},{ts},0,'bufr',{fx24}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), fx24=VALUES(fx24);")
 if obs["ff_td"]:
    today = dt.today()
    day = today.strftime( Ymd )
