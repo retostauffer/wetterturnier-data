@@ -34,12 +34,22 @@ if __name__ == "__main__":
    # Reading the config(s)
    config = readconfig("config.conf")
 
-   dahlem = config.ftp_dahlem
+   dahlem  = config.ftp_dahlem
 
    ftp = ftphandler( config )
 
    print(f"Download file '{dahlem}'")
    ftp.download( dahlem, "dahlem" )
+
+   from datetime import date, timedelta
+   day = date.today().strftime("%Y-%m-%d")
+
+   rr_dir  = "export/Berlin-Dahlem_rr"
+   rr_csv  = "Berlin-Dahlem_rr10min-Werte_"
+   rr_file = rr_dir + "/" + rr_csv + day + ".csv"
+   print(f"Download RR file ({rr_file})")
+   ftp.download( rr_file, "dahlem" )
+
    ftp.close()
 
    # Now we count the number of lines in the file. If it is 64 or more, we consider the day as finished.
@@ -51,18 +61,10 @@ if __name__ == "__main__":
    with open( hwerte + n, "r", encoding="ISO-8859-1" ) as fp:
       
       lines = len(fp.readlines())
-      from datetime import date, timedelta
-      day = date.today().strftime("%Y-%m-%d")
-
       daily_file = hwerte + f"{day}.txt"
 
       # if file is finished and daily file doesnt exist yet
       if lines == 65 and not os.path.exists( daily_file ):
-         from datetime import date, timedelta
-         from shutil import copy2
-
-         today      = date.today()
-         day        = today.strftime("%Y-%m-%d")
          daily_file = hwerte + f"{day}.txt"
-
+         from shutil import copy2
          copy2( hwerte + n, daily_file )
