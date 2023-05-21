@@ -97,7 +97,6 @@ class cleanup(object):
    # - Cleaning up the database
    # ----------------------------------------------------------------
    def live_database_to_archive(self):
-      import database as db
       """
       I would like to store some observation data longer than just
       a few days - however - we wont create a copy of the WMO
@@ -112,7 +111,10 @@ class cleanup(object):
 
       srctable = self.config['cleanup_srctable']
       dsttable = self.config['cleanup_dsttable']
-      stations = db.get_stations()
+      
+      from database import database
+      self.wpdb = database(self.config, database="wpwt")     
+      stations = self.wpdb.get_stations()
 
       # - If one of both is None: skip
       if not srctable or not dsttable:
@@ -125,9 +127,7 @@ class cleanup(object):
 
       # - No stations
       if len(stations) == 0:
-         print("    But no stations defined in the config.conf file")
-         print("    in [cleanup]. Seems that you dont want any")
-         print("    observation data in the archive table. Return.")
+         print("    No stations defined in the wp_wetterturnier_stations table (wpdb)!")
          return True
 
       print("    Have to backup:  %s stations" % len(stations))

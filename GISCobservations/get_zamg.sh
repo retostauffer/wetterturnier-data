@@ -2,7 +2,6 @@
 #receive the fx values for Austrian WMO stations from ZAMG OpenData
 
 base="https://dataset.api.hub.zamg.ac.at/v1/station/historical/"
-#resource_id="klima-v1-1d"
 resource_id="klima-v1-10min"
 parameters="FF,FFX,RR,SO"
 station_ids="5904,5917,11803,11804"
@@ -15,4 +14,4 @@ fi
 
 mkdir -p ZAMG
 
-wget "${base}${resource_id}?parameters=${parameters}&start=${start}&end=${end}&station_ids=${station_ids}" -O "ZAMG/${start}.test.json" #&& python3 extract_zamg.py ${start}
+wget "${base}${resource_id}?parameters=${parameters}&start=${start}&end=${end}&station_ids=${station_ids}" -O "ZAMG/${start}.test.json" && python3 extract_zamg.py ${start}

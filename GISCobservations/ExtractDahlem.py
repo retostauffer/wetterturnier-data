@@ -161,11 +161,8 @@ else:
 
 # add columns
 sql = []
-sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `fx24` SMALLINT(5) NULL DEFAULT NULL")
-sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `ff12` SMALLINT(5) NULL DEFAULT NULL")
-sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `rr1x` SMALLINT(5) NULL DEFAULT NULL")
-sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `sun` SMALLINT(5) NULL DEFAULT NULL")
-sql.append("ALTER TABLE `live` ADD IF NOT EXISTS `sunday` SMALLINT(5) NULL DEFAULT NULL")
+for param in ("fx24","ff12","rr1x","rr","sun","sunday"):
+   sql.append(f"ALTER TABLE `live` ADD IF NOT EXISTS `{param}` SMALLINT(5) NULL DEFAULT NULL")
 
 hour = dt.utcnow().hour
 

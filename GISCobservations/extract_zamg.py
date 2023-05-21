@@ -23,16 +23,17 @@ none_counter = 0
 
 params = {"FF":"ff", "FFX":"fx", "RR":"rr", "SO":"sun" }
 
-with open( path + DATE.strftime(fmt) + ".json", "r" ) as f:
+with open( path + DATE.strftime(fmt) + ".test.json", "r" ) as f:
    d = json.load(f)
    for f in d["features"]:
       p = f["properties"]
+      obs[stations[int(p["station"])]] = {}
       none_counter = 0
       for param in list(params.keys()):
          try:
-            obs[stations[int(p["station"])]] = p["parameters"][param]["data"]
+            obs[stations[int(p["station"])]][params[param]] = p["parameters"][param]["data"]
          except:
-            obs[stations[int(p["station"])]] = None
+            obs[stations[int(p["station"])]][params[param]] = None
             none_counter += 1
 
       if none_counter == len(params.keys()):
@@ -49,9 +50,12 @@ from database import database
 db = database(config)
 cur = db.cursor()
 
-#add column
-sql = "ALTER TABLE `live` ADD IF NOT EXISTS `fx24` SMALLINT(5) NULL DEFAULT NULL"
-cur.execute(sql)
+#add SQL columns
+sql = []
+for param in params.values():
+   sql.append( f"ALTER TABLE `live` ADD IF NOT EXISTS `{param}` SMALLINT(5) NULL DEFAULT NULL" )
+
+cur.executemany(sql)
 
 sql = []
 
@@ -62,13 +66,19 @@ datumsec = int( datumsec.replace( tzinfo = tz.utc ).timestamp() )
 print(datumsec)
 
 #insert obs
-for i,f in enumerate(fx):
-   try:
-      FX = int(fx[f]*10)
-   except:
-      FX = 'null'
-   sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES ({f},{datum},{datumsec},0,'bufr',{FX}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), fx24=VALUES(fx24);" )
-
+for i,f in enumerate(obs):
+   for param in params.values():
+      for value in obs[i][param]:
+         #only sunshine duration value is already correct for database storage
+         if param != "sun":
+            value *= 10
+         #convert 'None' to 'null'
+         if value == None: 
+            value = "null"
+         param_update = f"{param}=VALUES({param})"
+         sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,{param}) VALUES ({f},{datum},{datumsec},0,'bufr',{value}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), {param_update}" )
+         #add 10 mins (600 seconds) to UNIX timestamp
+         datumsec += 600
 print(sql)
 
 for s in sql:
