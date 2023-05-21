@@ -42,7 +42,8 @@ colnames = ["dt", "fx", "rr", "sd"]
 #get date of file (DOF)
 with open(name_td, "r", encoding=enc) as f:
    lines    = f.readlines()
-   date_ger = lines[2][12:22]
+   date_ger = lines[2][-11:]
+   date_ger = date_ger[:10]
    DOF = dt.strptime( date_ger, "%d.%m.%Y" )
 
 #read the tab-seperated table with pandas and convert it to a pandas dataframe
@@ -145,12 +146,18 @@ def find_ff( table, start_row ):
          except Exception as e:
             print(e); return 0
 
-obs["ff_td"] = find_ff( tables[0], 4 ); obs["ff_yd"] = find_ff( tables[1], 1 )
+try: obs["ff_td"] = find_ff( tables[0], 4 ); obs["ff_yd"] = find_ff( tables[1], 1 )
+except: print("Error while reading data! Mammatus95 userpage down?")
 
-if obs["ff_td"]:
-   print("ff @12z today:", float(obs["ff_td"]/10) )
-if obs["ff_yd"]:
+if "ff_td" in obs.keys():
+   try: print("ff @12z today:", float(obs["ff_td"]/10) )
+   except: print("no ff obs @12z today!")
+else: obs["ff_td"] = None
+if "ff_yd" in obs.keys():
    print("ff @12z yesterday:", float(obs["ff_yd"]/10) )
+else:
+   print("no ff obs @12z yesterday!")
+   obs["ff_yd"] = None
 
 # add columns
 sql = []
@@ -193,7 +200,9 @@ if "fx" in obs.keys():
    date = DOF + d
    day  = date.strftime( Ymd )
    ts  = dt2ts( date )
-   try:    fx24 = int( obs["fx"] * 10 )
+   try:
+      fx24 = int( obs["fx"] * 10 )
+      if fx24 == 0: sys.exit()
    except: fx24 = 'null'
    sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES (10381,{day},{ts},0,'bufr',{fx24}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), fx24=VALUES(fx24);")
 if obs["ff_td"]:
