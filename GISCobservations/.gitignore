@@ -15,6 +15,8 @@ config.conf
 R/Rplots.pdf
 
 # Ignore some folders
+SWISS
+ZAMG
 trash
 .tmp
 R/images

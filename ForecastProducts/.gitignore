@@ -9,3 +9,6 @@ lockbits
 
 # Ignore local config
 config.conf
+
+# Ignore dahlem directory
+dahlem
