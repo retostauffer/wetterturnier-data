@@ -9,8 +9,12 @@ import json, sys
 head = [i for i in range(0,9)]
 enc  = "ISO-8859-1"
 cols = [0,11,16,18]
-#path to input file from FU mira FTP server
-name = "../ForecastProducts/dahlem/hwerte_"
+#path to input files from FU mira FTP server
+path = "../ForecastProducts/dahlem"
+#Heizwerte table
+name = path + "/hwerte_"
+#RR 10 mins values
+rr10 = path + "/Berlin-Dahlem_rr10min-Werte_"
 eng  = "python"
 
 from datetime import datetime as dt, timedelta, timezone as tz
