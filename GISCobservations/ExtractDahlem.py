@@ -28,16 +28,50 @@ def dt2ts( datetime ):
 if len(sys.argv) == 2:
    td = dt.strptime( sys.argv[1], fmt ); yd = td - d
    name_td = name + str(sys.argv[1])
-   name_yd = name + yd.strftime( fmt )
+   yesterday = yd.strftime( fmt )
+   name_yd = name
    tm = td + d
    ts_td   = dt2ts( tm )
    day     = tm.strftime( Ymd ) 
 else:
    td = dt.today(); yd = td - d
    name_td = name + "neu"
-   name_yd = name + yd.strftime( fmt )
+   yesterday = yd.strftime( fmt )
+   name_yd = name
    ts_td   = dt2ts( td )
    day = td.strftime( Ymd )
+
+# load config and connect to DB
+sys.path.append('PyModules')
+from readconfig import readconfig
+config = readconfig("config.conf")
+
+from database import database
+db = database(config)
+cur = db.cursor()
+
+#Extract RR 10mins values from Dahlem
+#TODO
+yesterday = yd.strftime( Ymd )
+name_rr = rr10 + yd.strftime( fmt ) + ".csv"
+df_rr = pd.read_csv( name_rr, sep=";", encoding=enc, engine=eng)
+print(df_rr)
+
+sql = []
+
+from utils import clock_iter
+stdmin = clock_iter("2350")
+
+for index, row in df_rr.iterrows():
+   value = int( row["rr-Menge 10min in mm"] * 10 )
+   param_update = "rrr10=VALUES(rrr10)"
+   sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,param) VALUES (10381,{yesterday},{dt2ts(yd)},{next(stdmin)},'bufr',{value}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), {param_update}" )
+
+print(sql)
+sys.exit()
+for s in sql:
+   cur.execute( s )
+sys.exit()
 
 ts_yd = ts_td - 86400
 name_td += ".txt"; name_yd += ".txt"
@@ -75,13 +109,6 @@ except Exception as e:
    obs["fx_yd"] = 0
    obs["sd_yd"] = 0
 
-sys.path.append('PyModules')
-from readconfig import readconfig
-config = readconfig("config.conf")
-
-from database import database
-db = database(config)
-cur = db.cursor()
 
 fx = df_td["fx"]
 print(list(df_td["sd"][23:25]))
