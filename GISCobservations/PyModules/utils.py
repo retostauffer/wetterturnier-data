@@ -43,6 +43,30 @@ def movefile(config,stint,file,typ,ok):
    return
 
 
+from datetime import datetime as dt, timezone as tz
+import numpy as np
+
+def dt2str( datetime, fmt ):
+   """datetime -> string"""
+   datetime_str = datetime.strftime( fmt )
+   return datetime_str
+
+def dt2ts( datetime, min_time = False, tzinfo=tz.utc ):
+   """convert today's datetime object to timestamp"""
+   if min_time: dtts = dt.combine( datetime, dt.min.time() )
+   else: dtts = np.copy(datetime)
+   return int( dtts.replace( tzinfo = tz.utc ).timestamp() )
+
+def str2dt( string, fmt, tzinfo=tz.utc ):
+   """convert string to datetime object"""
+   datetime = dt.strptime(string, fmt).replace( tzinfo=tzinfo )
+   return datetime
+
+def str2ts( string, fmt, min_time = False, tzinfo=tz.utc ):
+   """string -> timestamp"""
+   datetime = str2dt( string, fmt )
+   return dt2ts( datetime, min_time = min_time, tzinfo=tzinfo )
+
 class clock_iter:
    """Iterator class; adds 10 mins to the iterated variable"""
    def __init__(self, start="0000"):

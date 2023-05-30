@@ -5,6 +5,7 @@
 import pandas as pd
 import numpy as np
 import json, sys
+sys.path.append('PyModules')
 
 head = [i for i in range(0,9)]
 enc  = "ISO-8859-1"
@@ -20,29 +21,27 @@ eng  = "python"
 from datetime import datetime as dt, timedelta, timezone as tz
 d = timedelta(days=1); fmt = "%Y-%m-%d"; Ymd = "%Y%m%d"
 
-def dt2ts( datetime ):
-   #convert today's datetime object to timestamp, we will need this later
-   ts = dt.combine( datetime, dt.min.time() )
-   return int( ts.replace( tzinfo = tz.utc ).timestamp() )
+
+from utils import dt2ts, str2dt
 
 if len(sys.argv) == 2:
-   td = dt.strptime( sys.argv[1], fmt ); yd = td - d
+   td = dt.strptime( sys.argv[1], fmt ) + d
    name_td = name + str(sys.argv[1])
-   yesterday = yd.strftime( fmt )
-   name_yd = name
-   tm = td + d
-   ts_td   = dt2ts( tm )
-   day     = tm.strftime( Ymd ) 
+   print("name_td: ", name_td)
+   day     = td.strftime( Ymd ) 
 else:
-   td = dt.today(); yd = td - d
+   td = dt.today()
    name_td = name + "neu"
-   yesterday = yd.strftime( fmt )
-   name_yd = name
-   ts_td   = dt2ts( td )
+   print("name_td: ",name_td)
    day = td.strftime( Ymd )
 
+ts_td = dt2ts( td, 1 )
+yd = td - d
+yesterday = yd.strftime( fmt )
+name_yd = name + yesterday
+print("name_yd: ", name_yd)
+
 # load config and connect to DB
-sys.path.append('PyModules')
 from readconfig import readconfig
 config = readconfig("config.conf")
 
@@ -52,26 +51,32 @@ cur = db.cursor()
 
 #Extract RR 10mins values from Dahlem
 #TODO
-yesterday = yd.strftime( Ymd )
-name_rr = rr10 + yd.strftime( fmt ) + ".csv"
+name_rr = rr10 + td.strftime( fmt ) + ".csv"
+print("name_rr: " + name_rr)
 df_rr = pd.read_csv( name_rr, sep=";", encoding=enc, engine=eng)
 print(df_rr)
 
 sql = []
 
-from utils import clock_iter
-stdmin = clock_iter("2350")
+datumsec = dt2ts(yd, 1)
 
 for index, row in df_rr.iterrows():
    value = int( row["rr-Menge 10min in mm"] * 10 )
    param_update = "rrr10=VALUES(rrr10)"
-   sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,param) VALUES (10381,{yesterday},{dt2ts(yd)},{next(stdmin)},'bufr',{value}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), {param_update}" )
+   datetime_str = row["zeit"]
+   hh = datetime_str[-8:-6]
+   mm = datetime_str[-5:-3]
+   stdmin = hh + mm
+   datetime = str2dt(datetime_str, "%Y-%m-%d %X")
+   datumsec = dt2ts(datetime)
+   sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,rrr10) VALUES (10381,{yesterday},{datumsec},{stdmin},'bufr',{value}) ON DUPLICATE KEY UPDATE stdmin=VALUES(stdmin), {param_update}" )
 
-print(sql)
-sys.exit()
 for s in sql:
-   cur.execute( s )
-sys.exit()
+   print(s)
+   try: cur.execute( s )
+   except: pass
+
+db.commit()
 
 ts_yd = ts_td - 86400
 name_td += ".txt"; name_yd += ".txt"
@@ -93,6 +98,7 @@ df_td["sd"] = df_td["sd"].astype(float)
 obs = {}
 
 try:
+   print(name_yd)
    df_yd = pd.read_csv(name_yd, sep="\t", encoding=enc, skiprows=head, skipfooter=4, engine=eng, usecols=cols)
    df_yd.columns = colnames
    df_yd = df_yd.replace(".",0)
@@ -254,6 +260,8 @@ if obs["ff_yd"]:
 
 print(sql)
 
-for s in sql: cur.execute( s )
+try:
+   for s in sql: cur.execute( s )
+except: pass
 
 db.commit()

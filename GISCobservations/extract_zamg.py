@@ -7,15 +7,23 @@ obs = {}
 stations = { 5904 : 11035, 5917 : 11040, 11803 : 11320, 11804 : 11120 }
 
 from datetime import datetime as dt, timedelta as td, timezone as tz
+sys.path.append('PyModules')
+from utils import clock_iter, dt2ts, str2dt
 fmt = "%Y-%m-%d"
+Ymd = "%Y%m%d"
 td1 = td(days = 1)
 
 if len(sys.argv) == 2:
+   print("CUSTOM DAY")
    DATE = sys.argv[1]
-   DATE = dt.strptime(DATE, fmt).replace( tzinfo = tz.utc )
-else:
+   DATE = str2dt( DATE, fmt, tzinfo = tz.utc )
+else: # default is yesterday
+   print("YESTERDAY")
    from datetime import date
-   DATE = dt.utcnow().date() - td1
+   DATE = dt.utcnow().date()
+
+DATE_yd = DATE - td1
+datum = DATE.strftime( Ymd )
 
 path = "ZAMG/"
 none_counter = 0
@@ -49,20 +57,13 @@ cur = db.cursor()
 sql = "ALTER TABLE `live` ADD IF NOT EXISTS %s SMALLINT(5) NULL DEFAULT NULL"
 for p in list(params.values()): cur.execute( sql % p )
 
-
-#DATE is yesterday by default, because we receive and save the observation on the next day
-datum = DATE.strftime("%Y%m%d")
-
-from utils import clock_iter
-
 sql = []
 
 #insert obs
 for i,f in enumerate(obs):
-   datumsec = dt.combine( DATE, dt.min.time() )
-   datumsec = int( datumsec.replace( tzinfo = tz.utc ).timestamp() )
-   stdmin = clock_iter("2350") # first iteration will start as "0000"
-   for param in params.values():
+   for param in list(params.values()):
+      datumsec = dt2ts( DATE_yd, Ymd, 1 )
+      stdmin = clock_iter("2350") # first iteration will start as "0000"
       for value in obs[f][param]:
          #convert 'None' to 'null' to match SQL format
          if value == None: value = "null"

@@ -64,6 +64,7 @@ for s in stations:
       Date = str(int(obs["Date"]))
       datum = int( Date[:8] )
       stdmin = int( Date[8:] )
+      #datumsec = str2ts( Date, tzinfo=tz.utc )
       datumsec = int( dt.strptime(Date, fmt2).replace(tzinfo=tz.utc).timestamp() )
       param_update = f"{p}=VALUES({p})"
       sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,{p}) VALUES ({s},{datum},{datumsec},{stdmin},'bufr',{value}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), {param_update}" )
