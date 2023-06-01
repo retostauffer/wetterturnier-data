@@ -22,7 +22,7 @@ from datetime import datetime as dt, timedelta, timezone as tz
 d = timedelta(days=1); fmt = "%Y-%m-%d"; Ymd = "%Y%m%d"
 
 
-from utils import dt2ts, str2dt
+from utils import dt2ts, str2dt, hhmm_str
 
 if len(sys.argv) == 2:
    td = dt.strptime( sys.argv[1], fmt ) + d
@@ -51,14 +51,11 @@ db = database(config)
 cur = db.cursor()
 
 #Extract RR 10mins values from Dahlem
-#TODO
 name_rr = rr10 + td.strftime( fmt ) + ".csv"
 print("name_rr: " + name_rr)
 df_rr = pd.read_csv( name_rr, sep=";", encoding=enc, engine=eng)
-print(df_rr)
 
 sql = []
-
 datumsec = dt2ts(yd, 1)
 
 for index, row in df_rr.iterrows():
@@ -66,8 +63,8 @@ for index, row in df_rr.iterrows():
    param_update = "rrr10=VALUES(rrr10), stdmin=VALUES(stdmin)"
    datetime_str = row["zeit"]
    datetime = str2dt(datetime_str, "%Y-%m-%d %X") - timedelta(hours=1)
-   hh = str(datetime.hour).rjust(2, "0")
-   mm = str(datetime.minute).rjust(2, "0")
+   hh = hhmm_str(datetime.hour)
+   mm = hhmm_str(datetime.minute)
    stdmin = hh + mm
    datumsec = dt2ts(datetime)
    sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,rrr10) VALUES (10381,{today},{datumsec},{stdmin},'bufr',{value}) ON DUPLICATE KEY UPDATE stdmin=VALUES(stdmin), {param_update}" )

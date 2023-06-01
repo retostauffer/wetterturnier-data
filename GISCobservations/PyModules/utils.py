@@ -67,6 +67,8 @@ def str2ts( string, fmt, min_time = False, tzinfo=tz.utc ):
    datetime = str2dt( string, fmt )
    return dt2ts( datetime, min_time = min_time, tzinfo=tzinfo )
 
+hhmm_str = lambda integer : str(integer).rjust(2, "0")
+
 class clock_iter:
    """Iterator class; adds 10 mins to the iterated variable"""
    def __init__(self, start="0000"):
@@ -79,7 +81,7 @@ class clock_iter:
          return self.time
       else: #for all other times
          if self.mm == "50":
-            self.hh = str( int(self.hh)+1 ).rjust(2, "0")
+            self.hh = hhmm_str( int(self.hh)+1 )
             self.mm = "00"
             self.time = self.hh + self.mm
             return self.time

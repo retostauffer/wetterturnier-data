@@ -23,13 +23,13 @@ else: # default is yesterday
    DATE = dt.utcnow().date()
 
 DATE_yd = DATE - td1
-datum = DATE.strftime( Ymd )
+datum_yd = DATE.strftime( Ymd )
 
 path = "ZAMG/"
 none_counter = 0
 params = {"FF":"ff10", "FFX":"ffx10", "RR":"rrr10", "SO":"sun10" }
 
-with open( path + DATE.strftime(fmt) + ".test.json", "r" ) as f:
+with open( path + DATE_yd.strftime(fmt) + ".json", "r" ) as f:
    d = json.load(f)
    for f in d["features"]:
       p = f["properties"]
@@ -64,17 +64,19 @@ for i,f in enumerate(obs):
    for param in list(params.values()):
       datumsec = dt2ts( DATE_yd, Ymd, 1 )
       stdmin = clock_iter("2350") # first iteration will start as "0000"
-      for value in obs[f][param]:
-         #convert 'None' to 'null' to match SQL format
-         if value == None: value = "null"
-         else:
-            #all params except sun10 need to be *10 for database storage
-            if param != "sun10": value *= 10
-            value = int(value)
-         param_update = f"{param}=VALUES({param})"
-         sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,{param}) VALUES ({f},{datum},{datumsec},{next(stdmin)},'bufr',{value}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), {param_update}" )
-         #add 10 mins (600 seconds) to UNIX timestamp
-         datumsec += 600
+      try:
+         for value in obs[f][param]:
+            #convert 'None' to 'null' to match SQL format
+            if value == None: value = "null"
+            else:
+               #all params except sun10 need to be *10 for database storage
+               if param != "sun10": value *= 10
+               value = int(value)
+            param_update = f"{param}=VALUES({param})"
+            sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,{param}) VALUES ({f},{datum_yd},{datumsec},{next(stdmin)},'bufr',{value}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), {param_update}" )
+            #add 10 mins (600 seconds) to UNIX timestamp
+            datumsec += 600
+      except TypeError: continue 
 
 for s in sql:
    cur.execute( s )
