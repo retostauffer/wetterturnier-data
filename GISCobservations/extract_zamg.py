@@ -20,29 +20,29 @@ if len(sys.argv) == 2:
 else: # default is yesterday
    print("YESTERDAY")
    from datetime import date
-   DATE = dt.utcnow().date()
+   DATE = dt.utcnow().date() - td1
 
-DATE_yd = DATE - td1
-datum_yd = DATE.strftime( Ymd )
+datum = DATE.strftime( Ymd )
 
 path = "ZAMG/"
 none_counter = 0
 params = {"FF":"ff10", "FFX":"ffx10", "RR":"rrr10", "SO":"sun10" }
 
-with open( path + DATE_yd.strftime(fmt) + ".json", "r" ) as f:
+with open( path + DATE.strftime(fmt) + ".json", "r" ) as f:
    d = json.load(f)
    for f in d["features"]:
       p = f["properties"]
       obs[stations[int(p["station"])]] = {}
       none_counter = 0
-      for param in list(params.keys()):
+      param_keys = list(params.keys())
+      for param in param_keys:
          try:
             obs[stations[int(p["station"])]][params[param]] = p["parameters"][param]["data"]
          except:
-            obs[stations[int(p["station"])]][params[param]] = None
+            obs[stations[int(p["station"])]][params[param]] = []
             none_counter += 1
 
-      if none_counter == len(params.keys()):
+      if none_counter == len(param_keys):
          print("MISSING DATA!")
 
 sys.path.append('PyModules')
@@ -62,21 +62,19 @@ sql = []
 #insert obs
 for i,f in enumerate(obs):
    for param in list(params.values()):
-      datumsec = dt2ts( DATE_yd, Ymd, 1 )
+      datumsec = dt2ts( DATE, Ymd, 1 )
       stdmin = clock_iter("2350") # first iteration will start as "0000"
-      try:
-         for value in obs[f][param]:
-            #convert 'None' to 'null' to match SQL format
-            if value == None: value = "null"
-            else:
-               #all params except sun10 need to be *10 for database storage
-               if param != "sun10": value *= 10
-               value = int(value)
-            param_update = f"{param}=VALUES({param})"
-            sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,{param}) VALUES ({f},{datum_yd},{datumsec},{next(stdmin)},'bufr',{value}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), {param_update}" )
-            #add 10 mins (600 seconds) to UNIX timestamp
-            datumsec += 600
-      except TypeError: continue 
+      for value in obs[f][param]:
+         #convert 'None' to 'null' to match SQL format
+         if value == None: value = "null"
+         else:
+            #all params except sun10 need to be *10 for database storage
+            if param != "sun10": value *= 10
+            value = int(value)
+         param_update = f"{param}=VALUES({param})"
+         sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,{param}) VALUES ({f},{datum},{datumsec},{next(stdmin)},'bufr',{value}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), {param_update}" )
+         #add 10 mins (600 seconds) to UNIX timestamp
+         datumsec += 600
 
 for s in sql:
    cur.execute( s )
