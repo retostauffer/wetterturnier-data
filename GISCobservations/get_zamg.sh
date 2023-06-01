@@ -15,4 +15,4 @@ td=$(date -d @${ts_yd} +"%Y-%m-%d")
 
 mkdir -p ZAMG
 
-wget "${base}${resource_id}?parameters=${parameters}&start=${yd}&end=${td}&station_ids=${station_ids}" -O "ZAMG/${yd}.test.json" && python3 extract_zamg.py ${yd}
+wget "${base}${resource_id}?parameters=${parameters}&start=${yd}&end=${td}&station_ids=${station_ids}" -O "ZAMG/${yd}.json" && python3 extract_zamg.py ${yd}

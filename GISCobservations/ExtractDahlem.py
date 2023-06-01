@@ -37,8 +37,9 @@ else:
 
 ts_td = dt2ts( td, 1 )
 yd = td - d
-yesterday = yd.strftime( fmt )
-name_yd = name + yesterday
+today     = td.strftime( Ymd )
+yesterday = yd.strftime( Ymd )
+name_yd = name + yd.strftime( fmt )
 print("name_yd: ", name_yd)
 
 # load config and connect to DB
@@ -62,14 +63,14 @@ datumsec = dt2ts(yd, 1)
 
 for index, row in df_rr.iterrows():
    value = int( row["rr-Menge 10min in mm"] * 10 )
-   param_update = "rrr10=VALUES(rrr10)"
+   param_update = "rrr10=VALUES(rrr10), stdmin=VALUES(stdmin)"
    datetime_str = row["zeit"]
-   hh = datetime_str[-8:-6]
-   mm = datetime_str[-5:-3]
+   datetime = str2dt(datetime_str, "%Y-%m-%d %X") - timedelta(hours=1)
+   hh = str(datetime.hour).rjust(2, "0")
+   mm = str(datetime.minute).rjust(2, "0")
    stdmin = hh + mm
-   datetime = str2dt(datetime_str, "%Y-%m-%d %X")
    datumsec = dt2ts(datetime)
-   sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,rrr10) VALUES (10381,{yesterday},{datumsec},{stdmin},'bufr',{value}) ON DUPLICATE KEY UPDATE stdmin=VALUES(stdmin), {param_update}" )
+   sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,rrr10) VALUES (10381,{today},{datumsec},{stdmin},'bufr',{value}) ON DUPLICATE KEY UPDATE stdmin=VALUES(stdmin), {param_update}" )
 
 for s in sql:
    print(s)

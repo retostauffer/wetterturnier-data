@@ -54,7 +54,7 @@ def dt2str( datetime, fmt ):
 def dt2ts( datetime, min_time = False, tzinfo=tz.utc ):
    """convert today's datetime object to timestamp"""
    if min_time: dtts = dt.combine( datetime, dt.min.time() )
-   else: dtts = np.copy(datetime)
+   else: dtts = datetime
    return int( dtts.replace( tzinfo = tz.utc ).timestamp() )
 
 def str2dt( string, fmt, tzinfo=tz.utc ):
