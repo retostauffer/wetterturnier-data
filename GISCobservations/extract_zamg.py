@@ -64,7 +64,7 @@ for i,f in enumerate(obs):
    for param in list(params.values()):
       datumsec = dt2ts( DATE, Ymd, 1 )
       stdmin = clock_iter("2350") # first iteration will start as "0000"
-      for value in obs[f][param]:
+      for value in obs[f][param][:-1]:
          #convert 'None' to 'null' to match SQL format
          if value == None: value = "null"
          else:
