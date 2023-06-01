@@ -26,7 +26,7 @@ datum = DATE.strftime( Ymd )
 
 path = "ZAMG/"
 none_counter = 0
-params = {"FF":"ff10", "FFX":"ffx10", "RR":"rrr10", "SO":"sun10" }
+params = {"FF":"ff", "FFX":"ffx10", "RR":"rrr10", "SO":"sun10" }
 
 with open( path + DATE.strftime(fmt) + ".json", "r" ) as f:
    d = json.load(f)
