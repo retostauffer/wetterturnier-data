@@ -1,6 +1,7 @@
 #!/bin/python3
 
 import json, sys, os, shutil
+from glob import glob
 import pandas as pd
 import numpy as np
 
@@ -22,7 +23,12 @@ from pathlib import Path
 Path(path).mkdir(parents=True, exist_ok=True)
 
 if len(sys.argv) == 2:
-   outfile = path + sys.argv[1] + C
+   if sys.argv[1] == "-a":
+      #take all .csv
+      outfiles = glob(path + "*.csv")
+      print(outfiles)
+   else:
+      outfiles = [path + sys.argv[1] + C]
 else:
    # download latest csv to SWISS folder as "YYYY-MM-DD@hh:mm.csv" and "VQHA80.csv"
    import wget
@@ -35,45 +41,51 @@ else:
    try: os.remove(path + filename)
    except FileNotFoundError: print("No latest file, downloading new!")
    #download latest file and copy it
-   outfile = wget.download( url + filename, out = path )
-   shutil.copyfile( outfile, path + dt.utcnow().strftime(fmt + C) )
+   outfiles = [wget.download( url + filename, out = path )]
+   shutil.copyfile( outfiles[0], path + dt.utcnow().strftime(fmt + C) )
 
-# now we can work with the downloaded file (extract observations)
-df = pd.read_csv(outfile, sep=";")
 
-# connect to database
-sys.path.append('PyModules')
-from readconfig import readconfig
-config = readconfig("config.conf")
+for outfile in outfiles:
 
-from database import database
-db = database(config)
-cur = db.cursor()
+   # now we can work with the downloaded file (extract observations)
+   df = pd.read_csv(outfile, sep=";")
 
-#add SQL columns
-sql = "ALTER TABLE `live` ADD IF NOT EXISTS %s SMALLINT(5) NULL DEFAULT NULL"
-for p in list(params.keys()): cur.execute( sql % p )
+   # connect to database
+   sys.path.append('PyModules')
+   from readconfig import readconfig
+   config = readconfig("config.conf")
 
-sql = []
+   from database import database
+   db = database(config)
+   cur = db.cursor()
 
-for s in stations:
-   obs = df.loc[df['Station/Location'] == stations[s]]
-   for p in params:
-      value = float(obs[params[p]])
-      # to save sunshine duration in the same format as for ZAMG stations, multiply by 60
-      if p == "sun10": value *= 60
-      # RR needs to be multiplied by 10 in order to match DB format (integer 1/10 mm)
-      else: value *= 10
-      value = int(np.round(value))
-      Date = str(int(obs["Date"]))
-      datum = int( Date[:8] )
-      stdmin = int( Date[8:] )
-      datumsec = int( dt.strptime(Date, fmt2).replace(tzinfo=tz.utc).timestamp() )
-      param_update = f"{p}=VALUES({p})"
-      sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,{p}) VALUES ({s},{datum},{datumsec},{stdmin},'bufr',{value}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), {param_update}" )
+   #add SQL columns
+   sql = "ALTER TABLE `live` ADD IF NOT EXISTS %s SMALLINT(5) NULL DEFAULT NULL"
+   for p in list(params.keys()): cur.execute( sql % p )
 
-for s in sql:
-   print(s); cur.execute( s )
+   sql = []
 
-# commit and close db
-db.commit(); db.close()
+   for s in stations:
+      obs = df.loc[df['Station/Location'] == stations[s]]
+      for p in params:
+         try:
+            value = float(obs[params[p]])
+            # to save sunshine duration in the same format as for ZAMG stations, multiply by 60
+            if p == "sun10": value *= 60
+            # RR needs to be multiplied by 10 in order to match DB format (integer 1/10 mm)
+            else: value *= 10
+            value = int(np.round(value))
+         except ValueError:
+            value = 'null'
+         Date = str(int(obs["Date"]))
+         datum = int( Date[:8] )
+         stdmin = int( Date[8:] )
+         datumsec = int( dt.strptime(Date, fmt2).replace(tzinfo=tz.utc).timestamp() )
+         param_update = f"{p}=VALUES({p})"
+         sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,{p}) VALUES ({s},{datum},{datumsec},{stdmin},'bufr',{value}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), {param_update}" )
+
+   for s in sql:
+      print(s); cur.execute( s )
+
+   # commit and close db
+   db.commit(); db.close()
