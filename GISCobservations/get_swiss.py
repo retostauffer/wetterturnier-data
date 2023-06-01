@@ -50,6 +50,10 @@ from database import database
 db = database(config)
 cur = db.cursor()
 
+#add SQL columns
+sql = "ALTER TABLE `live` ADD IF NOT EXISTS %s SMALLINT(5) NULL DEFAULT NULL"
+for p in list(params.keys()): cur.execute( sql % p )
+
 sql = []
 
 for s in stations:
