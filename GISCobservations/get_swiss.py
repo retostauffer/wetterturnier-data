@@ -5,7 +5,6 @@ from glob import glob
 import pandas as pd
 import numpy as np
 
-fx = {}
 # KLOTEN => KLO <> FLUNTERN => SMA
 stations = { 6670 : "KLO", 6660 : "SMA" }
 
