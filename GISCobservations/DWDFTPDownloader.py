@@ -39,8 +39,11 @@ if __name__ == "__main__":
 
    # FTP listing
    print("  * Establishing ftp connection")
-   ftp = ftplib.FTP( config["dwd_ftp"]["host"] )
+   from ftplib import FTP_TLS
+   ftp = FTP_TLS(config["dwd_ftp"]["host"], timeout=10)
+   #ftp = ftplib.FTP( config["dwd_ftp"]["host"] )
    ftp.login( config["dwd_ftp"]["user"], config["dwd_ftp"]["passwd"] )
+   print("LOGIN SUCCESFUL!")
    ftp.cwd( config["dwd_ftp"]["dir"] )
    data = []
    print("    Reading ftp file listing")
