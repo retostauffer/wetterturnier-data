@@ -3,7 +3,7 @@
 
 base="https://dataset.api.hub.zamg.ac.at/v1/station/historical/"
 resource_id="klima-v1-10min"
-parameters="DD,FF,FFX,P0,RR,SO,TL,TLMAX,TLMIN,TP"
+parameters="DD,FF,FFX,P,P0,RR,SO,TL,TLMAX,TLMIN,TP"
 station_ids="5904,5917,11803,11804"
 yd=${1:-$(date +%Y-%m-%d --date="1 day ago")}
 ts_yd=$(date --date="$yd" +"%s")
