@@ -3,7 +3,7 @@
 
 base="https://dataset.api.hub.zamg.ac.at/v1/station/historical/"
 resource_id="klima-v1-1d"
-parameters="vvmax"
+parameters="vvmax" #,sonne #TODO
 station_ids="5904,5917,11803,11804"
 start=${1:-$(date +%Y-%m-%d --date="1 day ago")}
 if [ -z $2 ]; then

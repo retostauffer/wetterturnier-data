@@ -69,8 +69,16 @@ for i,f in enumerate(obs):
          #convert 'None' to 'null' to match SQL format
          if value == None: value = "null"
          else:
-            #all params except sun10 need to be *10 for database storage
-            if param != "sun10": value *= 10
+            #all params except these need to be *10 for database storage
+            if param not in ("dd","sun10","psta","pmsl"): value *= 10
+            #wind direction needs to be devided by 10 and round to decadegrees (e.g. 270°
+            elif param == "dd":
+               value //10
+               value = np.round(value, -1)
+            #ffx10 needs to be 10 times higher
+            elif param == "ffx10": value *= 10
+            #pressure needs to be multiplied by 100
+            elif param in ("psta","pmsl"): value *= 100
             value = int(value)
          param_update = f"{param}=VALUES({param})"
          sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,{param}) VALUES ({f},{datum},{datumsec},{next(stdmin)},'bufr',{value}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), {param_update}" )
