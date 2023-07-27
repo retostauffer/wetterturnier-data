@@ -159,7 +159,7 @@ print("fx_td (max):", fx[2:].max())
 from bs4 import BeautifulSoup
 import requests
 
-soup=BeautifulSoup(requests.get("https://userpage.fu-berlin.de/mammatus95/turm/fm12/synopsturm.php").text,features="html.parser")
+soup=BeautifulSoup(requests.get("http://userpage.fu-berlin.de/schroetej31/turm/fm12/synops").text,features="html.parser")
 # first we should find our table object:
 tables = soup.find_all('table')
 
@@ -182,7 +182,7 @@ def find_ff( table, start_row ):
             print(e); return 0
 
 try: obs["ff_td"] = find_ff( tables[0], 4 ); obs["ff_yd"] = find_ff( tables[1], 1 )
-except: print("Error while reading data! Mammatus95 userpage down?")
+except: print("Error while reading data! schroetej31 userpage down?")
 
 if "ff_td" in obs.keys():
    try: print("ff @12z today:", float(obs["ff_td"]/10) )
