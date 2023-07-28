@@ -181,7 +181,7 @@ def find_ff( table, start_row ):
          except Exception as e:
             print(e); return 0
 
-try: obs["ff_td"] = find_ff( tables[0], 4 ); obs["ff_yd"] = find_ff( tables[1], 1 )
+try: obs["ff_td"] = find_ff( tables[0], 1 ); obs["ff_yd"] = find_ff( tables[1], 1 )
 except: print("Error while reading data! schroetej31 userpage down?")
 
 if "ff_td" in obs.keys():
