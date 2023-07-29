@@ -60,17 +60,15 @@ datumsec = dt2ts(yd, 1)
 
 for index, row in df_rr.iterrows():
    value = int( row["rr-Menge 10min in mm"] * 10 )
-   param_update = "rrr10=VALUES(rrr10), stdmin=VALUES(stdmin)"
    datetime_str = row["zeit"]
    datetime = str2dt(datetime_str, "%Y-%m-%d %X") - timedelta(hours=1)
    hh = hhmm_str(datetime.hour)
    mm = hhmm_str(datetime.minute)
    stdmin = hh + mm
    datumsec = dt2ts(datetime)
-   sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,rrr10) VALUES (10381,{today},{datumsec},{stdmin},'bufr',{value}) ON DUPLICATE KEY UPDATE stdmin=VALUES(stdmin), {param_update}" )
+   sql.append( f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,rrr10) VALUES (10381,{today},{datumsec},{stdmin},'bufr',{value}) ON DUPLICATE KEY UPDATE rrr10=VALUES(rrr10)" )
 
 for s in sql:
-   print(s)
    try: cur.execute( s )
    except: pass
 
@@ -199,6 +197,8 @@ sql = []
 for param in ("fx24","ff12","rr1x","rr","sun","sunday"):
    sql.append(f"ALTER TABLE `live` ADD IF NOT EXISTS `{param}` SMALLINT(5) NULL DEFAULT NULL")
 
+today = dt.today()
+today = today.replace(hour=0, minute=0, second=0, microsecond=0)
 hour = dt.utcnow().hour
 
 if "sd1" in obs.keys() and hour >= 12 and hour <= 13:
@@ -206,11 +206,11 @@ if "sd1" in obs.keys() and hour >= 12 and hour <= 13:
    except: sd1 = 'null'
    day = DOF.strftime( Ymd )
    ts  = dt2ts( DOF )
-   ts += 43200
+   ts += 43190
    print(day)
    print(ts)
    print("SD1 (min):", sd1)
-   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,sun) VALUES (10381,{day},{ts},1200,'bufr',{sd1}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), sun=VALUES(sun);")
+   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,sun) VALUES (10381,{day},{ts},1150,'bufr',{sd1}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), sun=VALUES(sun);")
 if "sd24" in obs.keys():
    try:    sd24 = int( np.round( obs["sd24"] ) )
    except: sd24 = 'null'
@@ -238,7 +238,6 @@ if "fx" in obs.keys():
    except: fx24 = 'null'
    sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES (10381,{day},{ts},0,'bufr',{fx24}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), fx24=VALUES(fx24);")
 if obs["ff_td"]:
-   today = dt.today()
    day = today.strftime( Ymd )
    ts = dt2ts( today )
    ts += 43200
@@ -246,7 +245,7 @@ if obs["ff_td"]:
    h = 1200
    sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,ff12) VALUES (10381,{day},{ts},{h},'bufr',{ff12}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), ff12=VALUES(ff12);")
 if obs["ff_yd"]:
-   today = dt.today() - d
+   today = today - d
    day = today.strftime( Ymd )
    ts = dt2ts( today )
    ts += 43200
