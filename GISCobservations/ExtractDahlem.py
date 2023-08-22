@@ -153,7 +153,7 @@ print("fx (0z-23z):")
 print(list(fx[2:]))
 print("fx_td (max):", fx[2:].max())
 
-#use BeautifulSoup to extract mammatus95 synopstalking page
+#use BeautifulSoup to extract schroetej31 formerly (mammatus95 synopstalking) page
 from bs4 import BeautifulSoup
 import requests
 
@@ -179,7 +179,7 @@ def find_ff( table, start_row ):
          except Exception as e:
             print(e); return 0
 
-try: obs["ff_td"] = find_ff( tables[0], 1 ); obs["ff_yd"] = find_ff( tables[1], 1 )
+try: obs["ff_td"] = find_ff( tables[0], 1 ); obs["ff_yd"] = find_ff( tables[1], 1 ); obs["ff_2d"] = find_ff( tables[2], 1 )
 except: print("Error while reading data! schroetej31 userpage down?")
 
 if "ff_td" in obs.keys():
@@ -191,22 +191,26 @@ if "ff_yd" in obs.keys():
 else:
    print("no ff obs @12z yesterday!")
    obs["ff_yd"] = None
+if "ff_2d" in obs.keys():
+   print("ff @12z the day before yesterday:", float(obs["ff_2d"]/10) )
+else:
+   print("no ff obs @12z the day before yesterday!")
+   obs["ff_2d"] = None
+
 
 # add columns
 sql = []
 for param in ("fx24","ff12","rr1x","rr","sun","sunday"):
    sql.append(f"ALTER TABLE `live` ADD IF NOT EXISTS `{param}` SMALLINT(5) NULL DEFAULT NULL")
 
-today = dt.today()
-today = today.replace(hour=0, minute=0, second=0, microsecond=0)
 hour = dt.utcnow().hour
 
-if "sd1" in obs.keys() and hour >= 12 and hour <= 13:
+if "sd1" in obs.keys() and hour >= 12 and hour <= 14:
    try:    sd1 = int( np.round( obs["sd1"] ) )
    except: sd1 = 'null'
    day = DOF.strftime( Ymd )
    ts  = dt2ts( DOF )
-   ts += 43190
+   ts += 42600
    print(day)
    print(ts)
    print("SD1 (min):", sd1)
@@ -237,21 +241,31 @@ if "fx" in obs.keys():
       if fx24 == 0: sys.exit()
    except: fx24 = 'null'
    sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES (10381,{day},{ts},0,'bufr',{fx24}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), fx24=VALUES(fx24);")
-if obs["ff_td"]:
+
+today = dt.today()
+today = today.replace(hour=0, minute=0, second=0, microsecond=0)
+
+dk = " ON DUPLICATE KEY UPDATE ucount=ucount+1, ff=VALUES(ff)"
+
+if obs["ff_td"] and hour >= 12 and hour <= 13:
    day = today.strftime( Ymd )
-   ts = dt2ts( today )
-   ts += 43200
+   ts = dt2ts( today ) + 42600
    ff12 = obs["ff_td"]
-   h = 1200
-   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,ff12) VALUES (10381,{day},{ts},{h},'bufr',{ff12}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), ff12=VALUES(ff12);")
-if obs["ff_yd"]:
-   today = today - d
-   day = today.strftime( Ymd )
-   ts = dt2ts( today )
-   ts += 43200
+   h = 1150
+   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,ff) VALUES (10381,{day},{ts},{h},'bufr',{ff12}){dk}")
+if obs["ff_yd"] and hour >= 12 and hour <= 13:
+   day = (today-d).strftime( Ymd )
+   ts = dt2ts( today-d ) + 42600
    ff12 = obs["ff_yd"]
-   h = 1200
-   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,ff12) VALUES (10381,{day},{ts},{h},'bufr',{ff12}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), ff12=VALUES(ff12);")
+   h = 1150
+   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,ff) VALUES (10381,{day},{ts},{h},'bufr',{ff12}){dk}")
+if obs["ff_2d"] and hour >= 12 and hour <= 13:
+   dby = today-d-d
+   day = (dby).strftime( Ymd )
+   ts = dt2ts(dby) + 42600
+   ff12 = obs["ff_2d"]
+   h = 1150
+   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,ff) VALUES (10381,{day},{ts},{h},'bufr',{ff12}){dk}")
 
 ##sql.append( "INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,rr1x) VALUES (10381,20230305,1678017600,1200,'bufr',null) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), rr1x=VALUES(rr1x);")
 
@@ -259,6 +273,7 @@ print(sql)
 
 try:
    for s in sql: cur.execute( s )
-except: pass
+except Exception as e:
+   print(e)
 
 db.commit()

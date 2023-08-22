@@ -1,7 +1,7 @@
 #!/bin/bash
 #receive the fx values for Austrian WMO stations from ZAMG OpenData
 
-base="https://dataset.api.hub.zamg.ac.at/v1/station/historical/"
+base="https://dataset.api.hub.geosphere.at/v1/station/historical/"
 resource_id="klima-v1-1d"
 parameters="vvmax" #,sonne #TODO
 station_ids="5904,5917,11803,11804"
