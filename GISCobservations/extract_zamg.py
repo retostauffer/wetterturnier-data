@@ -2,6 +2,7 @@
 
 import json, sys
 import numpy as np
+from datetime import date
 
 obs = {}
 stations = { 5904 : 11035, 5917 : 11040, 11803 : 11320, 11804 : 11120 }
@@ -19,14 +20,12 @@ if len(sys.argv) == 2:
    DATE = str2dt( DATE, fmt, tzinfo = tz.utc )
 else: # default is yesterday
    print("YESTERDAY")
-   from datetime import date
    DATE = dt.utcnow().date() - td1
 
 datum = DATE.strftime( Ymd )
 
 path = "ZAMG/"
 none_counter = 0
-#params = {"FF":"ff", "FFX":"ffx10", "RR":"rrr10", "SO":"sun10" }
 params = { "DD":"dd", "FF":"ff", "FFX":"ffx10", "P":"psta", "P0":"pmsl", "RR":"rrr10", "SO":"sun10", "TL":"t", "TLMAX":"tmax10", "TLMIN":"tmin10", "TP":"td" }
 
 with open( path + DATE.strftime(fmt) + ".json", "r" ) as f:

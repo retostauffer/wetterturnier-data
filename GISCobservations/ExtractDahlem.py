@@ -7,7 +7,7 @@ import numpy as np
 import json, sys
 sys.path.append('PyModules')
 
-head = [i for i in range(0,9)]
+head = [i for i in range(0,8)]
 enc  = "ISO-8859-1"
 cols = [0,11,16,18]
 #path to input files from FU mira FTP server
@@ -25,7 +25,7 @@ d = timedelta(days=1); fmt = "%Y-%m-%d"; Ymd = "%Y%m%d"
 from utils import dt2ts, str2dt, hhmm_str
 
 if len(sys.argv) == 2:
-   td = dt.strptime( sys.argv[1], fmt ) + d
+   td = dt.strptime( sys.argv[1], fmt )
    name_td = name + str(sys.argv[1])
    print("name_td: ", name_td)
    day     = td.strftime( Ymd ) 
@@ -91,6 +91,7 @@ df_td.columns = colnames
 df_td = df_td.replace(".", 0)
 df_td["sd"] = df_td["sd"].astype(float)
 
+
 obs = {}
 
 try:
@@ -99,37 +100,41 @@ try:
    df_yd.columns = colnames
    df_yd = df_yd.replace(".",0)
    df_yd["sd"] = df_yd["sd"].astype(float)
-   obs["fx_yd"] = df_yd["fx"][-2:].max()
-   print("sd_yd:")
-   print( list(df_yd["sd"][-2:] ) )
-   obs["sd_yd"] = df_yd["sd"][-2:].sum()
-   print("fx_yd (max):", obs["fx_yd"])
-   print("sd_yd (sum):", obs["sd_yd"])
-   rr24 = list( df_yd["rr"][-2:] )
+   fx_yd = list(df_yd["fx"])[2:]
+   rr24 = list(df_yd["rr"])[2:]
 except Exception as e:
-   print(e); print("No obs from yesterday, setting to 0!")
-   obs["fx_yd"] = 0
+   print(e); print(f"No obs from {yesterday}, setting fx and sd to 0!")
+   fx_yd = 0
    obs["sd_yd"] = 0
 
 
 fx = df_td["fx"]
 print(list(df_td["sd"][23:25]))
-obs["sd1"] = df_td["sd"][23:25].sum()
-print("sd1:", obs["sd1"])
+if len(df_td["sd"][23:25]) == 2:
+   obs["sd1"] = df_td["sd"][23:25].sum()
+   print("sd1:", obs["sd1"])
+else:
+   if len(sys.argv) == 2:
+      print(f"no Sd1 @12z for {today}")
+   else: print("no Sd1 @12z for today (yet)")
 
 #if file is finished
-if len(fx) == 47: # take last 23 hours
-   obs["fx"] = df_td["fx"][1:].max()
-   # correct fx of yesterday only if higher than last hour of yesterday
-   if obs["fx_yd"] > obs["fx"]:
-      obs["fx"] = obs["fx_yd"]
-   
-   obs["sd24"] = df_td["sd"][1:].sum() + obs["sd_yd"] 
+if len(sys.argv) == 2 or len(fx) == 47:
+   # take last 23 hours for Sd - sun doesnt shine at night usually ;)
+
+   obs["sd24"] = df_td["sd"][:-2].sum()
    print("sd24:", obs["sd24"])
 
-   rr1x = 0
-   rr24 += list( df_td["rr"][1:] )
+if len(sys.argv) == 2 or len(fx) == 2:
    
+   fx_td = list(df_td["fx"])[:2]
+   print(f"FX24 {today}:", fx_td)
+   obs["fx_yd"] = max(list(fx_yd) + list(fx_td))
+   print(f"FX24 {yesterday}:", obs["fx_yd"])
+
+   rr1x = 0
+   rr24 += list( df_td["rr"][:2] )
+
    for i, rr in enumerate(rr24):
       try:               rr24[i] = float(rr)
       except ValueError: rr24[i] = 0
@@ -142,16 +147,11 @@ if len(fx) == 47: # take last 23 hours
       if i+1 < len(rr24):
          max_i = sum( rr24[i:i+2] )
       rr1x = max_i if max_i > rr1x else rr1x
-   
-   print( rr24 )
-   print( rr1x )
 
-   obs["rr"] = rr1x
+   print( f"RR24 {yesterday}:", max(rr24) )
+   print( f"RR1X {yesterday}:", rr1x )
+   obs["rr1x"] = rr1x 
 
-# fx is more complicated because we need the daily maximum, of the UTC-day!
-print("fx (0z-23z):")
-print(list(fx[2:]))
-print("fx_td (max):", fx[2:].max())
 
 #use BeautifulSoup to extract schroetej31 formerly (mammatus95 synopstalking) page
 from bs4 import BeautifulSoup
@@ -161,105 +161,189 @@ soup=BeautifulSoup(requests.get("http://userpage.fu-berlin.de/schroetej31/turm/f
 # first we should find our table object:
 tables = soup.find_all('table')
 
-def find_ff( table, start_row ):
+
+def find_ff_fx( table, start_row ):
    rows = []
    
    for i, row in enumerate(table.find_all('tr')):
       rows.append([el.text.strip() for el in row.find_all('td')])
    
-   synop = ""
+   synop_12, synop_6 = "", ""
    for row in rows[start_row:]:
-      if row[0][7:9] == "12": synop = row[0]
+      hour_synop = row[0][7:9]
+      if hour_synop == "12": synop_12 = row[0]
+      elif hour_synop == "6 ": synop_6 = row[0]
 
-   print(synop)
+   res = []
 
-   for i in synop.split("&nbsp"):
+   for i in synop_12.split("&nbsp"):
       if i[0:4] == "555 ":
-         try: return int(i[18:21])
+         try: res.append( int(i[18:21]) )
          except Exception as e:
-            print(e); return 0
+            continue
 
-try: obs["ff_td"] = find_ff( tables[0], 1 ); obs["ff_yd"] = find_ff( tables[1], 1 ); obs["ff_2d"] = find_ff( tables[2], 1 )
-except: print("Error while reading data! schroetej31 userpage down?")
+   if len(res) == 0: res.append(None)
 
-if "ff_td" in obs.keys():
-   try: print("ff @12z today:", float(obs["ff_td"]/10) )
-   except: print("no ff obs @12z today!")
-else: obs["ff_td"] = None
-if "ff_yd" in obs.keys():
+   for i in synop_6.split("&nbsp"):
+      if "BOT" in i and "80000" in i:
+         i = i.split("80000 ")
+         try: res.append( int(i[-1][14:17]) )
+         except Exception as e:
+            continue
+
+   if len(res) == 1: res.append(None)
+   
+   if res[0] is not None and res[1] is not None:
+      return res
+   elif res[0] is None and res[1] is not None:
+      return None, res[1]
+   elif res[0] is not None and res[1] is None:
+      return res[0], None
+   else: return None, None
+
+
+try:     obs["ff_td"], obs["fx_yd"] = find_ff_fx( tables[0], 1 )
+except Exception as e: print(e)
+try:     obs["ff_yd"], obs["fx_2d"] = find_ff_fx( tables[1], 1 )
+except:  pass
+try:     obs["ff_2d"], obs["fx_3d"] = find_ff_fx( tables[2], 1 )
+except:  print("Error while reading data! schroetej31 userpage down?")
+
+
+if "ff_td" in obs.keys() and obs["ff_td"] is not None:
+   print("ff @12z today:", float(obs["ff_td"]/10) )
+else: print("no ff obs @12z today (yet)!")
+
+if "ff_yd" in obs.keys() and obs["ff_yd"] is not None:
    print("ff @12z yesterday:", float(obs["ff_yd"]/10) )
-else:
-   print("no ff obs @12z yesterday!")
-   obs["ff_yd"] = None
-if "ff_2d" in obs.keys():
+else: print("no ff obs @12z yesterday!")
+
+if "ff_2d" in obs.keys() and obs["ff_2d"] is not None:
    print("ff @12z the day before yesterday:", float(obs["ff_2d"]/10) )
-else:
-   print("no ff obs @12z the day before yesterday!")
-   obs["ff_2d"] = None
+else: print("no ff obs @12z the day before yesterday!")
+
+if "fx_yd" in obs.keys() and obs["fx_yd"] is not None:
+   print("fx @6z today (for yesterday):", float(obs["fx_yd"]/10) )
+else: print("no fx obs @6z today!")
+
+if "fx_2d" in obs.keys() and obs["fx_2d"] is not None:
+   print("fx @6z yesterday (for day before yesterday):", float(obs["fx_2d"]/10) )
+else: print("no fx obs @6z yesterday!")
+
+if "fx_3d" in obs.keys() and obs["fx_3d"] is not None:
+   print("fx @6z the day before yesterday (for previous day):", float(obs["fx_3d"]/10) )
+else: print("no fx obs @6z the day before yesterday!")
 
 
 # add columns
 sql = []
-for param in ("fx24","ff12","rr1x","rr","sun","sunday"):
+for param in ("fx24","ff12","rr1x","sun","sunday"):
    sql.append(f"ALTER TABLE `live` ADD IF NOT EXISTS `{param}` SMALLINT(5) NULL DEFAULT NULL")
 
 hour = dt.utcnow().hour
 
+if len(sys.argv) == 2:
+   dk = " ON DUPLICATE KEY UPDATE ucount=ucount+1, sun=VALUES(sun)"
+else: dk = ""
+
 if "sd1" in obs.keys() and hour >= 12 and hour <= 14:
    try:    sd1 = int( np.round( obs["sd1"] ) )
-   except: sd1 = 'null'
-   day = DOF.strftime( Ymd )
-   ts  = dt2ts( DOF )
-   ts += 42600
-   print(day)
-   print(ts)
-   print("SD1 (min):", sd1)
-   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,sun) VALUES (10381,{day},{ts},1150,'bufr',{sd1}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), sun=VALUES(sun);")
+   except: pass
+   else:
+      day = DOF.strftime( Ymd )
+      ts  = dt2ts( DOF )
+      ts += 42600
+      print(day)
+      print(ts)
+      print("SD1 (min):", sd1)
+      sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,sun) VALUES (10381,{day},{ts},1150,'bufr',{sd1}){dk};")
+
+if len(sys.argv) == 2:
+   dk = " ON DUPLICATE KEY UPDATE ucount=ucount+1, sd24=VALUES(sd24)"
+else: dk = ""
+
 if "sd24" in obs.keys():
    try:    sd24 = int( np.round( obs["sd24"] ) )
-   except: sd24 = 'null'
-   date = DOF + d
-   day = date.strftime( Ymd )
-   ts  = dt2ts( date )
-   print(day)
-   print(ts)
-   print("SD24 (min):", sd24)
-   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,sunday) VALUES (10381,{day},{ts},0,'bufr',{sd24}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), sunday=VALUES(sunday);")
-if "rr" in obs.keys():
-   date = DOF + d
+   except: pass
+   else:
+      date = DOF + d
+      day = date.strftime( Ymd )
+      ts  = dt2ts( date )
+      print(day)
+      print(ts)
+      print("SD24 (min):", sd24)
+      sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,sunday) VALUES (10381,{day},{ts},0,'bufr',{sd24}) ON DUPLICATE KEY UPDATE ucount=ucount+1, sunday=VALUES(sunday);")
+
+if len(sys.argv) == 2:
+   dk = " ON DUPLICATE KEY UPDATE ucount=ucount+1, rr1x=VALUES(rr1x)"
+else: dk = ""
+
+if "rr1x" in obs.keys():
+   date = DOF
    day  = date.strftime( Ymd )
    ts  = dt2ts( date )
-   try:    rr1x = int( obs["rr"] * 10 )
-   except: rr1x = 'null'
-   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,rr1x) VALUES (10381,{day},{ts},0,'bufr',{rr1x}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), rr1x=VALUES(rr1x);")
-if "fx" in obs.keys():
-   date = DOF + d
+   try:    rr1x = int( obs["rr1x"] * 10 )
+   except: pass
+   else:
+      sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,rr1x) VALUES (10381,{day},{ts},0,'bufr',{rr1x}){dk};")
+
+if len(sys.argv) == 2:
+   dk = " ON DUPLICATE KEY UPDATE ucount=ucount+1, fx24=VALUES(fx24)"
+else: dk = ""
+
+if "fx_yd" in obs.keys():
+   date = DOF
    day  = date.strftime( Ymd )
    ts  = dt2ts( date )
    try:
-      fx24 = int( obs["fx"] * 10 )
+      fx24 = int( obs["fx_yd"] * 10 )
       if fx24 == 0: sys.exit()
-   except: fx24 = 'null'
-   sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES (10381,{day},{ts},0,'bufr',{fx24}) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), fx24=VALUES(fx24);")
+   except: pass
+   else:
+      sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES (10381,{day},{ts},0,'bufr',{fx24}){dk};")
+
+if "fx_2d" in obs.keys():
+   date = DOF - d
+   day  = date.strftime( Ymd )
+   ts  = dt2ts( date )
+   try:
+      fx24 = int( obs["fx_2d"] * 10 )
+      if fx24 == 0: sys.exit()
+   except: pass
+   else:
+      sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES (10381,{day},{ts},0,'bufr',{fx24}){dk};")
+
+if "fx_3d" in obs.keys():
+   date = DOF - 2*d
+   day  = date.strftime( Ymd )
+   ts  = dt2ts( date )
+   try:
+      fx24 = int( obs["fx_3d"] * 10 )
+      if fx24 == 0: sys.exit()
+   except: pass
+   else:
+      sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,fx24) VALUES (10381,{day},{ts},0,'bufr',{fx24}){dk};")
 
 today = dt.today()
 today = today.replace(hour=0, minute=0, second=0, microsecond=0)
 
-dk = " ON DUPLICATE KEY UPDATE ucount=ucount+1, ff=VALUES(ff)"
+if len(sys.argv) == 2:
+   dk = " ON DUPLICATE KEY UPDATE ucount=ucount+1, ff=VALUES(ff)"
+else: dk = ""
 
-if obs["ff_td"] and hour >= 12 and hour <= 13:
+if obs["ff_td"] and hour >= 12 and hour <= 14:
    day = today.strftime( Ymd )
    ts = dt2ts( today ) + 42600
    ff12 = obs["ff_td"]
    h = 1150
    sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,ff) VALUES (10381,{day},{ts},{h},'bufr',{ff12}){dk}")
-if obs["ff_yd"] and hour >= 12 and hour <= 13:
+if obs["ff_yd"] and hour >= 12 and hour <= 14:
    day = (today-d).strftime( Ymd )
    ts = dt2ts( today-d ) + 42600
    ff12 = obs["ff_yd"]
    h = 1150
    sql.append(f"INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,ff) VALUES (10381,{day},{ts},{h},'bufr',{ff12}){dk}")
-if obs["ff_2d"] and hour >= 12 and hour <= 13:
+if obs["ff_2d"] and hour >= 12 and hour <= 14:
    dby = today-d-d
    day = (dby).strftime( Ymd )
    ts = dt2ts(dby) + 42600
@@ -269,11 +353,11 @@ if obs["ff_2d"] and hour >= 12 and hour <= 13:
 
 ##sql.append( "INSERT INTO live (statnr,datum,datumsec,stdmin,msgtyp,rr1x) VALUES (10381,20230305,1678017600,1200,'bufr',null) ON DUPLICATE KEY UPDATE ucount=ucount+1, stdmin=VALUES(stdmin), rr1x=VALUES(rr1x);")
 
-print(sql)
 
-try:
-   for s in sql: cur.execute( s )
-except Exception as e:
-   print(e)
+for s in sql:
+   print(s)
+   try:  cur.execute( s )
+   except Exception as e:
+      print(e)
 
 db.commit()
